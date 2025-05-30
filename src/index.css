@@ -1,0 +1,92 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .letter-card {
+    @apply bg-white rounded-bubble p-6 shadow-letter transition-all duration-300 hover:shadow-playful hover:scale-105 cursor-pointer;
+  }
+  
+  .game-button {
+    @apply bg-gradient-to-r from-primary to-primary-light text-white font-bold py-4 px-8 rounded-bubble shadow-soft hover:shadow-playful transition-all duration-300 transform hover:scale-105 active:scale-95;
+  }
+  
+  .activity-card {
+    @apply bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-card border border-white/20 transition-all duration-300 hover:shadow-playful;
+  }
+  
+  .progress-bar {
+    @apply w-full bg-surface-200 rounded-full h-3 overflow-hidden;
+  }
+  
+  .progress-fill {
+    @apply h-full bg-gradient-to-r from-secondary to-accent transition-all duration-500 ease-out rounded-full;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .bg-pattern {
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(78, 205, 196, 0.1) 0%, transparent 50%);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-surface-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary-dark;
+}
+
+/* Responsive text sizes */
+@media (max-width: 640px) {
+  .responsive-text-lg {
+    @apply text-base;
+  }
+  
+  .responsive-text-xl {
+    @apply text-lg;
+  }
+  
+  .responsive-text-2xl {
+    @apply text-xl;
+  }
+  
+  .responsive-text-3xl {
+    @apply text-2xl;
+  }
+  
+  .responsive-text-4xl {
+    @apply text-3xl;
+  }
+}
