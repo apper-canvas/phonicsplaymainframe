@@ -66,6 +66,8 @@ const [drawingLines, setDrawingLines] = useState([])
 const [letterCount, setLetterCount] = useState(5) // Default to 5 letters
   const [randomSeed, setRandomSeed] = useState(0) // Force re-randomization
   const [matchedPairs, setMatchedPairs] = useState(new Set())
+const [usedLineColors, setUsedLineColors] = useState(new Set())
+  const availableColors = ['red', 'blue', 'green', 'orange', 'purple', 'pink', 'teal', 'yellow', 'indigo', 'lime']
 const [randomizedPictures, setRandomizedPictures] = useState([])
 
   // Utility functions for randomization
@@ -84,6 +86,18 @@ const [randomizedPictures, setRandomizedPictures] = useState([])
   }
 const shufflePictures = (letters) => {
     return shuffleArray([...letters])
+  }
+// Color management for lines
+  const getNextAvailableColor = () => {
+    // Find the first color that hasn't been used
+    for (let color of availableColors) {
+      if (!usedLineColors.has(color)) {
+        return color
+      }
+    }
+    // If all colors are used, cycle back to start
+    setUsedLineColors(new Set())
+    return availableColors[0]
   }
 
   const getCurrentLetters = () => {
@@ -311,7 +325,7 @@ const switchActivity = (newActivity) => {
       setCurrentLine(null)
       setIsDrawing(false)
       setConnectionPoints({}) // Clear connection points
-      
+setUsedLineColors(new Set()) // Reset used colors for new activity
       // Generate new randomized letters when switching to line-drawing mode
       if (newActivity === 'line-drawing') {
         const newLetters = selectRandomLetters(letterCount)
@@ -337,7 +351,7 @@ const resetActivity = () => {
     setCurrentLine(null)
     setIsDrawing(false)
     setConnectionPoints({}) // Clear connection points
-    
+setUsedLineColors(new Set()) // Reset used colors
     // Reset randomized pictures for line-drawing mode
     if (currentActivity === 'line-drawing') {
       const newPictures = shufflePictures(randomizedLetters)
@@ -360,6 +374,7 @@ setAttempts(0)
     setCurrentActivity('letter-match')
     setGameState('playing')
     // Generate new randomized letters for line-drawing mode
+setUsedLineColors(new Set()) // Reset used colors
 const newLetters = selectRandomLetters(letterCount)
     const newPictures = shufflePictures(newLetters)
     setRandomizedLetters(newLetters)
@@ -450,12 +465,16 @@ const newLetters = selectRandomLetters(letterCount)
     
     if (closestTarget && currentLine.startItem.letter === closestTarget.item.letter) {
       // Correct connection
+const lineColor = getNextAvailableColor()
+      setUsedLineColors(prev => new Set([...prev, lineColor]))
+      
       const newLine = {
         start: currentLine.start,
         end: { x: closestTarget.x, y: closestTarget.y },
         startItem: currentLine.startItem,
         endItem: closestTarget.item,
-        id: `${currentLine.startItem.letter}-correct`
+id: `${currentLine.startItem.letter}-correct`,
+        color: lineColor
       }
       
       setDrawingLines(prev => [...prev, newLine])
@@ -471,6 +490,7 @@ const newLetters = selectRandomLetters(letterCount)
           setCompletedLetters(new Set())
           setMatchedPairs(new Set())
           setDrawingLines([])
+setUsedLineColors(new Set()) // Reset colors for new level
           setGameState('playing')
         }, 2000)
       }
@@ -1082,7 +1102,7 @@ const newLetters = selectRandomLetters(letterCount)
                   animate={{ pathLength: 1 }}
                   transition={{ duration: 0.5 }}
 d={`M ${line.start.x} ${line.start.y} Q ${(line.start.x + line.end.x) / 2} ${Math.min(line.start.y, line.end.y) - 50} ${line.end.x} ${line.end.y}`}
-                  stroke="url(#rainbow-gradient)"
+stroke={`url(#${line.color}-gradient)`}
                   strokeWidth="8"
                   fill="none"
                   strokeDasharray="0"
@@ -1098,7 +1118,7 @@ d={`M ${line.start.x} ${line.start.y} Q ${(line.start.x + line.end.x) / 2} ${Mat
               {currentLine && (
                 <motion.path
 d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + currentLine.end.x) / 2} ${Math.min(currentLine.start.y, currentLine.end.y) - 50} ${currentLine.end.x} ${currentLine.end.y}`}
-                  stroke="url(#active-rainbow-gradient)"
+stroke="url(#active-gradient)"
                   strokeWidth="6"
                   fill="none"
                   strokeDasharray="12,6"
@@ -1114,18 +1134,69 @@ d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + c
               <defs>
               
                 {/* Rainbow Gradient for Completed Lines */}
-                <linearGradient id="rainbow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+{/* Individual Color Gradients for Each Line */}
+                <linearGradient id="red-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="#FF6B6B" />
-                  <stop offset="16.66%" stopColor="#FFE66D" />
-                  <stop offset="33.33%" stopColor="#4ECDC4" />
-                  <stop offset="50%" stopColor="#45B7D1" />
-                  <stop offset="66.66%" stopColor="#96CEB4" />
-                  <stop offset="83.33%" stopColor="#DDA0DD" />
+                  <stop offset="50%" stopColor="#FF8E8E" />
                   <stop offset="100%" stopColor="#FF6B6B" />
                 </linearGradient>
                 
-                {/* Active Rainbow Gradient for Drawing Lines */}
-                <linearGradient id="active-rainbow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#4ECDC4" />
+                  <stop offset="50%" stopColor="#7DD3CC" />
+                  <stop offset="100%" stopColor="#4ECDC4" />
+                </linearGradient>
+                
+                <linearGradient id="green-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#96CEB4" />
+                  <stop offset="50%" stopColor="#B8E6D1" />
+                  <stop offset="100%" stopColor="#96CEB4" />
+                </linearGradient>
+                
+                <linearGradient id="orange-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FFB347" />
+                  <stop offset="50%" stopColor="#FFCC73" />
+                  <stop offset="100%" stopColor="#FFB347" />
+                </linearGradient>
+                
+                <linearGradient id="purple-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#DDA0DD" />
+                  <stop offset="50%" stopColor="#E6B3E6" />
+                  <stop offset="100%" stopColor="#DDA0DD" />
+                </linearGradient>
+                
+                <linearGradient id="pink-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FF69B4" />
+                  <stop offset="50%" stopColor="#FF8CC8" />
+                  <stop offset="100%" stopColor="#FF69B4" />
+                </linearGradient>
+                
+                <linearGradient id="teal-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#20B2AA" />
+                  <stop offset="50%" stopColor="#48D1CA" />
+                  <stop offset="100%" stopColor="#20B2AA" />
+                </linearGradient>
+                
+                <linearGradient id="yellow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FFE66D" />
+                  <stop offset="50%" stopColor="#FFF088" />
+                  <stop offset="100%" stopColor="#FFE66D" />
+                </linearGradient>
+                
+                <linearGradient id="indigo-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#6A5ACD" />
+                  <stop offset="50%" stopColor="#8A7FDE" />
+                  <stop offset="100%" stopColor="#6A5ACD" />
+                </linearGradient>
+                
+                <linearGradient id="lime-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#32CD32" />
+                  <stop offset="50%" stopColor="#5ED65E" />
+                  <stop offset="100%" stopColor="#32CD32" />
+                </linearGradient>
+                
+                {/* Active Drawing Gradient */}
+                <linearGradient id="active-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="#FFD700" />
                   <stop offset="25%" stopColor="#FF69B4" />
                   <stop offset="50%" stopColor="#00CED1" />
