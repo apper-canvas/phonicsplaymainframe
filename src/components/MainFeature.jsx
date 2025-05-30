@@ -325,6 +325,11 @@ const generateNewSet = () => {
   }
 const handleLetterCountChange = (newCount) => {
     setLetterCount(newCount)
+// Clear all connected lines and game state when settings change
+    setDrawingLines([])
+    setCompletedLetters(new Set())
+    setMatchedPairs(new Set())
+    setUsedLineColors(new Set())
     const newLetters = selectRandomLetters(newCount)
     const shuffledLetters = shuffleLetterOrder(newLetters)
     const newPictures = generatePicturesForLetters(shuffledLetters)
@@ -333,9 +338,16 @@ const handleLetterCountChange = (newCount) => {
     const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
     setRandomizedLetters(shuffledLetters)
     setRandomizedPictures(finalPictures)
+// Notify user that lines have been cleared
+    toast.info('🔄 Connected lines cleared for new letter count!')
   }
 const handleImagesPerLetterChange = (newCount) => {
 setImagesPerLetter(newCount)
+// Clear all connected lines and game state when settings change
+    setDrawingLines([])
+    setCompletedLetters(new Set())
+    setMatchedPairs(new Set())
+    setUsedLineColors(new Set())
     if (randomizedLetters.length > 0) {
       const newPictures = generatePicturesForLetters(randomizedLetters)
       const pictureGroups = groupPicturesByLetter(newPictures)
@@ -343,6 +355,8 @@ setImagesPerLetter(newCount)
       const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
       setRandomizedPictures(finalPictures)
     }
+// Notify user that lines have been cleared
+    toast.info('🔄 Connected lines cleared for new image count!')
   }
   // Generate initial randomized letters
 useEffect(() => {
