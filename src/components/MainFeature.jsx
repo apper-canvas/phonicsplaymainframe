@@ -334,13 +334,9 @@ const groupPicturesByLetter = (pictures) => {
 
 const generateNewSet = () => {
     const newLetters = selectRandomLetters(letterCount)
-    const shuffledLetters = shuffleLetterOrder(newLetters)
-    const newPictures = generatePicturesForLetters(shuffledLetters)
-    const pictureGroups = groupPicturesByLetter(newPictures)
-    const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
-    const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
-    setRandomizedLetters(shuffledLetters)
-    setRandomizedPictures(finalPictures)
+    const newPictures = generatePicturesForLetters(newLetters)
+    setRandomizedLetters(newLetters)
+    setRandomizedPictures(newPictures)
     setRandomSeed(prev => prev + 1)
   }
 const handleLetterCountChange = (newCount) => {
@@ -350,14 +346,10 @@ const handleLetterCountChange = (newCount) => {
     setCompletedLetters(new Set())
     setMatchedPairs(new Set())
     setUsedLineColors(new Set())
-    const newLetters = selectRandomLetters(newCount)
-    const shuffledLetters = shuffleLetterOrder(newLetters)
-    const newPictures = generatePicturesForLetters(shuffledLetters)
-    const pictureGroups = groupPicturesByLetter(newPictures)
-    const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
-    const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
-    setRandomizedLetters(shuffledLetters)
-    setRandomizedPictures(finalPictures)
+const newLetters = selectRandomLetters(newCount)
+    const newPictures = generatePicturesForLetters(newLetters)
+    setRandomizedLetters(newLetters)
+    setRandomizedPictures(newPictures)
   }
 const handleImagesPerLetterChange = (newCount) => {
 setImagesPerLetter(newCount)
@@ -366,25 +358,18 @@ setImagesPerLetter(newCount)
     setCompletedLetters(new Set())
     setMatchedPairs(new Set())
     setUsedLineColors(new Set())
-    if (randomizedLetters.length > 0) {
+if (randomizedLetters.length > 0) {
       const newPictures = generatePicturesForLetters(randomizedLetters)
-      const pictureGroups = groupPicturesByLetter(newPictures)
-      const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
-      const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
-      setRandomizedPictures(finalPictures)
+      setRandomizedPictures(newPictures)
     }
   }
   // Generate initial randomized letters
 useEffect(() => {
     if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
-      const newLetters = selectRandomLetters(letterCount)
-      const shuffledLetters = shuffleLetterOrder(newLetters)
-      setRandomizedLetters(shuffledLetters)
-      const newPictures = generatePicturesForLetters(shuffledLetters)
-      const pictureGroups = groupPicturesByLetter(newPictures)
-      const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
-      const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
-      setRandomizedPictures(finalPictures)
+const newLetters = selectRandomLetters(letterCount)
+      setRandomizedLetters(newLetters)
+      const newPictures = generatePicturesForLetters(newLetters)
+      setRandomizedPictures(newPictures)
     }
 }, [currentActivity, letterCount, imagesPerLetter])
 
@@ -543,14 +528,10 @@ const switchActivity = (newActivity) => {
 setUsedLineColors(new Set()) // Reset used colors for new activity
       // Generate new randomized letters when switching to line-drawing mode
 if (newActivity === 'line-drawing') {
-        const newLetters = selectRandomLetters(letterCount)
-        const shuffledLetters = shuffleLetterOrder(newLetters)
-        const newPictures = generatePicturesForLetters(shuffledLetters)
-        const pictureGroups = groupPicturesByLetter(newPictures)
-        const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
-        const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
-        setRandomizedLetters(shuffledLetters)
-        setRandomizedPictures(finalPictures)
+const newLetters = selectRandomLetters(letterCount)
+        const newPictures = generatePicturesForLetters(newLetters)
+        setRandomizedLetters(newLetters)
+        setRandomizedPictures(newPictures)
       }
       
       const activityNames = {
@@ -596,13 +577,9 @@ setUsedLineColors(new Set()) // Reset used colors
 // Reset letter history for fresh start
     setUsedLettersHistory([])
 const newLetters = selectRandomLetters(letterCount)
-    const shuffledLetters = shuffleLetterOrder(newLetters)
-    const newPictures = generatePicturesForLetters(shuffledLetters)
-    const pictureGroups = groupPicturesByLetter(newPictures)
-    const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
-    const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
-    setRandomizedLetters(shuffledLetters)
-    setRandomizedPictures(finalPictures)
+    const newPictures = generatePicturesForLetters(newLetters)
+    setRandomizedLetters(newLetters)
+    setRandomizedPictures(newPictures)
     toast.info('🔄 Game reset! Let\'s start fresh!')
   }
 
@@ -1530,49 +1507,44 @@ key={`letter-${item.letter}`}
                 <div className="column-header">
                   <h3 className="text-xl font-bold text-center text-secondary mb-6">Pictures</h3>
                 </div>
-<div className="pictures-by-letter-rows">
-                  {getCurrentLetters().map((letterItem, letterIndex) => {
-                    const letterPictures = randomizedPictures.filter(pic => pic.letter === letterItem.letter)
-                    return (
-                      <div key={`letter-pictures-${letterItem.letter}`} className="picture-row-for-letter">
-                        {letterPictures.map((item, index) => (
+<div className="column-content">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    {randomizedPictures.map((item, index) => (
+                      <motion.div
+                        key={`picture-${item.letter}-${item.index}`}
+                        data-picture={`${item.letter}-${item.index}`}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: index * 0.1 + 0.2 }}
+                        onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
+                        onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
+                        className={`letter-card cursor-pointer text-center relative select-none ${
+                          completedLetters.has(item.letter)
+                            ? 'bg-green-100 border-green-300 opacity-75'
+                            : 'hover:shadow-playful hover:scale-105'
+                        }`}
+                      >
+                        {completedLetters.has(item.letter) && (
                           <motion.div
-                            key={`picture-${item.letter}-${item.index}`}
-                            data-picture={`${item.letter}-${item.index}`}
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ delay: (letterIndex * letterPictures.length + index) * 0.1 + 0.2 }}
-                            onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
-                            onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
-                            className={`letter-card cursor-pointer text-center relative select-none ${
-                              completedLetters.has(item.letter)
-                                ? 'bg-green-100 border-green-300 opacity-75'
-                                : 'hover:shadow-playful hover:scale-105'
-                            }`}
+                            className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
                           >
-                            {completedLetters.has(item.letter) && (
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
-                              >
-                                <ApperIcon name="Check" className="w-4 h-4 text-white" />
-                              </motion.div>
-                            )}
-                            
-                            <div className="text-5xl sm:text-6xl mb-2 pointer-events-none">
-                              {item.emoji}
-                            </div>
-                            
-                            {/* Connection Point */}
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                              <div className="w-3 h-3 bg-secondary rounded-full opacity-20"></div>
-                            </div>
+                            <ApperIcon name="Check" className="w-4 h-4 text-white" />
                           </motion.div>
-                        ))}
-                      </div>
-                    )
-                  })}
+                        )}
+                        
+                        <div className="text-4xl sm:text-5xl mb-2 pointer-events-none">
+                          {item.emoji}
+                        </div>
+                        
+                        {/* Connection Point */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div className="w-3 h-3 bg-secondary rounded-full opacity-20"></div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
