@@ -516,6 +516,8 @@ setTimeout(() => {
           setDrawingLines([])
           setUsedLineColors(new Set()) // Reset colors for new level
           setGameState('playing')
+// Automatically generate new letters for the next level in line-drawing mode
+          generateNewSet()
         }, 2000)
       }
     } else {
