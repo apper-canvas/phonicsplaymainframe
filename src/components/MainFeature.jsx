@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import ApperIcon from './ApperIcon'
 
 const MainFeature = () => {
-  const [currentActivity, setCurrentActivity] = useState('letter-match')
+const [currentActivity, setCurrentActivity] = useState('letter-match') // 'letter-match' or 'picture-match'
   const [selectedLetter, setSelectedLetter] = useState(null)
   const [score, setScore] = useState(0)
   const [level, setLevel] = useState(1)
@@ -13,6 +13,8 @@ const MainFeature = () => {
   const [gameState, setGameState] = useState('playing') // playing, celebrating, completed
   const [showHint, setShowHint] = useState(false)
   const audioRef = useRef(null)
+const [draggedLetter, setDraggedLetter] = useState(null)
+  const [selectedPicture, setSelectedPicture] = useState(null)
 
   // Sample letters and words for different levels
   const letterData = {
@@ -37,20 +39,30 @@ const MainFeature = () => {
   }
 
   const getCurrentLetters = () => letterData[level] || letterData[1]
-  const [draggedLetter, setDraggedLetter] = useState(null)
-  const [matchedPairs, setMatchedPairs] = useState(new Set())
+const [matchedPairs, setMatchedPairs] = useState(new Set())
 
   // Audio simulation (in real app, this would play actual audio files)
-  const playSound = (letter, type = 'letter') => {
+const playSound = (letter, type = 'letter') => {
     // Simulate audio feedback
     if (type === 'correct') {
-      toast.success('🎉 Excellent! You got it right!', {
+      const message = currentActivity === 'picture-match' 
+        ? '🎉 Perfect match! You matched the picture to the letter!'
+        : '🎉 Excellent! You got it right!'
+      toast.success(message, {
         autoClose: 2000,
         hideProgressBar: false
       })
     } else if (type === 'incorrect') {
-      toast.error('Try again! You can do it!', {
+      const message = currentActivity === 'picture-match'
+        ? 'Try again! Look at the picture and find its starting letter!'
+        : 'Try again! You can do it!'
+      toast.error(message, {
         autoClose: 1500,
+        hideProgressBar: false
+      })
+    } else if (type === 'picture') {
+      toast.info(`This picture starts with the letter "${letter}"`, {
+        autoClose: 2000,
         hideProgressBar: false
       })
     } else {
@@ -66,8 +78,13 @@ const MainFeature = () => {
     setAttempts(prev => prev + 1)
     playSound(letter.letter)
   }
+const handlePictureSelect = (item) => {
+    setSelectedPicture(item)
+    setAttempts(prev => prev + 1)
+    playSound(item.letter, 'picture')
+  }
 
-  const handleWordMatch = (word) => {
+const handleWordMatch = (word) => {
     if (selectedLetter && selectedLetter.word.toLowerCase() === word.toLowerCase()) {
       // Correct match
       setScore(prev => prev + 10)
@@ -94,13 +111,61 @@ const MainFeature = () => {
     }
   }
 
+  const handlePictureMatch = (targetLetter) => {
+    if (selectedPicture && selectedPicture.letter === targetLetter) {
+      // Correct match
+      setScore(prev => prev + 15) // Slightly higher score for picture matching
+      setCompletedLetters(prev => new Set([...prev, selectedPicture.letter]))
+      setMatchedPairs(prev => new Set([...prev, selectedPicture.letter]))
+      playSound(selectedPicture.letter, 'correct')
+      setSelectedPicture(null)
+      setDraggedLetter(null)
+      
+      // Check if level is complete
+      if (completedLetters.size + 1 >= getCurrentLetters().length) {
+        setGameState('celebrating')
+        setTimeout(() => {
+          setLevel(prev => prev + 1)
+          setCompletedLetters(new Set())
+          setMatchedPairs(new Set())
+          setGameState('playing')
+          toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
+        }, 2000)
+      }
+    } else {
+      // Incorrect match
+      playSound(selectedPicture?.letter, 'incorrect')
+      setSelectedPicture(null)
+      setDraggedLetter(null)
+    }
+  }
+
+  const switchActivity = (newActivity) => {
+    if (newActivity !== currentActivity) {
+      setCurrentActivity(newActivity)
+      setSelectedLetter(null)
+      setSelectedPicture(null)
+      setDraggedLetter(null)
+      toast.info(`Switched to ${newActivity === 'letter-match' ? 'Letter to Word' : 'Picture to Letter'} matching!`)
+    }
+  }
+
+  const resetActivity = () => {
+    setSelectedLetter(null)
+    setSelectedPicture(null)
+    setDraggedLetter(null)
+  }
+
   const resetGame = () => {
     setScore(0)
     setLevel(1)
     setAttempts(0)
     setCompletedLetters(new Set())
     setMatchedPairs(new Set())
-    setSelectedLetter(null)
+setSelectedLetter(null)
+    setSelectedPicture(null)
+    setDraggedLetter(null)
+    setCurrentActivity('letter-match')
     setGameState('playing')
     toast.info('🔄 Game reset! Let\'s start fresh!')
   }
@@ -187,6 +252,44 @@ const MainFeature = () => {
         </div>
       </motion.div>
 
+{/* Activity Selector */}
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.1 }}
+        className="activity-card mb-6"
+      >
+        <div className="flex items-center justify-center gap-4">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => switchActivity('letter-match')}
+            className={`flex items-center gap-2 px-4 py-3 rounded-bubble transition-all duration-300 ${
+              currentActivity === 'letter-match'
+                ? 'bg-primary text-white shadow-playful'
+                : 'bg-surface-100 text-surface-700 hover:bg-surface-200'
+            }`}
+          >
+            <ApperIcon name="Type" className="w-5 h-5" />
+            <span className="font-medium">Letter to Word</span>
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => switchActivity('picture-match')}
+            className={`flex items-center gap-2 px-4 py-3 rounded-bubble transition-all duration-300 ${
+              currentActivity === 'picture-match'
+                ? 'bg-secondary text-white shadow-playful'
+                : 'bg-surface-100 text-surface-700 hover:bg-surface-200'
+            }`}
+          >
+            <ApperIcon name="Image" className="w-5 h-5" />
+            <span className="font-medium">Picture to Letter</span>
+          </motion.button>
+        </div>
+      </motion.div>
+
       {/* Hint Panel */}
       <AnimatePresence>
         {showHint && (
@@ -200,11 +303,19 @@ const MainFeature = () => {
               <ApperIcon name="Info" className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
               <div className="text-sm sm:text-base text-surface-700">
                 <p className="font-medium mb-2">How to play:</p>
-                <ol className="list-decimal list-inside space-y-1">
-                  <li>Click on a letter to hear its sound</li>
-                  <li>Find the word that starts with that letter</li>
-                  <li>Match letters to words to earn points!</li>
-                </ol>
+                {currentActivity === 'letter-match' ? (
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>Click on a letter to hear its sound</li>
+                    <li>Find the word that starts with that letter</li>
+                    <li>Match letters to words to earn points!</li>
+                  </ol>
+                ) : (
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>Click on a picture to hear what it starts with</li>
+                    <li>Drag the picture to the correct letter</li>
+                    <li>Match pictures to letters to earn points!</li>
+                  </ol>
+                )}
               </div>
             </div>
           </motion.div>
@@ -212,164 +323,355 @@ const MainFeature = () => {
       </AnimatePresence>
 
       {/* Main Game Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-        {/* Letters Section */}
-        <motion.div
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="activity-card"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-bubble flex items-center justify-center">
-              <ApperIcon name="Type" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+{currentActivity === 'letter-match' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+          {/* Letters Section */}
+          <motion.div
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="activity-card"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-bubble flex items-center justify-center">
+                <ApperIcon name="Type" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
+                Choose a Letter
+              </h2>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
-              Choose a Letter
-            </h2>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            {getCurrentLetters().map((item, index) => (
-              <motion.div
-                key={item.letter}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleLetterSelect(item)}
-                className={`letter-card cursor-pointer text-center relative overflow-hidden ${
-                  selectedLetter?.letter === item.letter 
-                    ? 'ring-4 ring-primary shadow-playful' 
-                    : ''
-                } ${
-                  completedLetters.has(item.letter)
-                    ? 'bg-green-100 border-green-300'
-                    : ''
-                }`}
-              >
-                {completedLetters.has(item.letter) && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
-                  >
-                    <ApperIcon name="Check" className="w-4 h-4 text-white" />
-                  </motion.div>
-                )}
-                
-                <div className="text-3xl sm:text-4xl font-bold text-primary mb-2 font-heading">
-                  {item.letter}
-                </div>
-                <div className="text-sm sm:text-base text-surface-600">
-                  {item.sound}
-                </div>
-                
-                {selectedLetter?.letter === item.letter && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute inset-0 bg-primary/10 flex items-center justify-center"
-                  >
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full"
-                    />
-                  </motion.div>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Words Section */}
-        <motion.div
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="activity-card"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-secondary rounded-bubble flex items-center justify-center">
-              <ApperIcon name="Image" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-            </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
-              Find the Word
-            </h2>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            {getCurrentLetters().map((item, index) => (
-              <motion.div
-                key={item.word}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: index * 0.1 + 0.2 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleWordMatch(item.word)}
-                className={`letter-card cursor-pointer text-center ${
-                  !selectedLetter 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'hover:shadow-playful'
-                } ${
-                  matchedPairs.has(item.letter)
-                    ? 'bg-green-100 border-green-300 opacity-50'
-                    : ''
-                }`}
-              >
-                <div className="text-4xl sm:text-5xl mb-3">
-                  {item.emoji}
-                </div>
-                <div className="text-lg sm:text-xl font-bold text-surface-800 mb-1">
-                  {item.word}
-                </div>
-                <div className="text-xs sm:text-sm text-surface-500">
-                  Starts with "{item.letter}"
-                </div>
-                
-                {matchedPairs.has(item.letter) && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute inset-0 bg-green-200/50 flex items-center justify-center rounded-bubble"
-                  >
+            
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {getCurrentLetters().map((item, index) => (
+                <motion.div
+                  key={item.letter}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleLetterSelect(item)}
+                  className={`letter-card cursor-pointer text-center relative overflow-hidden ${
+                    selectedLetter?.letter === item.letter 
+                      ? 'ring-4 ring-primary shadow-playful' 
+                      : ''
+                  } ${
+                    completedLetters.has(item.letter)
+                      ? 'bg-green-100 border-green-300'
+                      : ''
+                  }`}
+                >
+                  {completedLetters.has(item.letter) && (
                     <motion.div
                       initial={{ scale: 0 }}
-                      animate={{ scale: [0, 1.2, 1] }}
-                      transition={{ duration: 0.5 }}
-                      className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center"
+                      animate={{ scale: 1 }}
+                      className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
                     >
-                      <ApperIcon name="Check" className="w-6 h-6 text-white" />
+                      <ApperIcon name="Check" className="w-4 h-4 text-white" />
                     </motion.div>
-                  </motion.div>
-                )}
-              </motion.div>
-            ))}
-          </div>
-          
-          {selectedLetter && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-6 p-4 bg-primary/10 rounded-bubble border border-primary/20"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">
-                    {selectedLetter.letter}
-                  </span>
-                </div>
-                <div className="text-sm sm:text-base text-surface-700">
-                  Find a word that starts with "<strong>{selectedLetter.letter}</strong>"
-                </div>
+                  )}
+                  
+                  <div className="text-3xl sm:text-4xl font-bold text-primary mb-2 font-heading">
+                    {item.letter}
+                  </div>
+                  <div className="text-sm sm:text-base text-surface-600">
+                    {item.sound}
+                  </div>
+                  
+                  {selectedLetter?.letter === item.letter && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute inset-0 bg-primary/10 flex items-center justify-center"
+                    >
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full"
+                      />
+                    </motion.div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Words Section */}
+          <motion.div
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="activity-card"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-secondary rounded-bubble flex items-center justify-center">
+                <ApperIcon name="Image" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-            </motion.div>
-          )}
-        </motion.div>
-      </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
+                Find the Word
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {getCurrentLetters().map((item, index) => (
+                <motion.div
+                  key={item.word}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: index * 0.1 + 0.2 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleWordMatch(item.word)}
+                  className={`letter-card cursor-pointer text-center relative ${
+                    !selectedLetter 
+                      ? 'opacity-50 cursor-not-allowed' 
+                      : 'hover:shadow-playful'
+                  } ${
+                    matchedPairs.has(item.letter)
+                      ? 'bg-green-100 border-green-300 opacity-50'
+                      : ''
+                  }`}
+                >
+                  <div className="text-4xl sm:text-5xl mb-3">
+                    {item.emoji}
+                  </div>
+                  <div className="text-lg sm:text-xl font-bold text-surface-800 mb-1">
+                    {item.word}
+                  </div>
+                  <div className="text-xs sm:text-sm text-surface-500">
+                    Starts with "{item.letter}"
+                  </div>
+                  
+                  {matchedPairs.has(item.letter) && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute inset-0 bg-green-200/50 flex items-center justify-center rounded-bubble"
+                    >
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: [0, 1.2, 1] }}
+                        transition={{ duration: 0.5 }}
+                        className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center"
+                      >
+                        <ApperIcon name="Check" className="w-6 h-6 text-white" />
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+            
+            {selectedLetter && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 p-4 bg-primary/10 rounded-bubble border border-primary/20"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">
+                      {selectedLetter.letter}
+                    </span>
+                  </div>
+                  <div className="text-sm sm:text-base text-surface-700">
+                    Find a word that starts with "<strong>{selectedLetter.letter}</strong>"
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+          {/* Pictures Section */}
+          <motion.div
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="activity-card"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-secondary rounded-bubble flex items-center justify-center">
+                <ApperIcon name="Image" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
+                Choose a Picture
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {getCurrentLetters().map((item, index) => (
+                <motion.div
+                  key={item.emoji}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handlePictureSelect(item)}
+                  draggable={!completedLetters.has(item.letter)}
+                  onDragStart={(e) => {
+                    if (!completedLetters.has(item.letter)) {
+                      setDraggedLetter(item)
+                      setSelectedPicture(item)
+                      e.dataTransfer.effectAllowed = 'move'
+                    }
+                  }}
+                  onDragEnd={() => {
+                    setDraggedLetter(null)
+                  }}
+                  className={`letter-card cursor-pointer text-center relative overflow-hidden ${
+                    selectedPicture?.letter === item.letter 
+                      ? 'ring-4 ring-secondary shadow-playful' 
+                      : ''
+                  } ${
+                    completedLetters.has(item.letter)
+                      ? 'bg-green-100 border-green-300 opacity-50 cursor-not-allowed'
+                      : 'cursor-grab active:cursor-grabbing'
+                  }`}
+                >
+                  {completedLetters.has(item.letter) && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                    >
+                      <ApperIcon name="Check" className="w-4 h-4 text-white" />
+                    </motion.div>
+                  )}
+                  
+                  <div className="text-4xl sm:text-5xl mb-3">
+                    {item.emoji}
+                  </div>
+                  <div className="text-lg sm:text-xl font-bold text-surface-800 mb-1">
+                    {item.word}
+                  </div>
+                  <div className="text-xs sm:text-sm text-surface-500">
+                    Drag to letter "{item.letter}"
+                  </div>
+                  
+                  {selectedPicture?.letter === item.letter && !completedLetters.has(item.letter) && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute inset-0 bg-secondary/10 flex items-center justify-center"
+                    >
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="w-8 h-8 border-3 border-secondary border-t-transparent rounded-full"
+                      />
+                    </motion.div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Letters Drop Zone Section */}
+          <motion.div
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="activity-card"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-bubble flex items-center justify-center">
+                <ApperIcon name="Target" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
+                Drop on the Letter
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {getCurrentLetters().map((item, index) => (
+                <motion.div
+                  key={item.letter}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: index * 0.1 + 0.2 }}
+                  onDragOver={(e) => {
+                    e.preventDefault()
+                    e.dataTransfer.dropEffect = 'move'
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    if (draggedLetter && !matchedPairs.has(item.letter)) {
+                      handlePictureMatch(item.letter)
+                    }
+                  }}
+                  className={`letter-card text-center relative transition-all duration-300 ${
+                    matchedPairs.has(item.letter)
+                      ? 'bg-green-100 border-green-300'
+                      : draggedLetter
+                      ? 'border-dashed border-2 border-secondary bg-secondary/5 hover:bg-secondary/10'
+                      : 'border-2 border-transparent bg-surface-50'
+                  } ${
+                    !selectedPicture && !draggedLetter
+                      ? 'opacity-50'
+                      : ''
+                  }`}
+                >
+                  <div className="text-3xl sm:text-4xl font-bold text-primary mb-2 font-heading">
+                    {item.letter}
+                  </div>
+                  <div className="text-sm sm:text-base text-surface-600">
+                    {item.sound}
+                  </div>
+                  
+                  {draggedLetter && draggedLetter.letter === item.letter && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute inset-0 bg-secondary/20 flex items-center justify-center rounded-bubble border-2 border-secondary"
+                    >
+                      <div className="text-sm font-medium text-secondary">
+                        Drop here!
+                      </div>
+                    </motion.div>
+                  )}
+                  
+                  {matchedPairs.has(item.letter) && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute inset-0 bg-green-200/50 flex items-center justify-center rounded-bubble"
+                    >
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: [0, 1.2, 1] }}
+                        transition={{ duration: 0.5 }}
+                        className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center"
+                      >
+                        <ApperIcon name="Check" className="w-6 h-6 text-white" />
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+            
+            {selectedPicture && !completedLetters.has(selectedPicture.letter) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 p-4 bg-secondary/10 rounded-bubble border border-secondary/20"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl">
+                    {selectedPicture.emoji}
+                  </div>
+                  <div className="text-sm sm:text-base text-surface-700">
+                    Drag "<strong>{selectedPicture.word}</strong>" to the letter "<strong>{selectedPicture.letter}</strong>"
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
+      )}
 
       {/* Celebration Animation */}
       <AnimatePresence>
