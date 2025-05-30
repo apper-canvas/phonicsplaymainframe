@@ -54,6 +54,48 @@
 .column-content {
 @apply flex flex-col space-y-3 md:space-y-6;
   }
+/* Equal height management for drawing columns */
+.drawing-equal-height {
+  @apply min-h-0 flex-1;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawing-row-item {
+  @apply flex-1 min-h-[6rem] md:min-h-[8rem] lg:min-h-[10rem];
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drawing-columns-equal {
+  @apply grid grid-cols-2 gap-4 md:gap-8 lg:gap-12 relative z-0;
+  align-items: start;
+}
+
+.drawing-column-equal {
+  @apply flex-1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.column-content-equal {
+  @apply flex flex-col flex-1;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .column-content-equal {
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .column-content-equal {
+    gap: 2rem;
+  }
+}
 /* Letter Group Layout for Pictures Column */
 .letter-group {
   @apply mb-4 md:mb-6;
