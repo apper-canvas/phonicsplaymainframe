@@ -1457,70 +1457,65 @@ stroke="url(#active-gradient)"
               </defs>
 </svg>
             
-<div className="drawing-columns-container">
-              {/* Letters Column - Left Side */}
-              <div className="drawing-column letters-column">
-                <div className="column-header">
-                  <h3 className="text-xl font-bold text-center text-primary mb-6">Letters</h3>
-                </div>
-<div className="column-content">
-                  {getCurrentLetters().map((item, index) => (
-                    <motion.div
-key={`letter-${item.letter}`}
-                      data-letter={item.letter}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: index * 0.1 }}
-                      onMouseDown={(e) => handleDrawingStart(e, 'letter', item)}
-                      onTouchStart={(e) => handleDrawingStart(e, 'letter', item)}
-                      className={`letter-card cursor-pointer text-center relative select-none ${
-                        completedLetters.has(item.letter)
-                          ? 'bg-green-100 border-green-300 opacity-75'
-                          : 'hover:shadow-playful hover:scale-105'
-                      }`}
-                    >
-                      {completedLetters.has(item.letter) && (
+<div className="alphabet-rows-container">
+              {getCurrentLetters().map((letterItem, letterIndex) => {
+                const letterGroup = groupPicturesByLetter(randomizedPictures).find(group => group.letter === letterItem.letter);
+                return (
+                  <div key={`alphabet-row-${letterItem.letter}`} className="alphabet-row">
+                    {/* Letter Row */}
+                    <div className="mb-4">
+                      <h4 className="text-lg font-bold text-center text-primary mb-3">Letter {letterItem.letter}</h4>
+                      <div className="flex justify-center">
                         <motion.div
+                          key={`letter-${letterItem.letter}`}
+                          data-letter={letterItem.letter}
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                          transition={{ delay: letterIndex * 0.1 }}
+                          onMouseDown={(e) => handleDrawingStart(e, 'letter', letterItem)}
+                          onTouchStart={(e) => handleDrawingStart(e, 'letter', letterItem)}
+                          className={`letter-card cursor-pointer text-center relative select-none ${
+                            completedLetters.has(letterItem.letter)
+                              ? 'bg-green-100 border-green-300 opacity-75'
+                              : 'hover:shadow-playful hover:scale-105'
+                          }`}
                         >
-                          <ApperIcon name="Check" className="w-4 h-4 text-white" />
+                          {completedLetters.has(letterItem.letter) && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                            >
+                              <ApperIcon name="Check" className="w-4 h-4 text-white" />
+                            </motion.div>
+                          )}
+                          
+                          <div className="text-3xl sm:text-4xl font-bold text-primary mb-2 font-heading pointer-events-none">
+                            {letterItem.letter}
+                          </div>
+                          <div className="text-xs sm:text-sm text-surface-600 pointer-events-none">
+                            {letterItem.sound}
+                          </div>
+                          
+                          {/* Connection Point */}
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="w-3 h-3 bg-primary rounded-full opacity-20"></div>
+                          </div>
                         </motion.div>
-                      )}
-                      
-                      <div className="text-3xl sm:text-4xl font-bold text-primary mb-2 font-heading pointer-events-none">
-                        {item.letter}
                       </div>
-                      <div className="text-xs sm:text-sm text-surface-600 pointer-events-none">
-                        {item.sound}
-                      </div>
-                      
-                      {/* Connection Point */}
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-3 h-3 bg-primary rounded-full opacity-20"></div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Pictures Column - Right Side */}
-              <div className="drawing-column pictures-column">
-                <div className="column-header">
-                  <h3 className="text-xl font-bold text-center text-secondary mb-6">Pictures</h3>
-                </div>
-<div className="column-content">
-                  {groupPicturesByLetter(randomizedPictures).map((letterGroup, groupIndex) => (
-                    <div key={`letter-group-${letterGroup.letter}`} className="letter-group">
-                      <div className="letter-group-row">
-                        {letterGroup.pictures.map((item, index) => (
+                    </div>
+                    
+                    {/* Pictures Row for this Letter */}
+                    <div className="mb-6">
+                      <h4 className="text-lg font-bold text-center text-secondary mb-3">Pictures for {letterItem.letter}</h4>
+                      <div className="alphabet-row-content">
+                        {letterGroup && letterGroup.pictures.map((item, index) => (
                           <motion.div
                             key={`picture-${item.letter}-${item.index}`}
                             data-picture={`${item.letter}-${item.index}`}
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ delay: (groupIndex * letterGroup.pictures.length + index) * 0.1 + 0.2 }}
+                            transition={{ delay: (letterIndex * 3 + index) * 0.1 + 0.2 }}
                             onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
                             onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
                             className={`letter-card cursor-pointer text-center relative select-none ${
@@ -1551,9 +1546,9 @@ key={`letter-${item.letter}`}
                         ))}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                );
+              })}
             </div>
             
             {isDrawing && currentLine && (

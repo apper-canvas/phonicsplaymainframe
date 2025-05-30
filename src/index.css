@@ -54,16 +54,20 @@
 .column-content {
 @apply flex flex-col space-y-3 md:space-y-6;
   }
-/* Letter Group Layout for Pictures Column */
-.letter-group {
+/* Row-based Layout for Draw Lines Section */
+.alphabet-rows-container {
+  @apply flex flex-col space-y-4 md:space-y-6;
+}
+
+.alphabet-row {
   @apply mb-4 md:mb-6;
 }
 
-.letter-group-row {
+.alphabet-row-content {
   @apply flex flex-wrap gap-2 md:gap-3 justify-center;
 }
 
-.letter-group-row .letter-card {
+.alphabet-row-content .letter-card {
   @apply flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 p-2 sm:p-3;
 }
 
