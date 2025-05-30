@@ -1329,14 +1329,8 @@ key={`picture-${item.letter}`}
                         </motion.div>
                       )}
                       
-                      <div className="text-3xl sm:text-4xl mb-2 pointer-events-none">
+<div className="text-5xl sm:text-6xl mb-2 pointer-events-none">
                         {item.emoji}
-                      </div>
-                      <div className="text-sm sm:text-base font-bold text-surface-800 mb-1 pointer-events-none">
-                        {item.word}
-                      </div>
-                      <div className="text-xs text-surface-500 pointer-events-none">
-                        Starts with "{item.letter}"
                       </div>
                       
                       {/* Connection Point */}
