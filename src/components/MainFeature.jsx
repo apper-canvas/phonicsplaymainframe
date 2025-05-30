@@ -63,7 +63,7 @@ const [drawingLines, setDrawingLines] = useState([])
 
   // State for randomized letters in line-drawing mode
   const [randomizedLetters, setRandomizedLetters] = useState([])
-  const [letterCount, setLetterCount] = useState(6) // Default to 6 letters
+const [letterCount, setLetterCount] = useState(5) // Default to 5 letters
   const [randomSeed, setRandomSeed] = useState(0) // Force re-randomization
   const [matchedPairs, setMatchedPairs] = useState(new Set())
 const [randomizedPictures, setRandomizedPictures] = useState([])
