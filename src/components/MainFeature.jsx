@@ -250,8 +250,8 @@ const shufflePictures = (letters) => {
 const generatePicturesForLetters = (letters) => {
     const pictures = []
     
-    // Ensure we process each letter deterministically
-    letters.forEach(letterItem => {
+    // Process each letter and generate exactly imagesPerLetter pictures
+    letters.forEach((letterItem, letterIndex) => {
       const letterData = alphabetData.find(item => item.letter === letterItem.letter)
       
       if (letterData && letterData.words && letterData.words.length > 0) {
@@ -266,7 +266,8 @@ const generatePicturesForLetters = (letters) => {
             word: selectedWord.word,
             emoji: selectedWord.emoji,
             sound: letterData.sound,
-            index: i // Unique index for each picture within the letter
+            index: i, // Unique index for each picture within the letter
+            globalIndex: letterIndex * imagesPerLetter + i // Global unique index
           })
         }
       } else {
@@ -277,7 +278,8 @@ const generatePicturesForLetters = (letters) => {
             word: `${letterItem.letter}word${i + 1}`,
             emoji: '❓',
             sound: letterItem.sound || '/unknown/',
-            index: i
+            index: i,
+            globalIndex: letterIndex * imagesPerLetter + i
           })
         }
       }
