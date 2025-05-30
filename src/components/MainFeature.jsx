@@ -21,30 +21,95 @@ const [drawingLines, setDrawingLines] = useState([])
   const drawingSvgRef = useRef(null)
   const [connectionPoints, setConnectionPoints] = useState({})
 
-  // Sample letters and words for different levels
+// Complete A-Z alphabet data for randomized selection
+  const alphabetData = [
+    { letter: 'A', word: 'Apple', sound: '/eɪ/', emoji: '🍎' },
+    { letter: 'B', word: 'Ball', sound: '/b/', emoji: '⚽' },
+    { letter: 'C', word: 'Cat', sound: '/k/', emoji: '🐱' },
+    { letter: 'D', word: 'Dog', sound: '/d/', emoji: '🐕' },
+    { letter: 'E', word: 'Elephant', sound: '/ɛ/', emoji: '🐘' },
+    { letter: 'F', word: 'Fish', sound: '/f/', emoji: '🐠' },
+    { letter: 'G', word: 'Giraffe', sound: '/g/', emoji: '🦒' },
+    { letter: 'H', word: 'House', sound: '/h/', emoji: '🏠' },
+    { letter: 'I', word: 'Ice cream', sound: '/aɪ/', emoji: '🍦' },
+    { letter: 'J', word: 'Juice', sound: '/dʒ/', emoji: '🧃' },
+    { letter: 'K', word: 'Kite', sound: '/k/', emoji: '🪁' },
+    { letter: 'L', word: 'Lion', sound: '/l/', emoji: '🦁' },
+    { letter: 'M', word: 'Mouse', sound: '/m/', emoji: '🐭' },
+    { letter: 'N', word: 'Nest', sound: '/n/', emoji: '🪺' },
+    { letter: 'O', word: 'Orange', sound: '/ɔ/', emoji: '🍊' },
+    { letter: 'P', word: 'Pizza', sound: '/p/', emoji: '🍕' },
+    { letter: 'Q', word: 'Queen', sound: '/kw/', emoji: '👑' },
+    { letter: 'R', word: 'Robot', sound: '/r/', emoji: '🤖' },
+    { letter: 'S', word: 'Sun', sound: '/s/', emoji: '☀️' },
+    { letter: 'T', word: 'Tree', sound: '/t/', emoji: '🌳' },
+    { letter: 'U', word: 'Umbrella', sound: '/ʌ/', emoji: '☂️' },
+    { letter: 'V', word: 'Violin', sound: '/v/', emoji: '🎻' },
+    { letter: 'W', word: 'Whale', sound: '/w/', emoji: '🐋' },
+    { letter: 'X', word: 'Xylophone', sound: '/ks/', emoji: '🎵' },
+    { letter: 'Y', word: 'Yacht', sound: '/j/', emoji: '⛵' },
+    { letter: 'Z', word: 'Zebra', sound: '/z/', emoji: '🦓' }
+  ]
+
+  // Level-based letter data for letter-match and picture-match modes
   const letterData = {
-    1: [
-      { letter: 'A', word: 'Apple', sound: '/eɪ/', emoji: '🍎' },
-      { letter: 'B', word: 'Ball', sound: '/b/', emoji: '⚽' },
-      { letter: 'C', word: 'Cat', sound: '/k/', emoji: '🐱' },
-      { letter: 'D', word: 'Dog', sound: '/d/', emoji: '🐕' }
-    ],
-    2: [
-      { letter: 'E', word: 'Elephant', sound: '/ɛ/', emoji: '🐘' },
-      { letter: 'F', word: 'Fish', sound: '/f/', emoji: '🐠' },
-      { letter: 'G', word: 'Giraffe', sound: '/g/', emoji: '🦒' },
-      { letter: 'H', word: 'House', sound: '/h/', emoji: '🏠' }
-    ],
-    3: [
-      { letter: 'I', word: 'Ice cream', sound: '/aɪ/', emoji: '🍦' },
-      { letter: 'J', word: 'Juice', sound: '/dʒ/', emoji: '🧃' },
-      { letter: 'K', word: 'Kite', sound: '/k/', emoji: '🪁' },
-      { letter: 'L', word: 'Lion', sound: '/l/', emoji: '🦁' }
-    ]
+    1: alphabetData.slice(0, 4),   // A-D
+    2: alphabetData.slice(4, 8),   // E-H
+    3: alphabetData.slice(8, 12),  // I-L
+    4: alphabetData.slice(12, 16), // M-P
+    5: alphabetData.slice(16, 20), // Q-T
+    6: alphabetData.slice(20, 26)  // U-Z
   }
 
-  const getCurrentLetters = () => letterData[level] || letterData[1]
-const [matchedPairs, setMatchedPairs] = useState(new Set())
+  // State for randomized letters in line-drawing mode
+  const [randomizedLetters, setRandomizedLetters] = useState([])
+  const [letterCount, setLetterCount] = useState(6) // Default to 6 letters
+  const [randomSeed, setRandomSeed] = useState(0) // Force re-randomization
+  const [matchedPairs, setMatchedPairs] = useState(new Set())
+
+  // Utility functions for randomization
+  const shuffleArray = (array) => {
+    const shuffled = [...array]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }
+
+  const selectRandomLetters = (count) => {
+    const shuffled = shuffleArray(alphabetData)
+    return shuffled.slice(0, Math.min(count, alphabetData.length))
+  }
+
+  const getCurrentLetters = () => {
+    if (currentActivity === 'line-drawing') {
+      return randomizedLetters
+    }
+    return letterData[level] || letterData[1]
+  }
+
+  const generateNewSet = () => {
+    const newLetters = selectRandomLetters(letterCount)
+    setRandomizedLetters(newLetters)
+    setRandomSeed(prev => prev + 1)
+    toast.info(`🔀 Generated new set with ${newLetters.length} letters!`)
+  }
+
+  const handleLetterCountChange = (newCount) => {
+    setLetterCount(newCount)
+    const newLetters = selectRandomLetters(newCount)
+    setRandomizedLetters(newLetters)
+    toast.info(`📝 Set to ${newCount} letters!`)
+  }
+
+  // Generate initial randomized letters
+  useEffect(() => {
+    if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
+      setRandomizedLetters(selectRandomLetters(letterCount))
+    }
+  }, [currentActivity, letterCount])
+
 
   // Audio simulation (in real app, this would play actual audio files)
 const playSound = (letter, type = 'letter') => {
@@ -147,13 +212,20 @@ const handleWordMatch = (word) => {
 
 const switchActivity = (newActivity) => {
     if (newActivity !== currentActivity) {
-      setCurrentActivity(newActivity)
+setCurrentActivity(newActivity)
       setSelectedLetter(null)
       setSelectedPicture(null)
       setDraggedLetter(null)
       setDrawingLines([])
       setCurrentLine(null)
       setIsDrawing(false)
+      
+      // Generate new randomized letters when switching to line-drawing mode
+      if (newActivity === 'line-drawing') {
+        const newLetters = selectRandomLetters(letterCount)
+        setRandomizedLetters(newLetters)
+      }
+      
       const activityNames = {
         'letter-match': 'Letter to Word',
         'picture-match': 'Picture to Letter',
@@ -175,7 +247,7 @@ const resetActivity = () => {
 const resetGame = () => {
     setScore(0)
     setLevel(1)
-    setAttempts(0)
+setAttempts(0)
     setCompletedLetters(new Set())
     setMatchedPairs(new Set())
     setSelectedLetter(null)
@@ -186,6 +258,10 @@ const resetGame = () => {
     setIsDrawing(false)
     setCurrentActivity('letter-match')
     setGameState('playing')
+    
+    // Generate new randomized letters for line-drawing mode
+    setRandomizedLetters(selectRandomLetters(letterCount))
+    
     toast.info('🔄 Game reset! Let\'s start fresh!')
   }
 
@@ -433,6 +509,55 @@ const resetGame = () => {
           </motion.button>
         </div>
       </motion.div>
+{/* Line Drawing Configuration */}
+        {currentActivity === 'line-drawing' && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-6 pt-6 border-t border-surface-200"
+          >
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="flex items-center gap-3">
+                <ApperIcon name="Settings" className="w-5 h-5 text-surface-600" />
+                <span className="text-sm font-medium text-surface-700">Letter Count:</span>
+                <div className="flex items-center gap-2">
+                  {[4, 5, 6, 7, 8].map((count) => (
+                    <motion.button
+                      key={count}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleLetterCountChange(count)}
+                      className={`w-8 h-8 rounded-full text-sm font-bold transition-all duration-300 ${
+                        letterCount === count
+                          ? 'bg-accent text-surface-700 shadow-letter'
+                          : 'bg-surface-200 text-surface-600 hover:bg-surface-300'
+                      }`}
+                    >
+                      {count}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={generateNewSet}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-bubble shadow-soft hover:shadow-playful transition-all duration-300"
+              >
+                <ApperIcon name="Shuffle" className="w-4 h-4" />
+                <span className="font-medium text-sm">New Letters</span>
+              </motion.button>
+            </div>
+            
+            <div className="mt-3 text-center">
+              <span className="text-xs text-surface-500">
+                Current letters: {randomizedLetters.map(l => l.letter).join(', ')}
+              </span>
+            </div>
+          </motion.div>
+        )}
 
       {/* Hint Panel */}
       <AnimatePresence>
