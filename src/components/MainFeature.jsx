@@ -214,7 +214,7 @@ const [randomizedPictures, setRandomizedPictures] = useState([])
   const [usedLettersHistory, setUsedLettersHistory] = useState([])
 const [imagesPerLetter, setImagesPerLetter] = useState(3) // Default to 3 images per letter
 
-const [shuffledPictureGroups, setShuffledPictureGroups] = useState([])
+const [rearrangedPictureGroups, setRearrangedPictureGroups] = useState([])
   // Utility functions for randomization
   const shuffleArray = (array) => {
     const shuffled = [...array]
@@ -309,7 +309,7 @@ const groupPicturesByLetter = (pictures) => {
     return shuffleArray([...letters])
   }
   
-const shufflePictureGroupsByLetter = (pictures) => {
+const rearrangePictureRowsToAvoidSameRow = (pictures) => {
     // Group pictures by letter
     const groups = {}
     pictures.forEach(picture => {
@@ -319,13 +319,33 @@ const shufflePictureGroupsByLetter = (pictures) => {
       groups[picture.letter].push(picture)
     })
     
-    // Create array of groups and shuffle the order
-    const groupsArray = getCurrentLetters().map(letterItem => ({
+    // Create array of groups with offset positioning to avoid same row as letters
+    const letterOrder = getCurrentLetters()
+    const groupsArray = letterOrder.map((letterItem, index) => ({
       letter: letterItem.letter,
-      pictures: groups[letterItem.letter] || []
+      pictures: groups[letterItem.letter] || [],
+      originalIndex: index
     }))
     
-    return shuffleArray(groupsArray)
+    // Rearrange groups to ensure no letter and its pictures are on the same row
+    const rearrangedGroups = []
+    const totalGroups = groupsArray.length
+    
+    groupsArray.forEach((group, index) => {
+      // Calculate offset to ensure this group doesn't appear in the same row as its letter
+      const offset = Math.floor(totalGroups / 2) + (index % 2 === 0 ? 1 : -1)
+      const newPosition = (index + offset) % totalGroups
+      rearrangedGroups[newPosition] = group
+    })
+    
+    // Fill any gaps with remaining groups
+    groupsArray.forEach((group, index) => {
+      if (!rearrangedGroups[index]) {
+        rearrangedGroups[index] = group
+      }
+    })
+    
+    return rearrangedGroups.filter(Boolean)
   }
 // Color management for lines
   const getNextAvailableColor = () => {
@@ -350,10 +370,10 @@ const shufflePictureGroupsByLetter = (pictures) => {
 const generateNewSet = () => {
     const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const shuffledGroups = shufflePictureGroupsByLetter(newPictures)
+const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
     setRandomizedLetters(newLetters)
 setRandomizedPictures(newPictures)
-setShuffledPictureGroups(shuffledGroups)
+setRearrangedPictureGroups(rearrangedGroups)
     setRandomSeed(prev => prev + 1)
   }
 const handleLetterCountChange = (newCount) => {
@@ -365,11 +385,11 @@ const handleLetterCountChange = (newCount) => {
     setUsedLineColors(new Set())
 const newLetters = selectRandomLetters(newCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const shuffledGroups = shufflePictureGroupsByLetter(newPictures)
+const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
     setRandomizedLetters(newLetters)
 setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
-setShuffledPictureGroups(shuffledGroups)
+setRearrangedPictureGroups(rearrangedGroups)
   }
 const handleImagesPerLetterChange = (newCount) => {
 setImagesPerLetter(newCount)
@@ -380,9 +400,9 @@ setImagesPerLetter(newCount)
     setUsedLineColors(new Set())
 if (randomizedLetters.length > 0) {
 const newPictures = generatePicturesForLetters(randomizedLetters)
-const shuffledGroups = shufflePictureGroupsByLetter(newPictures)
+const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
 setRandomizedPictures(newPictures)
-setShuffledPictureGroups(shuffledGroups)
+setRearrangedPictureGroups(rearrangedGroups)
     }
   }
   // Generate initial randomized letters
@@ -391,9 +411,9 @@ useEffect(() => {
 const newLetters = selectRandomLetters(letterCount)
       setRandomizedLetters(newLetters)
 const newPictures = generatePicturesForLetters(newLetters)
-const shuffledGroups = shufflePictureGroupsByLetter(newPictures)
+const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
 setRandomizedPictures(newPictures)
-setShuffledPictureGroups(shuffledGroups)
+setRearrangedPictureGroups(rearrangedGroups)
     }
 }, [currentActivity, letterCount, imagesPerLetter])
 
@@ -566,11 +586,11 @@ setUsedLineColors(new Set()) // Reset used colors for new activity
 if (newActivity === 'line-drawing') {
 const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const shuffledGroups = shufflePictureGroupsByLetter(newPictures)
+const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
         setRandomizedLetters(newLetters)
 setRandomizedLetters(newLetters)
         setRandomizedPictures(newPictures)
-setShuffledPictureGroups(shuffledGroups)
+setRearrangedPictureGroups(rearrangedGroups)
       }
       
       const activityNames = {
@@ -617,11 +637,11 @@ setUsedLineColors(new Set()) // Reset used colors
     setUsedLettersHistory([])
 const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const shuffledGroups = shufflePictureGroupsByLetter(newPictures)
+const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
     setRandomizedLetters(newLetters)
 setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
-setShuffledPictureGroups(shuffledGroups)
+setRearrangedPictureGroups(rearrangedGroups)
     toast.info('🔄 Game reset! Let\'s start fresh!')
   }
 
