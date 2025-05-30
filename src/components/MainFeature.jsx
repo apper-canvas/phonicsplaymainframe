@@ -212,7 +212,7 @@ const [usedLineColors, setUsedLineColors] = useState(new Set())
 const [randomizedPictures, setRandomizedPictures] = useState([])
 // State to track letters used in the past 5 levels
   const [usedLettersHistory, setUsedLettersHistory] = useState([])
-const [imagesPerLetter, setImagesPerLetter] = useState(3) // Default to 3 images per letter
+const [imagesPerLetter, setImagesPerLetter] = useState(1) // Default to 1 image per letter
 
 const [rearrangedPictureGroups, setRearrangedPictureGroups] = useState([])
   // Utility functions for randomization
