@@ -1510,17 +1510,18 @@ key={`letter-${item.letter}`}
                 <div className="column-header">
                   <h3 className="text-xl font-bold text-center text-secondary mb-6">Pictures</h3>
                 </div>
-<div className="column-content">
-                  {groupPicturesByLetter(randomizedPictures).map((letterGroup, groupIndex) => (
-                    <div key={`letter-group-${letterGroup.letter}`} className="letter-group">
-                      <div className="letter-group-row">
-                        {letterGroup.pictures.map((item, index) => (
+<div className="pictures-by-letter-rows">
+                  {getCurrentLetters().map((letterItem, letterIndex) => {
+                    const letterPictures = randomizedPictures.filter(pic => pic.letter === letterItem.letter)
+                    return (
+                      <div key={`letter-pictures-${letterItem.letter}`} className="picture-row-for-letter">
+                        {letterPictures.map((item, index) => (
                           <motion.div
                             key={`picture-${item.letter}-${item.index}`}
                             data-picture={`${item.letter}-${item.index}`}
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ delay: (groupIndex * letterGroup.pictures.length + index) * 0.1 + 0.2 }}
+                            transition={{ delay: (letterIndex * letterPictures.length + index) * 0.1 + 0.2 }}
                             onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
                             onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
                             className={`letter-card cursor-pointer text-center relative select-none ${
@@ -1550,8 +1551,8 @@ key={`letter-${item.letter}`}
                           </motion.div>
                         ))}
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             </div>
