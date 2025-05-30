@@ -281,7 +281,7 @@ return pictures // Don't shuffle to maintain letter grouping
     return getCurrentLetters().map(letterItem => ({
       letter: letterItem.letter,
       pictures: groups[letterItem.letter] || []
-    })).filter(group => group.pictures.length > 0)
+}))
   }
 // Randomization functions for display order
   const shuffleLetterOrder = (letters) => {
