@@ -312,7 +312,6 @@ useEffect(() => {
     if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
       const newLetters = selectRandomLetters(letterCount)
       const newPictures = shufflePictures(newLetters)
-const newPictures = generatePicturesForLetters(newLetters)
       setRandomizedPictures(newPictures)
     }
 }, [currentActivity, letterCount, imagesPerLetter])
@@ -541,7 +540,6 @@ setUsedLineColors(new Set()) // Reset used colors
     // Reset randomized pictures for line-drawing mode
     if (currentActivity === 'line-drawing') {
       const newPictures = shufflePictures(randomizedLetters)
-const newPictures = generatePicturesForLetters(randomizedLetters)
     }
   }
 
