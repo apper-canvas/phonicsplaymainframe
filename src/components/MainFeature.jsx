@@ -100,7 +100,6 @@ const generateNewSet = () => {
     setRandomizedPictures(newPictures)
     setRandomSeed(prev => prev + 1)
     toast.info(`🔀 Generated new set with ${newLetters.length} letters!`)
-setConnectionPoints({}) // Clear connection points when generating new set
   }
 const handleLetterCountChange = (newCount) => {
     setLetterCount(newCount)
@@ -109,7 +108,6 @@ const handleLetterCountChange = (newCount) => {
     setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
     toast.info(`📝 Set to ${newCount} letters!`)
-setConnectionPoints({}) // Clear connection points when changing letter count
   }
   // Generate initial randomized letters
 useEffect(() => {
@@ -119,7 +117,7 @@ useEffect(() => {
       setRandomizedLetters(newLetters)
       setRandomizedPictures(newPictures)
     }
-setConnectionPoints({}) // Clear connection points on re-initialization
+}, [currentActivity, letterCount])
 
   // Register connection points for all interactive elements
   useEffect(() => {
@@ -163,7 +161,48 @@ setConnectionPoints({}) // Clear connection points on re-initialization
       return () => clearTimeout(timer)
     }
   }, [currentActivity, randomizedLetters, randomizedPictures])
-  }, [currentActivity, letterCount])
+  // Register connection points for all interactive elements
+  useEffect(() => {
+    if (currentActivity === 'line-drawing' && drawingSvgRef.current) {
+      const registerConnectionPoints = () => {
+        const newConnectionPoints = {}
+        
+        // Register letter connection points
+        getCurrentLetters().forEach((item) => {
+          const letterElement = document.querySelector(`[data-letter="${item.letter}"]`)
+          if (letterElement) {
+            const center = getElementCenter(letterElement)
+            newConnectionPoints[`letter${item.letter}`] = { 
+              x: center.x, 
+              y: center.y, 
+              type: 'letter', 
+              item 
+            }
+          }
+        })
+        
+        // Register picture connection points
+        randomizedPictures.forEach((item) => {
+          const pictureElement = document.querySelector(`[data-picture="${item.letter}"]`)
+          if (pictureElement) {
+            const center = getElementCenter(pictureElement)
+            newConnectionPoints[`picture${item.letter}`] = { 
+              x: center.x, 
+              y: center.y, 
+              type: 'picture', 
+              item 
+            }
+          }
+        })
+        
+        setConnectionPoints(newConnectionPoints)
+      }
+      
+      // Delay registration to ensure DOM elements are rendered
+      const timer = setTimeout(registerConnectionPoints, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [currentActivity, randomizedLetters, randomizedPictures])
 
   // Audio simulation (in real app, this would play actual audio files)
 const playSound = (letter, type = 'letter') => {
@@ -322,7 +361,6 @@ setAttempts(0)
     setIsDrawing(false)
     setCurrentActivity('letter-match')
     setGameState('playing')
-setConnectionPoints({}) // Clear connection points
     // Generate new randomized letters for line-drawing mode
 const newLetters = selectRandomLetters(letterCount)
     const newPictures = shufflePictures(newLetters)
