@@ -885,7 +885,7 @@ const resetGame = () => {
                 <div className="column-header">
                   <h3 className="text-xl font-bold text-center text-primary mb-6">Letters</h3>
                 </div>
-                <div className="column-content">
+<div className="column-content">
                   {getCurrentLetters().map((item, index) => (
                     <motion.div
                       key={`letter-${item.letter}`}
@@ -931,7 +931,7 @@ const resetGame = () => {
                 <div className="column-header">
                   <h3 className="text-xl font-bold text-center text-secondary mb-6">Pictures</h3>
                 </div>
-                <div className="column-content">
+<div className="column-content">
                   {getCurrentLetters().map((item, index) => (
                     <motion.div
                       key={`picture-${item.letter}`}
