@@ -99,7 +99,6 @@ const generateNewSet = () => {
     setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
     setRandomSeed(prev => prev + 1)
-    toast.info(`🔀 Generated new set with ${newLetters.length} letters!`)
   }
 const handleLetterCountChange = (newCount) => {
     setLetterCount(newCount)
@@ -107,7 +106,6 @@ const handleLetterCountChange = (newCount) => {
     const newPictures = shufflePictures(newLetters)
     setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
-    toast.info(`📝 Set to ${newCount} letters!`)
   }
   // Generate initial randomized letters
 useEffect(() => {
@@ -464,7 +462,6 @@ const newLetters = selectRandomLetters(letterCount)
       setScore(prev => prev + 20)
       setCompletedLetters(prev => new Set([...prev, currentLine.startItem.letter]))
       setMatchedPairs(prev => new Set([...prev, currentLine.startItem.letter]))
-      playSound(currentLine.startItem.letter, 'correct')
       
       // Check if level is complete
       if (completedLetters.size + 1 >= getCurrentLetters().length) {
@@ -475,12 +472,10 @@ const newLetters = selectRandomLetters(letterCount)
           setMatchedPairs(new Set())
           setDrawingLines([])
           setGameState('playing')
-          toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
         }, 2000)
       }
     } else {
       // Incorrect connection
-      playSound(currentLine.startItem?.letter, 'incorrect')
     }
     
     setCurrentLine(null)
