@@ -101,7 +101,7 @@ const generateNewSet = () => {
     setRandomSeed(prev => prev + 1)
     toast.info(`🔀 Generated new set with ${newLetters.length} letters!`)
   }
-
+setConnectionPoints({}) // Clear connection points when generating new set
 const handleLetterCountChange = (newCount) => {
     setLetterCount(newCount)
     const newLetters = selectRandomLetters(newCount)
@@ -110,7 +110,7 @@ const handleLetterCountChange = (newCount) => {
     setRandomizedPictures(newPictures)
     toast.info(`📝 Set to ${newCount} letters!`)
   }
-
+setConnectionPoints({}) // Clear connection points when changing letter count
   // Generate initial randomized letters
 useEffect(() => {
     if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
@@ -120,7 +120,7 @@ useEffect(() => {
       setRandomizedPictures(newPictures)
     }
   }, [currentActivity, letterCount])
-
+setConnectionPoints({}) // Clear connection points on re-initialization
 
   // Audio simulation (in real app, this would play actual audio files)
 const playSound = (letter, type = 'letter') => {
@@ -223,15 +223,16 @@ const handleWordMatch = (word) => {
 
 const switchActivity = (newActivity) => {
     if (newActivity !== currentActivity) {
-setCurrentActivity(newActivity)
+      setCurrentActivity(newActivity)
       setSelectedLetter(null)
       setSelectedPicture(null)
       setDraggedLetter(null)
       setDrawingLines([])
       setCurrentLine(null)
       setIsDrawing(false)
+      setConnectionPoints({}) // Clear connection points
       
-// Generate new randomized letters when switching to line-drawing mode
+      // Generate new randomized letters when switching to line-drawing mode
       if (newActivity === 'line-drawing') {
         const newLetters = selectRandomLetters(letterCount)
         const newPictures = shufflePictures(newLetters)
@@ -255,7 +256,13 @@ const resetActivity = () => {
     setDrawingLines([])
     setCurrentLine(null)
     setIsDrawing(false)
-setRandomizedPictures([])
+    setConnectionPoints({}) // Clear connection points
+    
+    // Reset randomized pictures for line-drawing mode
+    if (currentActivity === 'line-drawing') {
+      const newPictures = shufflePictures(randomizedLetters)
+      setRandomizedPictures(newPictures)
+    }
   }
 
 const resetGame = () => {
@@ -272,7 +279,7 @@ setAttempts(0)
     setIsDrawing(false)
     setCurrentActivity('letter-match')
     setGameState('playing')
-    
+setConnectionPoints({}) // Clear connection points
     // Generate new randomized letters for line-drawing mode
 const newLetters = selectRandomLetters(letterCount)
     const newPictures = shufflePictures(newLetters)
