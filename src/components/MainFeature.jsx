@@ -310,8 +310,9 @@ const handleImagesPerLetterChange = (newCount) => {
   // Generate initial randomized letters
 useEffect(() => {
     if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
-      const newLetters = selectRandomLetters(letterCount)
-      const newPictures = shufflePictures(newLetters)
+const newLetters = selectRandomLetters(letterCount)
+      setRandomizedLetters(newLetters)
+      const newPictures = generatePicturesForLetters(newLetters)
       setRandomizedPictures(newPictures)
     }
 }, [currentActivity, letterCount, imagesPerLetter])
