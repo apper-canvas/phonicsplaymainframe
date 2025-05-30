@@ -247,41 +247,44 @@ const shufflePictures = (letters) => {
   }
 // Generate pictures for letters based on imagesPerLetter setting
 // Generate pictures for letters based on imagesPerLetter setting
-  const generatePicturesForLetters = (letters) => {
+const generatePicturesForLetters = (letters) => {
     const pictures = []
+    
+    // Ensure we process each letter deterministically
     letters.forEach(letterItem => {
       const letterData = alphabetData.find(item => item.letter === letterItem.letter)
-      if (letterData) {
-        // Ensure we always get exactly imagesPerLetter number of pictures
-        const availableWords = [...letterData.words]
-        const selectedWords = []
-        
-        // Fill up to imagesPerLetter count
+      
+      if (letterData && letterData.words && letterData.words.length > 0) {
+        // Generate exactly imagesPerLetter pictures for this letter
         for (let i = 0; i < imagesPerLetter; i++) {
-          // If we have available words, use them
-          if (i < availableWords.length) {
-            selectedWords.push(availableWords[i])
-          } else {
-            // If we need more words than available, repeat from the beginning
-            selectedWords.push(availableWords[i % availableWords.length])
-          }
-        }
-        
-        // Create picture objects for this letter
-        selectedWords.forEach((wordItem, index) => {
+          // Use modulo to cycle through available words if we need more than available
+          const wordIndex = i % letterData.words.length
+          const selectedWord = letterData.words[wordIndex]
+          
           pictures.push({
             letter: letterItem.letter,
-            word: wordItem.word,
-            emoji: wordItem.emoji,
+            word: selectedWord.word,
+            emoji: selectedWord.emoji,
             sound: letterData.sound,
-            index: index // Add index to make each picture unique
+            index: i // Unique index for each picture within the letter
           })
-        })
+        }
+      } else {
+        // Fallback: if no letter data found, create placeholder pictures
+        for (let i = 0; i < imagesPerLetter; i++) {
+          pictures.push({
+            letter: letterItem.letter,
+            word: `${letterItem.letter}word${i + 1}`,
+            emoji: '❓',
+            sound: letterItem.sound || '/unknown/',
+            index: i
+          })
+        }
       }
     })
-    return pictures // Don't shuffle to maintain letter grouping
-
-}
+    
+    return pictures
+  }
 // Group pictures by letter for display
 const groupPicturesByLetter = (pictures) => {
     const groups = {}
