@@ -1081,26 +1081,75 @@ const newLetters = selectRandomLetters(letterCount)
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
                   transition={{ duration: 0.5 }}
-                  d={`M ${line.start.x} ${line.start.y} Q ${(line.start.x + line.end.x) / 2} ${Math.min(line.start.y, line.end.y) - 50} ${line.end.x} ${line.end.y}`}
-                  stroke="#10B981"
-                  strokeWidth="4"
+d={`M ${line.start.x} ${line.start.y} Q ${(line.start.x + line.end.x) / 2} ${Math.min(line.start.y, line.end.y) - 50} ${line.end.x} ${line.end.y}`}
+                  stroke="url(#rainbow-gradient)"
+                  strokeWidth="8"
                   fill="none"
                   strokeDasharray="0"
                   strokeLinecap="round"
+                  filter="url(#glow-effect)"
+                  style={{
+                    dropShadow: '0 0 8px rgba(16, 185, 129, 0.6)'
+                  }}
                 />
               ))}
               
               {/* Current Drawing Line */}
               {currentLine && (
                 <motion.path
-                  d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + currentLine.end.x) / 2} ${Math.min(currentLine.start.y, currentLine.end.y) - 50} ${currentLine.end.x} ${currentLine.end.y}`}
-                  stroke="#FFE66D"
-                  strokeWidth="3"
+d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + currentLine.end.x) / 2} ${Math.min(currentLine.start.y, currentLine.end.y) - 50} ${currentLine.end.x} ${currentLine.end.y}`}
+                  stroke="url(#active-rainbow-gradient)"
+                  strokeWidth="6"
                   fill="none"
-                  strokeDasharray="8,4"
+                  strokeDasharray="12,6"
                   strokeLinecap="round"
+                  filter="url(#active-glow-effect)"
                   className="animate-pulse"
+                  style={{
+                    dropShadow: '0 0 12px rgba(255, 230, 109, 0.8)'
+                  }}
                 />
+              
+}
+              <defs>
+                {/* Rainbow Gradient for Completed Lines */}
+                <linearGradient id="rainbow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FF6B6B" />
+                  <stop offset="16.66%" stopColor="#FFE66D" />
+                  <stop offset="33.33%" stopColor="#4ECDC4" />
+                  <stop offset="50%" stopColor="#45B7D1" />
+                  <stop offset="66.66%" stopColor="#96CEB4" />
+                  <stop offset="83.33%" stopColor="#DDA0DD" />
+                  <stop offset="100%" stopColor="#FF6B6B" />
+                </linearGradient>
+                
+                {/* Active Rainbow Gradient for Drawing Lines */}
+                <linearGradient id="active-rainbow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FFD700" />
+                  <stop offset="25%" stopColor="#FF69B4" />
+                  <stop offset="50%" stopColor="#00CED1" />
+                  <stop offset="75%" stopColor="#32CD32" />
+                  <stop offset="100%" stopColor="#FFD700" />
+                </linearGradient>
+                
+                {/* Glow Effect for Completed Lines */}
+                <filter id="glow-effect" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge> 
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                
+                {/* Active Glow Effect for Drawing Lines */}
+                <filter id="active-glow-effect" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                  <feMerge> 
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
               )}
             </svg>
             
