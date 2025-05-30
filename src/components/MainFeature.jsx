@@ -1109,8 +1109,10 @@ d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + c
                     dropShadow: '0 0 12px rgba(255, 230, 109, 0.8)'
                   }}
                 />
+)}
               
-</defs>
+              <defs>
+              
                 {/* Rainbow Gradient for Completed Lines */}
                 <linearGradient id="rainbow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="#FF6B6B" />
@@ -1149,8 +1151,7 @@ d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + c
                   </feMerge>
                 </filter>
               </defs>
-              )}
-            </svg>
+</svg>
             
 <div className="drawing-columns-container">
               {/* Letters Column - Left Side */}
