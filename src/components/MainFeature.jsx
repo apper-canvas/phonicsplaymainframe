@@ -69,6 +69,8 @@ const [letterCount, setLetterCount] = useState(5) // Default to 5 letters
 const [usedLineColors, setUsedLineColors] = useState(new Set())
   const availableColors = ['red', 'blue', 'green', 'orange', 'purple', 'pink', 'teal', 'yellow', 'indigo', 'lime']
 const [randomizedPictures, setRandomizedPictures] = useState([])
+// State to track letters used in the past 5 levels
+  const [usedLettersHistory, setUsedLettersHistory] = useState([])
 
   // Utility functions for randomization
   const shuffleArray = (array) => {
@@ -80,9 +82,23 @@ const [randomizedPictures, setRandomizedPictures] = useState([])
     return shuffled
   }
 
-  const selectRandomLetters = (count) => {
-    const shuffled = shuffleArray(alphabetData)
-    return shuffled.slice(0, Math.min(count, alphabetData.length))
+const selectRandomLetters = (count) => {
+    // Get all letters used in the past 5 levels
+    const recentlyUsedLetters = usedLettersHistory.flat().map(item => item.letter)
+    
+    // Filter out recently used letters from available alphabet
+    const availableLetters = alphabetData.filter(item => 
+      !recentlyUsedLetters.includes(item.letter)
+    )
+    
+    // If we don't have enough unused letters, fall back to full alphabet
+    const lettersToUse = availableLetters.length >= count 
+      ? availableLetters 
+      : alphabetData
+    
+    // Shuffle and select the requested count
+    const shuffled = shuffleArray(lettersToUse)
+    return shuffled.slice(0, Math.min(count, lettersToUse.length))
   }
 const shufflePictures = (letters) => {
     return shuffleArray([...letters])
@@ -375,11 +391,12 @@ setAttempts(0)
     setGameState('playing')
     // Generate new randomized letters for line-drawing mode
 setUsedLineColors(new Set()) // Reset used colors
-const newLetters = selectRandomLetters(letterCount)
+// Reset letter history for fresh start
+    setUsedLettersHistory([])
+    const newLetters = selectRandomLetters(letterCount)
     const newPictures = shufflePictures(newLetters)
     setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
-    
     toast.info('🔄 Game reset! Let\'s start fresh!')
   }
 
@@ -485,12 +502,19 @@ id: `${currentLine.startItem.letter}-correct`,
       // Check if level is complete
       if (completedLetters.size + 1 >= getCurrentLetters().length) {
         setGameState('celebrating')
-        setTimeout(() => {
+setTimeout(() => {
+          // Add current level's letters to history before moving to next level
+          setUsedLettersHistory(prev => {
+            const newHistory = [...prev, getCurrentLetters()]
+            // Keep only the last 5 levels
+            return newHistory.slice(-5)
+          })
+          
           setLevel(prev => prev + 1)
           setCompletedLetters(new Set())
           setMatchedPairs(new Set())
           setDrawingLines([])
-setUsedLineColors(new Set()) // Reset colors for new level
+          setUsedLineColors(new Set()) // Reset colors for new level
           setGameState('playing')
         }, 2000)
       }
