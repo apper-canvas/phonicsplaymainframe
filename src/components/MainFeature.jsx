@@ -66,6 +66,7 @@ const [drawingLines, setDrawingLines] = useState([])
   const [letterCount, setLetterCount] = useState(6) // Default to 6 letters
   const [randomSeed, setRandomSeed] = useState(0) // Force re-randomization
   const [matchedPairs, setMatchedPairs] = useState(new Set())
+const [randomizedPictures, setRandomizedPictures] = useState([])
 
   // Utility functions for randomization
   const shuffleArray = (array) => {
@@ -81,6 +82,9 @@ const [drawingLines, setDrawingLines] = useState([])
     const shuffled = shuffleArray(alphabetData)
     return shuffled.slice(0, Math.min(count, alphabetData.length))
   }
+const shufflePictures = (letters) => {
+    return shuffleArray([...letters])
+  }
 
   const getCurrentLetters = () => {
     if (currentActivity === 'line-drawing') {
@@ -89,24 +93,31 @@ const [drawingLines, setDrawingLines] = useState([])
     return letterData[level] || letterData[1]
   }
 
-  const generateNewSet = () => {
+const generateNewSet = () => {
     const newLetters = selectRandomLetters(letterCount)
+    const newPictures = shufflePictures(newLetters)
     setRandomizedLetters(newLetters)
+    setRandomizedPictures(newPictures)
     setRandomSeed(prev => prev + 1)
     toast.info(`🔀 Generated new set with ${newLetters.length} letters!`)
   }
 
-  const handleLetterCountChange = (newCount) => {
+const handleLetterCountChange = (newCount) => {
     setLetterCount(newCount)
     const newLetters = selectRandomLetters(newCount)
+    const newPictures = shufflePictures(newLetters)
     setRandomizedLetters(newLetters)
+    setRandomizedPictures(newPictures)
     toast.info(`📝 Set to ${newCount} letters!`)
   }
 
   // Generate initial randomized letters
-  useEffect(() => {
+useEffect(() => {
     if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
-      setRandomizedLetters(selectRandomLetters(letterCount))
+      const newLetters = selectRandomLetters(letterCount)
+      const newPictures = shufflePictures(newLetters)
+      setRandomizedLetters(newLetters)
+      setRandomizedPictures(newPictures)
     }
   }, [currentActivity, letterCount])
 
@@ -220,10 +231,12 @@ setCurrentActivity(newActivity)
       setCurrentLine(null)
       setIsDrawing(false)
       
-      // Generate new randomized letters when switching to line-drawing mode
+// Generate new randomized letters when switching to line-drawing mode
       if (newActivity === 'line-drawing') {
         const newLetters = selectRandomLetters(letterCount)
+        const newPictures = shufflePictures(newLetters)
         setRandomizedLetters(newLetters)
+        setRandomizedPictures(newPictures)
       }
       
       const activityNames = {
@@ -242,6 +255,7 @@ const resetActivity = () => {
     setDrawingLines([])
     setCurrentLine(null)
     setIsDrawing(false)
+setRandomizedPictures([])
   }
 
 const resetGame = () => {
@@ -260,7 +274,10 @@ setAttempts(0)
     setGameState('playing')
     
     // Generate new randomized letters for line-drawing mode
-    setRandomizedLetters(selectRandomLetters(letterCount))
+const newLetters = selectRandomLetters(letterCount)
+    const newPictures = shufflePictures(newLetters)
+    setRandomizedLetters(newLetters)
+    setRandomizedPictures(newPictures)
     
     toast.info('🔄 Game reset! Let\'s start fresh!')
   }
@@ -1057,7 +1074,7 @@ setAttempts(0)
                   <h3 className="text-xl font-bold text-center text-secondary mb-6">Pictures</h3>
                 </div>
 <div className="column-content">
-                  {getCurrentLetters().map((item, index) => (
+{randomizedPictures.map((item, index) => (
                     <motion.div
                       key={`picture-${item.letter}`}
                       initial={{ scale: 0 }}
