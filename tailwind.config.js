@@ -31,6 +31,19 @@ export default {
           900: '#0f172a'
         }
       },
+border: {
+        DEFAULT: '#e2e8f0',
+        light: '#f1f5f9',
+        dark: '#cbd5e1'
+      },
+      background: {
+        DEFAULT: '#ffffff',
+        secondary: '#f8fafc'
+      },
+      foreground: {
+        DEFAULT: '#0f172a',
+        muted: '#64748b'
+      },
       fontFamily: {
         sans: ['Fredoka', 'ui-sans-serif', 'system-ui'],
         heading: ['Comic Neue', 'ui-sans-serif', 'system-ui']
