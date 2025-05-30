@@ -1509,7 +1509,9 @@ key={`letter-${item.letter}`}
                 </div>
 <div className="column-content">
                   <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    {randomizedPictures.map((item, index) => (
+{randomizedPictures.filter(picture => 
+                      getCurrentLetters().some(letter => letter.letter === picture.letter)
+                    ).map((item, index) => (
                       <motion.div
                         key={`picture-${item.letter}-${item.index}`}
                         data-picture={`${item.letter}-${item.index}`}
