@@ -15,6 +15,11 @@ const [currentActivity, setCurrentActivity] = useState('letter-match') // 'lette
   const audioRef = useRef(null)
 const [draggedLetter, setDraggedLetter] = useState(null)
   const [selectedPicture, setSelectedPicture] = useState(null)
+const [drawingLines, setDrawingLines] = useState([])
+  const [isDrawing, setIsDrawing] = useState(false)
+  const [currentLine, setCurrentLine] = useState(null)
+  const drawingSvgRef = useRef(null)
+  const [connectionPoints, setConnectionPoints] = useState({})
 
   // Sample letters and words for different levels
   const letterData = {
@@ -140,31 +145,45 @@ const handleWordMatch = (word) => {
     }
   }
 
-  const switchActivity = (newActivity) => {
+const switchActivity = (newActivity) => {
     if (newActivity !== currentActivity) {
       setCurrentActivity(newActivity)
       setSelectedLetter(null)
       setSelectedPicture(null)
       setDraggedLetter(null)
-      toast.info(`Switched to ${newActivity === 'letter-match' ? 'Letter to Word' : 'Picture to Letter'} matching!`)
+      setDrawingLines([])
+      setCurrentLine(null)
+      setIsDrawing(false)
+      const activityNames = {
+        'letter-match': 'Letter to Word',
+        'picture-match': 'Picture to Letter',
+        'line-drawing': 'Draw Lines'
+      }
+      toast.info(`Switched to ${activityNames[newActivity]} matching!`)
     }
   }
 
-  const resetActivity = () => {
+const resetActivity = () => {
     setSelectedLetter(null)
     setSelectedPicture(null)
     setDraggedLetter(null)
+    setDrawingLines([])
+    setCurrentLine(null)
+    setIsDrawing(false)
   }
 
-  const resetGame = () => {
+const resetGame = () => {
     setScore(0)
     setLevel(1)
     setAttempts(0)
     setCompletedLetters(new Set())
     setMatchedPairs(new Set())
-setSelectedLetter(null)
+    setSelectedLetter(null)
     setSelectedPicture(null)
     setDraggedLetter(null)
+    setDrawingLines([])
+    setCurrentLine(null)
+    setIsDrawing(false)
     setCurrentActivity('letter-match')
     setGameState('playing')
     toast.info('🔄 Game reset! Let\'s start fresh!')
@@ -175,6 +194,117 @@ setSelectedLetter(null)
   }
 
   const progressPercentage = (completedLetters.size / getCurrentLetters().length) * 100
+// Line drawing functions
+  const getElementCenter = (element) => {
+    const rect = element.getBoundingClientRect()
+    const svgRect = drawingSvgRef.current?.getBoundingClientRect()
+    if (!svgRect) return { x: 0, y: 0 }
+    
+    return {
+      x: rect.left + rect.width / 2 - svgRect.left,
+      y: rect.top + rect.height / 2 - svgRect.top
+    }
+  }
+
+  const calculateDistance = (point1, point2) => {
+    return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2))
+  }
+
+  const handleDrawingStart = (e, type, item) => {
+    if (completedLetters.has(item.letter)) return
+    
+    const element = e.currentTarget
+    const center = getElementCenter(element)
+    
+    setConnectionPoints(prev => ({
+      ...prev,
+      [type + item.letter]: { x: center.x, y: center.y, type, item }
+    }))
+    
+    setCurrentLine({
+      start: center,
+      end: center,
+      startType: type,
+      startItem: item
+    })
+    setIsDrawing(true)
+    setAttempts(prev => prev + 1)
+  }
+
+  const handleDrawingMove = (e) => {
+    if (!isDrawing || !currentLine || !drawingSvgRef.current) return
+    
+    const svgRect = drawingSvgRef.current.getBoundingClientRect()
+    const point = {
+      x: (e.clientX || e.touches?.[0]?.clientX || 0) - svgRect.left,
+      y: (e.clientY || e.touches?.[0]?.clientY || 0) - svgRect.top
+    }
+    
+    setCurrentLine(prev => ({ ...prev, end: point }))
+  }
+
+  const handleDrawingEnd = (e) => {
+    if (!isDrawing || !currentLine) return
+    
+    const svgRect = drawingSvgRef.current?.getBoundingClientRect()
+    if (!svgRect) return
+    
+    const endPoint = {
+      x: (e.clientX || e.changedTouches?.[0]?.clientX || 0) - svgRect.left,
+      y: (e.clientY || e.changedTouches?.[0]?.clientY || 0) - svgRect.top
+    }
+    
+    // Check if line ends near a valid target
+    const targetType = currentLine.startType === 'letter' ? 'picture' : 'letter'
+    let closestTarget = null
+    let minDistance = Infinity
+    
+    Object.entries(connectionPoints).forEach(([key, point]) => {
+      if (point.type === targetType) {
+        const distance = calculateDistance(endPoint, point)
+        if (distance < 60 && distance < minDistance) { // 60px tolerance
+          minDistance = distance
+          closestTarget = point
+        }
+      }
+    })
+    
+    if (closestTarget && currentLine.startItem.letter === closestTarget.item.letter) {
+      // Correct connection
+      const newLine = {
+        start: currentLine.start,
+        end: { x: closestTarget.x, y: closestTarget.y },
+        startItem: currentLine.startItem,
+        endItem: closestTarget.item,
+        id: `${currentLine.startItem.letter}-correct`
+      }
+      
+      setDrawingLines(prev => [...prev, newLine])
+      setScore(prev => prev + 20)
+      setCompletedLetters(prev => new Set([...prev, currentLine.startItem.letter]))
+      setMatchedPairs(prev => new Set([...prev, currentLine.startItem.letter]))
+      playSound(currentLine.startItem.letter, 'correct')
+      
+      // Check if level is complete
+      if (completedLetters.size + 1 >= getCurrentLetters().length) {
+        setGameState('celebrating')
+        setTimeout(() => {
+          setLevel(prev => prev + 1)
+          setCompletedLetters(new Set())
+          setMatchedPairs(new Set())
+          setDrawingLines([])
+          setGameState('playing')
+          toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
+        }, 2000)
+      }
+    } else {
+      // Incorrect connection
+      playSound(currentLine.startItem?.letter, 'incorrect')
+    }
+    
+    setCurrentLine(null)
+    setIsDrawing(false)
+  }
 
   return (
     <div className="w-full max-w-7xl mx-auto">
@@ -259,33 +389,47 @@ setSelectedLetter(null)
         transition={{ delay: 0.1 }}
         className="activity-card mb-6"
       >
-        <div className="flex items-center justify-center gap-4">
+<div className="flex items-center justify-center gap-2 sm:gap-4 flex-wrap">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => switchActivity('letter-match')}
-            className={`flex items-center gap-2 px-4 py-3 rounded-bubble transition-all duration-300 ${
+            className={`flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-bubble transition-all duration-300 ${
               currentActivity === 'letter-match'
                 ? 'bg-primary text-white shadow-playful'
                 : 'bg-surface-100 text-surface-700 hover:bg-surface-200'
             }`}
           >
-            <ApperIcon name="Type" className="w-5 h-5" />
-            <span className="font-medium">Letter to Word</span>
+            <ApperIcon name="Type" className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium text-sm sm:text-base">Letter to Word</span>
           </motion.button>
           
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => switchActivity('picture-match')}
-            className={`flex items-center gap-2 px-4 py-3 rounded-bubble transition-all duration-300 ${
+            className={`flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-bubble transition-all duration-300 ${
               currentActivity === 'picture-match'
                 ? 'bg-secondary text-white shadow-playful'
                 : 'bg-surface-100 text-surface-700 hover:bg-surface-200'
             }`}
           >
-            <ApperIcon name="Image" className="w-5 h-5" />
-            <span className="font-medium">Picture to Letter</span>
+            <ApperIcon name="Image" className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium text-sm sm:text-base">Picture to Letter</span>
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => switchActivity('line-drawing')}
+            className={`flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-bubble transition-all duration-300 ${
+              currentActivity === 'line-drawing'
+                ? 'bg-accent text-surface-700 shadow-playful'
+                : 'bg-surface-100 text-surface-700 hover:bg-surface-200'
+            }`}
+          >
+            <ApperIcon name="Pen" className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium text-sm sm:text-base">Draw Lines</span>
           </motion.button>
         </div>
       </motion.div>
@@ -303,17 +447,23 @@ setSelectedLetter(null)
               <ApperIcon name="Info" className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
               <div className="text-sm sm:text-base text-surface-700">
                 <p className="font-medium mb-2">How to play:</p>
-                {currentActivity === 'letter-match' ? (
+{currentActivity === 'letter-match' ? (
                   <ol className="list-decimal list-inside space-y-1">
                     <li>Click on a letter to hear its sound</li>
                     <li>Find the word that starts with that letter</li>
                     <li>Match letters to words to earn points!</li>
                   </ol>
-                ) : (
+                ) : currentActivity === 'picture-match' ? (
                   <ol className="list-decimal list-inside space-y-1">
                     <li>Click on a picture to hear what it starts with</li>
                     <li>Drag the picture to the correct letter</li>
                     <li>Match pictures to letters to earn points!</li>
+                  </ol>
+                ) : (
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>Click and hold on a letter or picture</li>
+                    <li>Draw a line to connect it with its match</li>
+                    <li>Release to complete the connection!</li>
                   </ol>
                 )}
               </div>
@@ -482,7 +632,7 @@ setSelectedLetter(null)
             )}
           </motion.div>
         </div>
-      ) : (
+      ) : currentActivity === 'picture-match' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {/* Pictures Section */}
           <motion.div
@@ -671,6 +821,173 @@ setSelectedLetter(null)
             )}
           </motion.div>
         </div>
+      ) : (
+        // Line Drawing Mode
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="relative"
+          onMouseMove={handleDrawingMove}
+          onMouseUp={handleDrawingEnd}
+          onTouchMove={handleDrawingMove}
+          onTouchEnd={handleDrawingEnd}
+        >
+          <div className="activity-card relative overflow-hidden">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-accent rounded-bubble flex items-center justify-center">
+                <ApperIcon name="Pen" className="w-4 h-4 sm:w-5 sm:h-5 text-surface-700" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
+                Draw Lines to Connect
+              </h2>
+            </div>
+            
+            {/* Drawing Canvas */}
+            <svg
+              ref={drawingSvgRef}
+              className="absolute inset-0 w-full h-full pointer-events-none z-10"
+              style={{ minHeight: '600px' }}
+            >
+              {/* Completed Lines */}
+              {drawingLines.map((line, index) => (
+                <motion.path
+                  key={line.id}
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.5 }}
+                  d={`M ${line.start.x} ${line.start.y} Q ${(line.start.x + line.end.x) / 2} ${Math.min(line.start.y, line.end.y) - 50} ${line.end.x} ${line.end.y}`}
+                  stroke="#10B981"
+                  strokeWidth="4"
+                  fill="none"
+                  strokeDasharray="0"
+                  strokeLinecap="round"
+                />
+              ))}
+              
+              {/* Current Drawing Line */}
+              {currentLine && (
+                <motion.path
+                  d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + currentLine.end.x) / 2} ${Math.min(currentLine.start.y, currentLine.end.y) - 50} ${currentLine.end.x} ${currentLine.end.y}`}
+                  stroke="#FFE66D"
+                  strokeWidth="3"
+                  fill="none"
+                  strokeDasharray="8,4"
+                  strokeLinecap="round"
+                  className="animate-pulse"
+                />
+              )}
+            </svg>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative z-0">
+              {/* Letters Column */}
+              <div className="lg:col-span-2 space-y-4">
+                <h3 className="text-lg font-bold text-center text-surface-700 mb-4">Letters</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {getCurrentLetters().map((item, index) => (
+                    <motion.div
+                      key={`letter-${item.letter}`}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      onMouseDown={(e) => handleDrawingStart(e, 'letter', item)}
+                      onTouchStart={(e) => handleDrawingStart(e, 'letter', item)}
+                      className={`letter-card cursor-pointer text-center relative select-none ${
+                        completedLetters.has(item.letter)
+                          ? 'bg-green-100 border-green-300 opacity-75'
+                          : 'hover:shadow-playful hover:scale-105'
+                      }`}
+                    >
+                      {completedLetters.has(item.letter) && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        >
+                          <ApperIcon name="Check" className="w-4 h-4 text-white" />
+                        </motion.div>
+                      )}
+                      
+                      <div className="text-3xl sm:text-4xl font-bold text-primary mb-2 font-heading pointer-events-none">
+                        {item.letter}
+                      </div>
+                      <div className="text-xs sm:text-sm text-surface-600 pointer-events-none">
+                        {item.sound}
+                      </div>
+                      
+                      {/* Connection Point */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-3 h-3 bg-primary rounded-full opacity-20"></div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Pictures Column */}
+              <div className="lg:col-span-2 space-y-4">
+                <h3 className="text-lg font-bold text-center text-surface-700 mb-4">Pictures</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {getCurrentLetters().map((item, index) => (
+                    <motion.div
+                      key={`picture-${item.letter}`}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: index * 0.1 + 0.2 }}
+                      onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
+                      onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
+                      className={`letter-card cursor-pointer text-center relative select-none ${
+                        completedLetters.has(item.letter)
+                          ? 'bg-green-100 border-green-300 opacity-75'
+                          : 'hover:shadow-playful hover:scale-105'
+                      }`}
+                    >
+                      {completedLetters.has(item.letter) && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        >
+                          <ApperIcon name="Check" className="w-4 h-4 text-white" />
+                        </motion.div>
+                      )}
+                      
+                      <div className="text-3xl sm:text-4xl mb-2 pointer-events-none">
+                        {item.emoji}
+                      </div>
+                      <div className="text-sm sm:text-base font-bold text-surface-800 mb-1 pointer-events-none">
+                        {item.word}
+                      </div>
+                      <div className="text-xs text-surface-500 pointer-events-none">
+                        Starts with "{item.letter}"
+                      </div>
+                      
+                      {/* Connection Point */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-3 h-3 bg-secondary rounded-full opacity-20"></div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {isDrawing && currentLine && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 p-4 bg-accent/10 rounded-bubble border border-accent/20"
+              >
+                <div className="flex items-center gap-3 justify-center">
+                  <ApperIcon name="Hand" className="w-5 h-5 text-accent" />
+                  <div className="text-sm sm:text-base text-surface-700 font-medium">
+                    Draw a line to connect <strong>{currentLine.startItem.letter}</strong> with its matching picture!
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
       )}
 
       {/* Celebration Animation */}
