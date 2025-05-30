@@ -268,7 +268,7 @@ return pictures // Don't shuffle to maintain letter grouping
   }
 
 // Group pictures by letter for display
-  const groupPicturesByLetter = (pictures) => {
+const groupPicturesByLetter = (pictures) => {
     const groups = {}
     pictures.forEach(picture => {
       if (!groups[picture.letter]) {
