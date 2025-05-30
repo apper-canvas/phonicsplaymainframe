@@ -283,6 +283,15 @@ return pictures // Don't shuffle to maintain letter grouping
       pictures: groups[letterItem.letter] || []
     })).filter(group => group.pictures.length > 0)
   }
+// Randomization functions for display order
+  const shuffleLetterOrder = (letters) => {
+    return shuffleArray([...letters])
+  }
+  
+  const shufflePictureOrder = (pictureGroups) => {
+    // Shuffle the order of letter groups while maintaining pictures within each group
+    return shuffleArray([...pictureGroups])
+  }
 // Color management for lines
   const getNextAvailableColor = () => {
     // Find the first color that hasn't been used
@@ -305,17 +314,25 @@ return pictures // Don't shuffle to maintain letter grouping
 
 const generateNewSet = () => {
     const newLetters = selectRandomLetters(letterCount)
-const newPictures = generatePicturesForLetters(newLetters)
-    setRandomizedLetters(newLetters)
-    setRandomizedPictures(newPictures)
+    const shuffledLetters = shuffleLetterOrder(newLetters)
+    const newPictures = generatePicturesForLetters(shuffledLetters)
+    const pictureGroups = groupPicturesByLetter(newPictures)
+    const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
+    const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
+    setRandomizedLetters(shuffledLetters)
+    setRandomizedPictures(finalPictures)
     setRandomSeed(prev => prev + 1)
   }
 const handleLetterCountChange = (newCount) => {
     setLetterCount(newCount)
     const newLetters = selectRandomLetters(newCount)
-const newPictures = generatePicturesForLetters(newLetters)
-    setRandomizedLetters(newLetters)
-    setRandomizedPictures(newPictures)
+    const shuffledLetters = shuffleLetterOrder(newLetters)
+    const newPictures = generatePicturesForLetters(shuffledLetters)
+    const pictureGroups = groupPicturesByLetter(newPictures)
+    const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
+    const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
+    setRandomizedLetters(shuffledLetters)
+    setRandomizedPictures(finalPictures)
   }
 const handleImagesPerLetterChange = (newCount) => {
     setImagesPerLetter(newCount)
@@ -327,10 +344,14 @@ const handleImagesPerLetterChange = (newCount) => {
   // Generate initial randomized letters
 useEffect(() => {
     if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
-const newLetters = selectRandomLetters(letterCount)
-      setRandomizedLetters(newLetters)
-      const newPictures = generatePicturesForLetters(newLetters)
-      setRandomizedPictures(newPictures)
+      const newLetters = selectRandomLetters(letterCount)
+      const shuffledLetters = shuffleLetterOrder(newLetters)
+      setRandomizedLetters(shuffledLetters)
+      const newPictures = generatePicturesForLetters(shuffledLetters)
+      const pictureGroups = groupPicturesByLetter(newPictures)
+      const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
+      const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
+      setRandomizedPictures(finalPictures)
     }
 }, [currentActivity, letterCount, imagesPerLetter])
 
@@ -530,11 +551,15 @@ const switchActivity = (newActivity) => {
       setConnectionPoints({}) // Clear connection points
 setUsedLineColors(new Set()) // Reset used colors for new activity
       // Generate new randomized letters when switching to line-drawing mode
-      if (newActivity === 'line-drawing') {
+if (newActivity === 'line-drawing') {
         const newLetters = selectRandomLetters(letterCount)
-const newPictures = generatePicturesForLetters(newLetters)
-        setRandomizedLetters(newLetters)
-        setRandomizedPictures(newPictures)
+        const shuffledLetters = shuffleLetterOrder(newLetters)
+        const newPictures = generatePicturesForLetters(shuffledLetters)
+        const pictureGroups = groupPicturesByLetter(newPictures)
+        const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
+        const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
+        setRandomizedLetters(shuffledLetters)
+        setRandomizedPictures(finalPictures)
       }
       
       const activityNames = {
@@ -579,10 +604,14 @@ setAttempts(0)
 setUsedLineColors(new Set()) // Reset used colors
 // Reset letter history for fresh start
     setUsedLettersHistory([])
-    const newLetters = selectRandomLetters(letterCount)
-const newPictures = generatePicturesForLetters(newLetters)
-    setRandomizedLetters(newLetters)
-    setRandomizedPictures(newPictures)
+const newLetters = selectRandomLetters(letterCount)
+    const shuffledLetters = shuffleLetterOrder(newLetters)
+    const newPictures = generatePicturesForLetters(shuffledLetters)
+    const pictureGroups = groupPicturesByLetter(newPictures)
+    const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
+    const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
+    setRandomizedLetters(shuffledLetters)
+    setRandomizedPictures(finalPictures)
     toast.info('🔄 Game reset! Let\'s start fresh!')
   }
 
