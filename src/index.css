@@ -38,6 +38,22 @@
     @apply h-full bg-gradient-to-r from-secondary to-accent transition-all duration-500 ease-out rounded-full;
   }
 }
+/* Line Drawing Layout Components */
+  .drawing-columns-container {
+    @apply flex flex-col lg:flex-row gap-8 lg:gap-12 relative z-0;
+  }
+  
+  .drawing-column {
+    @apply flex-1 space-y-4;
+  }
+  
+  .column-header {
+    @apply border-b-2 border-surface-200 pb-2;
+  }
+  
+  .column-content {
+    @apply grid grid-cols-2 gap-4;
+  }
 
 @layer utilities {
   .text-shadow {

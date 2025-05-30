@@ -879,11 +879,13 @@ const resetGame = () => {
               )}
             </svg>
             
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative z-0">
-              {/* Letters Column */}
-              <div className="lg:col-span-2 space-y-4">
-                <h3 className="text-lg font-bold text-center text-surface-700 mb-4">Letters</h3>
-                <div className="grid grid-cols-2 gap-3">
+<div className="drawing-columns-container">
+              {/* Letters Column - Left Side */}
+              <div className="drawing-column letters-column">
+                <div className="column-header">
+                  <h3 className="text-xl font-bold text-center text-primary mb-6">Letters</h3>
+                </div>
+                <div className="column-content">
                   {getCurrentLetters().map((item, index) => (
                     <motion.div
                       key={`letter-${item.letter}`}
@@ -924,10 +926,12 @@ const resetGame = () => {
                 </div>
               </div>
               
-              {/* Pictures Column */}
-              <div className="lg:col-span-2 space-y-4">
-                <h3 className="text-lg font-bold text-center text-surface-700 mb-4">Pictures</h3>
-                <div className="grid grid-cols-2 gap-3">
+              {/* Pictures Column - Right Side */}
+              <div className="drawing-column pictures-column">
+                <div className="column-header">
+                  <h3 className="text-xl font-bold text-center text-secondary mb-6">Pictures</h3>
+                </div>
+                <div className="column-content">
                   {getCurrentLetters().map((item, index) => (
                     <motion.div
                       key={`picture-${item.letter}`}
