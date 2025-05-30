@@ -309,43 +309,8 @@ const groupPicturesByLetter = (pictures) => {
     return shuffleArray([...letters])
   }
   
-const rearrangePictureRowsToAvoidSameRow = (pictures) => {
-    // Group pictures by letter
-    const groups = {}
-    pictures.forEach(picture => {
-      if (!groups[picture.letter]) {
-        groups[picture.letter] = []
-      }
-      groups[picture.letter].push(picture)
-    })
-    
-    // Create array of groups with offset positioning to avoid same row as letters
-    const letterOrder = getCurrentLetters()
-    const groupsArray = letterOrder.map((letterItem, index) => ({
-      letter: letterItem.letter,
-      pictures: groups[letterItem.letter] || [],
-      originalIndex: index
-    }))
-    
-    // Rearrange groups to ensure no letter and its pictures are on the same row
-    const rearrangedGroups = []
-    const totalGroups = groupsArray.length
-    
-    groupsArray.forEach((group, index) => {
-      // Calculate offset to ensure this group doesn't appear in the same row as its letter
-      const offset = Math.floor(totalGroups / 2) + (index % 2 === 0 ? 1 : -1)
-      const newPosition = (index + offset) % totalGroups
-      rearrangedGroups[newPosition] = group
-    })
-    
-    // Fill any gaps with remaining groups
-    groupsArray.forEach((group, index) => {
-      if (!rearrangedGroups[index]) {
-        rearrangedGroups[index] = group
-      }
-    })
-    
-    return rearrangedGroups.filter(Boolean)
+const shufflePicturesByDifferentLetters = (pictures) => {
+    return shuffleArray([...pictures])
   }
 // Color management for lines
   const getNextAvailableColor = () => {
@@ -370,10 +335,9 @@ const rearrangePictureRowsToAvoidSameRow = (pictures) => {
 const generateNewSet = () => {
     const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
+const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
     setRandomizedLetters(newLetters)
-setRandomizedPictures(newPictures)
-setRearrangedPictureGroups(rearrangedGroups)
+setRandomizedPictures(shuffledPictures)
     setRandomSeed(prev => prev + 1)
   }
 const handleLetterCountChange = (newCount) => {
@@ -385,11 +349,10 @@ const handleLetterCountChange = (newCount) => {
     setUsedLineColors(new Set())
 const newLetters = selectRandomLetters(newCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
+const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
     setRandomizedLetters(newLetters)
 setRandomizedLetters(newLetters)
-    setRandomizedPictures(newPictures)
-setRearrangedPictureGroups(rearrangedGroups)
+setRandomizedPictures(shuffledPictures)
   }
 const handleImagesPerLetterChange = (newCount) => {
 setImagesPerLetter(newCount)
@@ -400,9 +363,8 @@ setImagesPerLetter(newCount)
     setUsedLineColors(new Set())
 if (randomizedLetters.length > 0) {
 const newPictures = generatePicturesForLetters(randomizedLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
-setRandomizedPictures(newPictures)
-setRearrangedPictureGroups(rearrangedGroups)
+const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
+setRandomizedPictures(shuffledPictures)
     }
   }
   // Generate initial randomized letters
@@ -411,9 +373,8 @@ useEffect(() => {
 const newLetters = selectRandomLetters(letterCount)
       setRandomizedLetters(newLetters)
 const newPictures = generatePicturesForLetters(newLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
-setRandomizedPictures(newPictures)
-setRearrangedPictureGroups(rearrangedGroups)
+const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
+setRandomizedPictures(shuffledPictures)
     }
 }, [currentActivity, letterCount, imagesPerLetter])
 
@@ -586,11 +547,10 @@ setUsedLineColors(new Set()) // Reset used colors for new activity
 if (newActivity === 'line-drawing') {
 const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
+const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
         setRandomizedLetters(newLetters)
 setRandomizedLetters(newLetters)
-        setRandomizedPictures(newPictures)
-setRearrangedPictureGroups(rearrangedGroups)
+setRandomizedPictures(shuffledPictures)
       }
       
       const activityNames = {
@@ -637,11 +597,10 @@ setUsedLineColors(new Set()) // Reset used colors
     setUsedLettersHistory([])
 const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
+const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
     setRandomizedLetters(newLetters)
 setRandomizedLetters(newLetters)
-    setRandomizedPictures(newPictures)
-setRearrangedPictureGroups(rearrangedGroups)
+setRandomizedPictures(shuffledPictures)
     toast.info('🔄 Game reset! Let\'s start fresh!')
   }
 
@@ -1635,51 +1594,42 @@ key={`letter-${item.letter}`}
                   <h3 className="text-xl font-bold text-center text-secondary mb-6">Pictures</h3>
                 </div>
 <div className="column-content">
-<div className="pictures-by-letter-rows">
-                    {getCurrentLetters().map((letterItem, letterIndex) => {
-                      // Get pictures for this specific letter
-                      const letterPictures = randomizedPictures.filter(pic => pic.letter === letterItem.letter)
-                      
-                      return (
-                        <div key={`group-${letterItem.letter}`} className="picture-row-for-letter">
-                          {letterPictures.map((item, index) => (
-                            <motion.div
-                              key={`picture-${item.letter}-${item.index}`}
-                              data-picture={`${item.letter}-${item.index}`}
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ delay: (letterIndex * letterPictures.length + index) * 0.1 + 0.2 }}
-                              onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
-                              onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
-                              className={`letter-card cursor-pointer text-center relative select-none ${
-                                completedLetters.has(item.letter)
-                                  ? 'bg-green-100 border-green-300 opacity-75'
-                                  : 'hover:shadow-playful hover:scale-105'
-                              }`}
-                            >
-                              {completedLetters.has(item.letter) && (
-                                <motion.div
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
-                                >
-                                  <ApperIcon name="Check" className="w-4 h-4 text-white" />
-                                </motion.div>
-                              )}
-                              
-                              <div className="text-4xl sm:text-5xl mb-2 pointer-events-none">
-                                {item.emoji}
-                              </div>
-                              
-                              {/* Connection Point */}
-                              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <div className="w-3 h-3 bg-secondary rounded-full opacity-20"></div>
-                              </div>
-                            </motion.div>
-                          ))}
+<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                    {randomizedPictures.map((item, index) => (
+                      <motion.div
+                        key={`picture-${item.letter}-${item.index}`}
+                        data-picture={`${item.letter}-${item.index}`}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: index * 0.1 + 0.2 }}
+                        onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
+                        onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
+                        className={`letter-card cursor-pointer text-center relative select-none ${
+                          completedLetters.has(item.letter)
+                            ? 'bg-green-100 border-green-300 opacity-75'
+                            : 'hover:shadow-playful hover:scale-105'
+                        }`}
+                      >
+                        {completedLetters.has(item.letter) && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                          >
+                            <ApperIcon name="Check" className="w-4 h-4 text-white" />
+                          </motion.div>
+                        )}
+                        
+                        <div className="text-4xl sm:text-5xl mb-2 pointer-events-none">
+                          {item.emoji}
                         </div>
-                      )
-                    })}
+                        
+                        {/* Connection Point */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div className="w-3 h-3 bg-secondary rounded-full opacity-20"></div>
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
             </div>
 </div>
