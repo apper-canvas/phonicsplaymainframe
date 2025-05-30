@@ -120,6 +120,49 @@ useEffect(() => {
       setRandomizedPictures(newPictures)
     }
 setConnectionPoints({}) // Clear connection points on re-initialization
+
+  // Register connection points for all interactive elements
+  useEffect(() => {
+    if (currentActivity === 'line-drawing' && drawingSvgRef.current) {
+      const registerConnectionPoints = () => {
+        const newConnectionPoints = {}
+        
+        // Register letter connection points
+        getCurrentLetters().forEach((item) => {
+          const letterElement = document.querySelector(`[data-letter="${item.letter}"]`)
+          if (letterElement) {
+            const center = getElementCenter(letterElement)
+            newConnectionPoints[`letter${item.letter}`] = { 
+              x: center.x, 
+              y: center.y, 
+              type: 'letter', 
+              item 
+            }
+          }
+        })
+        
+        // Register picture connection points
+        randomizedPictures.forEach((item) => {
+          const pictureElement = document.querySelector(`[data-picture="${item.letter}"]`)
+          if (pictureElement) {
+            const center = getElementCenter(pictureElement)
+            newConnectionPoints[`picture${item.letter}`] = { 
+              x: center.x, 
+              y: center.y, 
+              type: 'picture', 
+              item 
+            }
+          }
+        })
+        
+        setConnectionPoints(newConnectionPoints)
+      }
+      
+      // Delay registration to ensure DOM elements are rendered
+      const timer = setTimeout(registerConnectionPoints, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [currentActivity, randomizedLetters, randomizedPictures])
   }, [currentActivity, letterCount])
 
   // Audio simulation (in real app, this would play actual audio files)
@@ -1037,7 +1080,8 @@ const newLetters = selectRandomLetters(letterCount)
 <div className="column-content">
                   {getCurrentLetters().map((item, index) => (
                     <motion.div
-                      key={`letter-${item.letter}`}
+key={`letter-${item.letter}`}
+                      data-letter={item.letter}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: index * 0.1 }}
@@ -1083,7 +1127,8 @@ const newLetters = selectRandomLetters(letterCount)
 <div className="column-content">
 {randomizedPictures.map((item, index) => (
                     <motion.div
-                      key={`picture-${item.letter}`}
+key={`picture-${item.letter}`}
+                      data-picture={item.letter}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: index * 0.1 + 0.2 }}
