@@ -335,10 +335,13 @@ const handleLetterCountChange = (newCount) => {
     setRandomizedPictures(finalPictures)
   }
 const handleImagesPerLetterChange = (newCount) => {
-    setImagesPerLetter(newCount)
+setImagesPerLetter(newCount)
     if (randomizedLetters.length > 0) {
       const newPictures = generatePicturesForLetters(randomizedLetters)
-      setRandomizedPictures(newPictures)
+      const pictureGroups = groupPicturesByLetter(newPictures)
+      const shuffledPictureGroups = shufflePictureOrder(pictureGroups)
+      const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
+      setRandomizedPictures(finalPictures)
     }
   }
   // Generate initial randomized letters

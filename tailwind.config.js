@@ -31,7 +31,8 @@ export default {
           900: '#0f172a'
         }
       },
-border: {
+},
+      border: {
         DEFAULT: '#e2e8f0',
         light: '#f1f5f9',
         dark: '#cbd5e1'
