@@ -22,43 +22,184 @@ const [drawingLines, setDrawingLines] = useState([])
   const [connectionPoints, setConnectionPoints] = useState({})
 
 // Complete A-Z alphabet data for randomized selection
+// Complete A-Z alphabet data with multiple options per letter
   const alphabetData = [
-    { letter: 'A', word: 'Apple', sound: '/eɪ/', emoji: '🍎' },
-    { letter: 'B', word: 'Ball', sound: '/b/', emoji: '⚽' },
-    { letter: 'C', word: 'Cat', sound: '/k/', emoji: '🐱' },
-    { letter: 'D', word: 'Dog', sound: '/d/', emoji: '🐕' },
-    { letter: 'E', word: 'Elephant', sound: '/ɛ/', emoji: '🐘' },
-    { letter: 'F', word: 'Fish', sound: '/f/', emoji: '🐠' },
-    { letter: 'G', word: 'Giraffe', sound: '/g/', emoji: '🦒' },
-    { letter: 'H', word: 'House', sound: '/h/', emoji: '🏠' },
-    { letter: 'I', word: 'Ice cream', sound: '/aɪ/', emoji: '🍦' },
-    { letter: 'J', word: 'Juice', sound: '/dʒ/', emoji: '🧃' },
-    { letter: 'K', word: 'Kite', sound: '/k/', emoji: '🪁' },
-    { letter: 'L', word: 'Lion', sound: '/l/', emoji: '🦁' },
-    { letter: 'M', word: 'Mouse', sound: '/m/', emoji: '🐭' },
-    { letter: 'N', word: 'Nest', sound: '/n/', emoji: '🪺' },
-    { letter: 'O', word: 'Orange', sound: '/ɔ/', emoji: '🍊' },
-    { letter: 'P', word: 'Pizza', sound: '/p/', emoji: '🍕' },
-    { letter: 'Q', word: 'Queen', sound: '/kw/', emoji: '👑' },
-    { letter: 'R', word: 'Robot', sound: '/r/', emoji: '🤖' },
-    { letter: 'S', word: 'Sun', sound: '/s/', emoji: '☀️' },
-    { letter: 'T', word: 'Tree', sound: '/t/', emoji: '🌳' },
-    { letter: 'U', word: 'Umbrella', sound: '/ʌ/', emoji: '☂️' },
-    { letter: 'V', word: 'Violin', sound: '/v/', emoji: '🎻' },
-    { letter: 'W', word: 'Whale', sound: '/w/', emoji: '🐋' },
-    { letter: 'X', word: 'Xylophone', sound: '/ks/', emoji: '🎵' },
-    { letter: 'Y', word: 'Yacht', sound: '/j/', emoji: '⛵' },
-    { letter: 'Z', word: 'Zebra', sound: '/z/', emoji: '🦓' }
+    { letter: 'A', words: [
+      { word: 'Apple', emoji: '🍎' },
+      { word: 'Ant', emoji: '🐜' },
+      { word: 'Airplane', emoji: '✈️' },
+      { word: 'Anchor', emoji: '⚓' }
+    ], sound: '/eɪ/' },
+    { letter: 'B', words: [
+      { word: 'Ball', emoji: '⚽' },
+      { word: 'Bear', emoji: '🐻' },
+      { word: 'Book', emoji: '📚' },
+      { word: 'Butterfly', emoji: '🦋' }
+    ], sound: '/b/' },
+    { letter: 'C', words: [
+      { word: 'Cat', emoji: '🐱' },
+      { word: 'Car', emoji: '🚗' },
+      { word: 'Cookie', emoji: '🍪' },
+      { word: 'Crown', emoji: '👑' }
+    ], sound: '/k/' },
+    { letter: 'D', words: [
+      { word: 'Dog', emoji: '🐕' },
+      { word: 'Duck', emoji: '🦆' },
+      { word: 'Drum', emoji: '🥁' },
+      { word: 'Diamond', emoji: '💎' }
+    ], sound: '/d/' },
+    { letter: 'E', words: [
+      { word: 'Elephant', emoji: '🐘' },
+      { word: 'Eagle', emoji: '🦅' },
+      { word: 'Egg', emoji: '🥚' },
+      { word: 'Earth', emoji: '🌍' }
+    ], sound: '/ɛ/' },
+    { letter: 'F', words: [
+      { word: 'Fish', emoji: '🐠' },
+      { word: 'Flower', emoji: '🌸' },
+      { word: 'Fire', emoji: '🔥' },
+      { word: 'Frog', emoji: '🐸' }
+    ], sound: '/f/' },
+    { letter: 'G', words: [
+      { word: 'Giraffe', emoji: '🦒' },
+      { word: 'Guitar', emoji: '🎸' },
+      { word: 'Gift', emoji: '🎁' },
+      { word: 'Grapes', emoji: '🍇' }
+    ], sound: '/g/' },
+    { letter: 'H', words: [
+      { word: 'House', emoji: '🏠' },
+      { word: 'Horse', emoji: '🐴' },
+      { word: 'Heart', emoji: '❤️' },
+      { word: 'Hat', emoji: '🎩' }
+    ], sound: '/h/' },
+    { letter: 'I', words: [
+      { word: 'Ice cream', emoji: '🍦' },
+      { word: 'Island', emoji: '🏝️' },
+      { word: 'Igloo', emoji: '⛄' },
+      { word: 'Iron', emoji: '👕' }
+    ], sound: '/aɪ/' },
+    { letter: 'J', words: [
+      { word: 'Juice', emoji: '🧃' },
+      { word: 'Jet', emoji: '🛩️' },
+      { word: 'Jewel', emoji: '💍' },
+      { word: 'Jacket', emoji: '🧥' }
+    ], sound: '/dʒ/' },
+    { letter: 'K', words: [
+      { word: 'Kite', emoji: '🪁' },
+      { word: 'Key', emoji: '🔑' },
+      { word: 'King', emoji: '👑' },
+      { word: 'Kangaroo', emoji: '🦘' }
+    ], sound: '/k/' },
+    { letter: 'L', words: [
+      { word: 'Lion', emoji: '🦁' },
+      { word: 'Leaf', emoji: '🍃' },
+      { word: 'Lamp', emoji: '💡' },
+      { word: 'Lemon', emoji: '🍋' }
+    ], sound: '/l/' },
+    { letter: 'M', words: [
+      { word: 'Mouse', emoji: '🐭' },
+      { word: 'Moon', emoji: '🌙' },
+      { word: 'Music', emoji: '🎵' },
+      { word: 'Mountain', emoji: '⛰️' }
+    ], sound: '/m/' },
+    { letter: 'N', words: [
+      { word: 'Nest', emoji: '🪺' },
+      { word: 'Nose', emoji: '👃' },
+      { word: 'Night', emoji: '🌃' },
+      { word: 'Nut', emoji: '🥜' }
+    ], sound: '/n/' },
+    { letter: 'O', words: [
+      { word: 'Orange', emoji: '🍊' },
+      { word: 'Owl', emoji: '🦉' },
+      { word: 'Ocean', emoji: '🌊' },
+      { word: 'Octopus', emoji: '🐙' }
+    ], sound: '/ɔ/' },
+    { letter: 'P', words: [
+      { word: 'Pizza', emoji: '🍕' },
+      { word: 'Penguin', emoji: '🐧' },
+      { word: 'Piano', emoji: '🎹' },
+      { word: 'Pineapple', emoji: '🍍' }
+    ], sound: '/p/' },
+    { letter: 'Q', words: [
+      { word: 'Queen', emoji: '👸' },
+      { word: 'Question', emoji: '❓' },
+      { word: 'Quilt', emoji: '🛏️' },
+      { word: 'Quail', emoji: '🐦' }
+    ], sound: '/kw/' },
+    { letter: 'R', words: [
+      { word: 'Robot', emoji: '🤖' },
+      { word: 'Rainbow', emoji: '🌈' },
+      { word: 'Rocket', emoji: '🚀' },
+      { word: 'Rose', emoji: '🌹' }
+    ], sound: '/r/' },
+    { letter: 'S', words: [
+      { word: 'Sun', emoji: '☀️' },
+      { word: 'Star', emoji: '⭐' },
+      { word: 'Snake', emoji: '🐍' },
+      { word: 'Ship', emoji: '🚢' }
+    ], sound: '/s/' },
+    { letter: 'T', words: [
+      { word: 'Tree', emoji: '🌳' },
+      { word: 'Tiger', emoji: '🐅' },
+      { word: 'Train', emoji: '🚂' },
+      { word: 'Turtle', emoji: '🐢' }
+    ], sound: '/t/' },
+    { letter: 'U', words: [
+      { word: 'Umbrella', emoji: '☂️' },
+      { word: 'Unicorn', emoji: '🦄' },
+      { word: 'UFO', emoji: '🛸' },
+      { word: 'Uniform', emoji: '👮' }
+    ], sound: '/ʌ/' },
+    { letter: 'V', words: [
+      { word: 'Violin', emoji: '🎻' },
+      { word: 'Volcano', emoji: '🌋' },
+      { word: 'Van', emoji: '🚐' },
+      { word: 'Vase', emoji: '🏺' }
+    ], sound: '/v/' },
+    { letter: 'W', words: [
+      { word: 'Whale', emoji: '🐋' },
+      { word: 'Water', emoji: '💧' },
+      { word: 'Watch', emoji: '⌚' },
+      { word: 'Wolf', emoji: '🐺' }
+    ], sound: '/w/' },
+    { letter: 'X', words: [
+      { word: 'Xylophone', emoji: '🎵' },
+      { word: 'X-ray', emoji: '🦴' },
+      { word: 'Xbox', emoji: '🎮' },
+      { word: 'Xerox', emoji: '📄' }
+    ], sound: '/ks/' },
+    { letter: 'Y', words: [
+      { word: 'Yacht', emoji: '⛵' },
+      { word: 'Yo-yo', emoji: '🪀' },
+      { word: 'Yarn', emoji: '🧶' },
+      { word: 'Yak', emoji: '🐂' }
+    ], sound: '/j/' },
+    { letter: 'Z', words: [
+      { word: 'Zebra', emoji: '🦓' },
+      { word: 'Zoo', emoji: '🏛️' },
+      { word: 'Zipper', emoji: '🤐' },
+      { word: 'Zero', emoji: '0️⃣' }
+    ], sound: '/z/' }
   ]
+
+  // Convert to old format for compatibility with other game modes
+  const getCompatibleAlphabetData = () => {
+    return alphabetData.map(item => ({
+      letter: item.letter,
+      word: item.words[0].word,
+      sound: item.sound,
+      emoji: item.words[0].emoji
+    }))
+  }
 
   // Level-based letter data for letter-match and picture-match modes
   const letterData = {
-    1: alphabetData.slice(0, 4),   // A-D
-    2: alphabetData.slice(4, 8),   // E-H
-    3: alphabetData.slice(8, 12),  // I-L
-    4: alphabetData.slice(12, 16), // M-P
-    5: alphabetData.slice(16, 20), // Q-T
-    6: alphabetData.slice(20, 26)  // U-Z
+1: getCompatibleAlphabetData().slice(0, 4),   // A-D
+2: getCompatibleAlphabetData().slice(4, 8),   // E-H
+3: getCompatibleAlphabetData().slice(8, 12),  // I-L
+4: getCompatibleAlphabetData().slice(12, 16), // M-P
+5: getCompatibleAlphabetData().slice(16, 20), // Q-T
+6: getCompatibleAlphabetData().slice(20, 26)  // U-Z
   }
 
   // State for randomized letters in line-drawing mode
@@ -71,6 +212,7 @@ const [usedLineColors, setUsedLineColors] = useState(new Set())
 const [randomizedPictures, setRandomizedPictures] = useState([])
 // State to track letters used in the past 5 levels
   const [usedLettersHistory, setUsedLettersHistory] = useState([])
+const [imagesPerLetter, setImagesPerLetter] = useState(3) // Default to 3 images per letter
 
   // Utility functions for randomization
   const shuffleArray = (array) => {
@@ -87,14 +229,14 @@ const selectRandomLetters = (count) => {
     const recentlyUsedLetters = usedLettersHistory.flat().map(item => item.letter)
     
     // Filter out recently used letters from available alphabet
-    const availableLetters = alphabetData.filter(item => 
+const availableLetters = getCompatibleAlphabetData().filter(item =>
       !recentlyUsedLetters.includes(item.letter)
     )
     
     // If we don't have enough unused letters, fall back to full alphabet
-    const lettersToUse = availableLetters.length >= count 
-      ? availableLetters 
-      : alphabetData
+const lettersToUse = availableLetters.length >= count
+? availableLetters
+: getCompatibleAlphabetData()
     
     // Shuffle and select the requested count
     const shuffled = shuffleArray(lettersToUse)
@@ -102,6 +244,27 @@ const selectRandomLetters = (count) => {
   }
 const shufflePictures = (letters) => {
     return shuffleArray([...letters])
+  }
+// Generate pictures for letters based on imagesPerLetter setting
+  const generatePicturesForLetters = (letters) => {
+    const pictures = []
+    letters.forEach(letterItem => {
+      const letterData = alphabetData.find(item => item.letter === letterItem.letter)
+      if (letterData) {
+        // Get the specified number of word options for this letter
+        const selectedWords = shuffleArray(letterData.words).slice(0, imagesPerLetter)
+        selectedWords.forEach((wordItem, index) => {
+          pictures.push({
+            letter: letterItem.letter,
+            word: wordItem.word,
+            emoji: wordItem.emoji,
+            sound: letterData.sound,
+            index: index // Add index to make each picture unique
+          })
+        })
+      }
+    })
+    return shuffleArray(pictures)
   }
 // Color management for lines
   const getNextAvailableColor = () => {
@@ -125,7 +288,7 @@ const shufflePictures = (letters) => {
 
 const generateNewSet = () => {
     const newLetters = selectRandomLetters(letterCount)
-    const newPictures = shufflePictures(newLetters)
+const newPictures = generatePicturesForLetters(newLetters)
     setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
     setRandomSeed(prev => prev + 1)
@@ -133,19 +296,26 @@ const generateNewSet = () => {
 const handleLetterCountChange = (newCount) => {
     setLetterCount(newCount)
     const newLetters = selectRandomLetters(newCount)
-    const newPictures = shufflePictures(newLetters)
+const newPictures = generatePicturesForLetters(newLetters)
     setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
+  }
+const handleImagesPerLetterChange = (newCount) => {
+    setImagesPerLetter(newCount)
+    if (randomizedLetters.length > 0) {
+      const newPictures = generatePicturesForLetters(randomizedLetters)
+      setRandomizedPictures(newPictures)
+    }
   }
   // Generate initial randomized letters
 useEffect(() => {
     if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
       const newLetters = selectRandomLetters(letterCount)
       const newPictures = shufflePictures(newLetters)
-      setRandomizedLetters(newLetters)
+const newPictures = generatePicturesForLetters(newLetters)
       setRandomizedPictures(newPictures)
     }
-}, [currentActivity, letterCount])
+}, [currentActivity, letterCount, imagesPerLetter])
 
   // Register connection points for all interactive elements
   useEffect(() => {
@@ -169,10 +339,10 @@ useEffect(() => {
         
         // Register picture connection points
         randomizedPictures.forEach((item) => {
-          const pictureElement = document.querySelector(`[data-picture="${item.letter}"]`)
+const pictureElement = document.querySelector(`[data-picture="${item.letter}-${item.index}"]`)
           if (pictureElement) {
             const center = getElementCenter(pictureElement)
-            newConnectionPoints[`picture${item.letter}`] = { 
+newConnectionPoints[`picture${item.letter}-${item.index}`] = {
               x: center.x, 
               y: center.y, 
               type: 'picture', 
@@ -211,10 +381,10 @@ useEffect(() => {
         
         // Register picture connection points
         randomizedPictures.forEach((item) => {
-          const pictureElement = document.querySelector(`[data-picture="${item.letter}"]`)
+const pictureElement = document.querySelector(`[data-picture="${item.letter}-${item.index}"]`)
           if (pictureElement) {
             const center = getElementCenter(pictureElement)
-            newConnectionPoints[`picture${item.letter}`] = { 
+newConnectionPoints[`picture${item.letter}-${item.index}`] = {
               x: center.x, 
               y: center.y, 
               type: 'picture', 
@@ -345,7 +515,7 @@ setUsedLineColors(new Set()) // Reset used colors for new activity
       // Generate new randomized letters when switching to line-drawing mode
       if (newActivity === 'line-drawing') {
         const newLetters = selectRandomLetters(letterCount)
-        const newPictures = shufflePictures(newLetters)
+const newPictures = generatePicturesForLetters(newLetters)
         setRandomizedLetters(newLetters)
         setRandomizedPictures(newPictures)
       }
@@ -371,7 +541,7 @@ setUsedLineColors(new Set()) // Reset used colors
     // Reset randomized pictures for line-drawing mode
     if (currentActivity === 'line-drawing') {
       const newPictures = shufflePictures(randomizedLetters)
-      setRandomizedPictures(newPictures)
+const newPictures = generatePicturesForLetters(randomizedLetters)
     }
   }
 
@@ -394,7 +564,7 @@ setUsedLineColors(new Set()) // Reset used colors
 // Reset letter history for fresh start
     setUsedLettersHistory([])
     const newLetters = selectRandomLetters(letterCount)
-    const newPictures = shufflePictures(newLetters)
+const newPictures = generatePicturesForLetters(newLetters)
     setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
     toast.info('🔄 Game reset! Let\'s start fresh!')
@@ -677,6 +847,27 @@ setTimeout(() => {
                       className={`w-8 h-8 rounded-full text-sm font-bold transition-all duration-300 ${
                         letterCount === count
                           ? 'bg-accent text-surface-700 shadow-letter'
+                          : 'bg-surface-200 text-surface-600 hover:bg-surface-300'
+                      }`}
+                    >
+                      {count}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+<div className="flex items-center gap-3">
+                <ApperIcon name="Image" className="w-5 h-5 text-surface-600" />
+                <span className="text-sm font-medium text-surface-700">Images per Letter:</span>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4].map((count) => (
+                    <motion.button
+                      key={count}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleImagesPerLetterChange(count)}
+                      className={`w-8 h-8 rounded-full text-sm font-bold transition-all duration-300 ${
+                        imagesPerLetter === count
+                          ? 'bg-secondary text-white shadow-letter'
                           : 'bg-surface-200 text-surface-600 hover:bg-surface-300'
                       }`}
                     >
@@ -1306,8 +1497,8 @@ key={`letter-${item.letter}`}
 <div className="column-content">
 {randomizedPictures.map((item, index) => (
                     <motion.div
-key={`picture-${item.letter}`}
-                      data-picture={item.letter}
+key={`picture-${item.letter}-${item.index}`}
+data-picture={`${item.letter}-${item.index}`}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: index * 0.1 + 0.2 }}
