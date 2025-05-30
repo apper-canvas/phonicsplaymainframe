@@ -886,67 +886,132 @@ setTimeout(() => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-6 pt-6 border-t border-surface-200"
+            className="activity-card mt-6"
           >
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <div className="flex items-center gap-3">
-                <ApperIcon name="Settings" className="w-5 h-5 text-surface-600" />
-                <span className="text-sm font-medium text-surface-700">Letter Count:</span>
-                <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-accent rounded-bubble flex items-center justify-center">
+                <ApperIcon name="Settings" className="w-4 h-4 sm:w-5 sm:h-5 text-surface-700" />
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
+                Game Configuration
+              </h3>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Letter Count Configuration */}
+              <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-6 border border-accent/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
+                    <ApperIcon name="Hash" className="w-4 h-4 text-accent" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-surface-800 font-heading">Letter Count</h4>
+                    <p className="text-sm text-surface-600">Choose how many letters to practice</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-center gap-3 mb-4">
                   {[4, 5, 6, 7, 8].map((count) => (
                     <motion.button
                       key={count}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleLetterCountChange(count)}
-                      className={`w-8 h-8 rounded-full text-sm font-bold transition-all duration-300 ${
+                      className={`w-12 h-12 rounded-full text-lg font-bold transition-all duration-300 ${
                         letterCount === count
-                          ? 'bg-accent text-surface-700 shadow-letter'
-                          : 'bg-surface-200 text-surface-600 hover:bg-surface-300'
+                          ? 'bg-accent text-surface-700 shadow-playful ring-2 ring-accent/50'
+                          : 'bg-surface-200 text-surface-600 hover:bg-surface-300 hover:shadow-soft'
                       }`}
                     >
                       {count}
                     </motion.button>
                   ))}
                 </div>
+                
+                <div className="text-center">
+                  <div className="inline-flex items-center gap-2 px-3 py-2 bg-accent/20 rounded-bubble">
+                    <span className="text-sm font-medium text-surface-700">
+                      Currently: <strong>{letterCount} letters</strong>
+                    </span>
+                  </div>
+                  <p className="text-xs text-surface-500 mt-2">
+                    More letters = longer game sessions
+                  </p>
+                </div>
               </div>
-<div className="flex items-center gap-3">
-                <ApperIcon name="Image" className="w-5 h-5 text-surface-600" />
-                <span className="text-sm font-medium text-surface-700">Images per Letter:</span>
-                <div className="flex items-center gap-2">
+
+              {/* Images Per Letter Configuration */}
+              <div className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl p-6 border border-secondary/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center">
+                    <ApperIcon name="Image" className="w-4 h-4 text-secondary" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-surface-800 font-heading">Images per Letter</h4>
+                    <p className="text-sm text-surface-600">Set how many pictures to show for each letter</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-center gap-3 mb-4">
                   {[1, 2, 3, 4].map((count) => (
                     <motion.button
                       key={count}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleImagesPerLetterChange(count)}
-                      className={`w-8 h-8 rounded-full text-sm font-bold transition-all duration-300 ${
+                      className={`w-12 h-12 rounded-full text-lg font-bold transition-all duration-300 ${
                         imagesPerLetter === count
-                          ? 'bg-secondary text-white shadow-letter'
-                          : 'bg-surface-200 text-surface-600 hover:bg-surface-300'
+                          ? 'bg-secondary text-white shadow-playful ring-2 ring-secondary/50'
+                          : 'bg-surface-200 text-surface-600 hover:bg-surface-300 hover:shadow-soft'
                       }`}
                     >
                       {count}
                     </motion.button>
                   ))}
                 </div>
+                
+                <div className="text-center">
+                  <div className="inline-flex items-center gap-2 px-3 py-2 bg-secondary/20 rounded-bubble">
+                    <span className="text-sm font-medium text-surface-700">
+                      Currently: <strong>{imagesPerLetter} {imagesPerLetter === 1 ? 'image' : 'images'}</strong> per letter
+                    </span>
+                  </div>
+                  <p className="text-xs text-surface-500 mt-2">
+                    More images = more variety and practice
+                  </p>
+                </div>
               </div>
-              
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={generateNewSet}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-bubble shadow-soft hover:shadow-playful transition-all duration-300"
-              >
-                <ApperIcon name="Shuffle" className="w-4 h-4" />
-                <span className="font-medium text-sm">New Letters</span>
-              </motion.button>
             </div>
-            
-            <div className="mt-3 text-center">
-              <span className="text-xs text-surface-500">
-                Current letters: {randomizedLetters.map(l => l.letter).join(', ')}
-              </span>
+
+            {/* Action Section */}
+            <div className="mt-6 pt-6 border-t border-surface-200">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-center sm:text-left">
+                  <div className="flex items-center gap-2 text-surface-700 mb-1">
+                    <ApperIcon name="BookOpen" className="w-4 h-4" />
+                    <span className="font-medium">Current Selection</span>
+                  </div>
+                  <div className="text-sm text-surface-600">
+                    <span className="font-medium">{letterCount} letters:</span> {randomizedLetters.map(l => l.letter).join(', ')}
+                  </div>
+                  <div className="text-xs text-surface-500 mt-1">
+                    {letterCount * imagesPerLetter} total pictures to match
+                  </div>
+                </div>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={generateNewSet}
+                  className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-bubble shadow-soft hover:shadow-playful transition-all duration-300"
+                >
+                  <ApperIcon name="Shuffle" className="w-5 h-5" />
+                  <div className="text-left">
+                    <div className="font-bold text-sm">Generate New Set</div>
+                    <div className="text-xs opacity-90">Get different letters</div>
+                  </div>
+                </motion.button>
+              </div>
             </div>
           </motion.div>
         )}
