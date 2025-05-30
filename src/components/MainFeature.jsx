@@ -400,48 +400,6 @@ newConnectionPoints[`picture${item.letter}-${item.index}`] = {
       return () => clearTimeout(timer)
     }
   }, [currentActivity, randomizedLetters, randomizedPictures])
-  // Register connection points for all interactive elements
-  useEffect(() => {
-    if (currentActivity === 'line-drawing' && drawingSvgRef.current) {
-      const registerConnectionPoints = () => {
-        const newConnectionPoints = {}
-        
-        // Register letter connection points
-        getCurrentLetters().forEach((item) => {
-          const letterElement = document.querySelector(`[data-letter="${item.letter}"]`)
-          if (letterElement) {
-            const center = getElementCenter(letterElement)
-            newConnectionPoints[`letter${item.letter}`] = { 
-              x: center.x, 
-              y: center.y, 
-              type: 'letter', 
-              item 
-            }
-          }
-        })
-        
-        // Register picture connection points
-        randomizedPictures.forEach((item) => {
-const pictureElement = document.querySelector(`[data-picture="${item.letter}-${item.index}"]`)
-          if (pictureElement) {
-            const center = getElementCenter(pictureElement)
-newConnectionPoints[`picture${item.letter}-${item.index}`] = {
-              x: center.x, 
-              y: center.y, 
-              type: 'picture', 
-              item 
-            }
-          }
-        })
-        
-        setConnectionPoints(newConnectionPoints)
-      }
-      
-      // Delay registration to ensure DOM elements are rendered
-      const timer = setTimeout(registerConnectionPoints, 100)
-      return () => clearTimeout(timer)
-    }
-  }, [currentActivity, randomizedLetters, randomizedPictures])
 
   // Audio simulation (in real app, this would play actual audio files)
 const playSound = (letter, type = 'letter') => {
