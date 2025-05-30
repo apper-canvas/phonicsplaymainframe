@@ -246,13 +246,28 @@ const shufflePictures = (letters) => {
     return shuffleArray([...letters])
   }
 // Generate pictures for letters based on imagesPerLetter setting
+// Generate pictures for letters based on imagesPerLetter setting
   const generatePicturesForLetters = (letters) => {
     const pictures = []
     letters.forEach(letterItem => {
       const letterData = alphabetData.find(item => item.letter === letterItem.letter)
       if (letterData) {
-        // Get the specified number of word options for this letter
-        const selectedWords = shuffleArray(letterData.words).slice(0, imagesPerLetter)
+        // Ensure we always get exactly imagesPerLetter number of pictures
+        const availableWords = [...letterData.words]
+        const selectedWords = []
+        
+        // Fill up to imagesPerLetter count
+        for (let i = 0; i < imagesPerLetter; i++) {
+          // If we have available words, use them
+          if (i < availableWords.length) {
+            selectedWords.push(availableWords[i])
+          } else {
+            // If we need more words than available, repeat from the beginning
+            selectedWords.push(availableWords[i % availableWords.length])
+          }
+        }
+        
+        // Create picture objects for this letter
         selectedWords.forEach((wordItem, index) => {
           pictures.push({
             letter: letterItem.letter,
@@ -264,9 +279,9 @@ const shufflePictures = (letters) => {
         })
       }
     })
-return pictures // Don't shuffle to maintain letter grouping
-  }
+    return pictures // Don't shuffle to maintain letter grouping
 
+}
 // Group pictures by letter for display
 const groupPicturesByLetter = (pictures) => {
     const groups = {}
