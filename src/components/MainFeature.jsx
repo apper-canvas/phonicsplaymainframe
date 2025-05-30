@@ -1594,7 +1594,7 @@ key={`letter-${item.letter}`}
                   <h3 className="text-xl font-bold text-center text-secondary mb-6">Pictures</h3>
                 </div>
 <div className="column-content">
-<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+<div className={`grid grid-cols-dynamic-${imagesPerLetter} gap-3 md:gap-4`}>
                     {randomizedPictures.map((item, index) => (
                       <motion.div
                         key={`picture-${item.letter}-${item.index}`}
