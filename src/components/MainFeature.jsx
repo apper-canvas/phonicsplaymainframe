@@ -1575,9 +1575,6 @@ key={`letter-${item.letter}`}
                       <div className="text-3xl sm:text-4xl font-bold text-primary mb-2 font-heading pointer-events-none">
                         {item.letter}
                       </div>
-                      <div className="text-xs sm:text-sm text-surface-600 pointer-events-none">
-                        {item.sound}
-                      </div>
                       
                       {/* Connection Point */}
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
