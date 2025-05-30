@@ -100,8 +100,8 @@ const generateNewSet = () => {
     setRandomizedPictures(newPictures)
     setRandomSeed(prev => prev + 1)
     toast.info(`🔀 Generated new set with ${newLetters.length} letters!`)
-  }
 setConnectionPoints({}) // Clear connection points when generating new set
+  }
 const handleLetterCountChange = (newCount) => {
     setLetterCount(newCount)
     const newLetters = selectRandomLetters(newCount)
@@ -109,8 +109,8 @@ const handleLetterCountChange = (newCount) => {
     setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
     toast.info(`📝 Set to ${newCount} letters!`)
-  }
 setConnectionPoints({}) // Clear connection points when changing letter count
+  }
   // Generate initial randomized letters
 useEffect(() => {
     if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
@@ -119,8 +119,8 @@ useEffect(() => {
       setRandomizedLetters(newLetters)
       setRandomizedPictures(newPictures)
     }
-  }, [currentActivity, letterCount])
 setConnectionPoints({}) // Clear connection points on re-initialization
+  }, [currentActivity, letterCount])
 
   // Audio simulation (in real app, this would play actual audio files)
 const playSound = (letter, type = 'letter') => {
