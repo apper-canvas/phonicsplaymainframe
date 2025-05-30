@@ -338,8 +338,6 @@ const handleLetterCountChange = (newCount) => {
     const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
     setRandomizedLetters(shuffledLetters)
     setRandomizedPictures(finalPictures)
-// Notify user that lines have been cleared
-    toast.info('🔄 Connected lines cleared for new letter count!')
   }
 const handleImagesPerLetterChange = (newCount) => {
 setImagesPerLetter(newCount)
@@ -355,8 +353,6 @@ setImagesPerLetter(newCount)
       const finalPictures = shuffledPictureGroups.flatMap(group => group.pictures)
       setRandomizedPictures(finalPictures)
     }
-// Notify user that lines have been cleared
-    toast.info('🔄 Connected lines cleared for new image count!')
   }
   // Generate initial randomized letters
 useEffect(() => {
