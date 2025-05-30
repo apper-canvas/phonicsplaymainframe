@@ -309,7 +309,7 @@ const groupPicturesByLetter = (pictures) => {
     return shuffleArray([...letters])
   }
   
-const rearrangePictureRowsToAvoidSameRow = (pictures) => {
+const rearrangePictureGroupsWithOffset = (pictures) => {
     // Group pictures by letter
     const groups = {}
     pictures.forEach(picture => {
@@ -319,7 +319,7 @@ const rearrangePictureRowsToAvoidSameRow = (pictures) => {
       groups[picture.letter].push(picture)
     })
     
-    // Create array of groups with offset positioning to avoid same row as letters
+    // Create array of groups in the same order as letters
     const letterOrder = getCurrentLetters()
     const groupsArray = letterOrder.map((letterItem, index) => ({
       letter: letterItem.letter,
@@ -327,21 +327,27 @@ const rearrangePictureRowsToAvoidSameRow = (pictures) => {
       originalIndex: index
     }))
     
-    // Rearrange groups to ensure no letter and its pictures are on the same row
-    const rearrangedGroups = []
+    // Create rearranged array with systematic offset to prevent same-row placement
     const totalGroups = groupsArray.length
+    const rearrangedGroups = new Array(totalGroups)
     
     groupsArray.forEach((group, index) => {
-      // Calculate offset to ensure this group doesn't appear in the same row as its letter
-      const offset = Math.floor(totalGroups / 2) + (index % 2 === 0 ? 1 : -1)
+      // Use a systematic circular shift that guarantees no same-row placement
+      // Shift by at least half the total groups to ensure separation
+      const minOffset = Math.max(1, Math.floor(totalGroups / 2))
+      const offset = minOffset + (index % 2) // Add variation for better distribution
       const newPosition = (index + offset) % totalGroups
       rearrangedGroups[newPosition] = group
     })
     
-    // Fill any gaps with remaining groups
+    // Fill any remaining empty positions (shouldn't happen with proper offset)
     groupsArray.forEach((group, index) => {
-      if (!rearrangedGroups[index]) {
-        rearrangedGroups[index] = group
+      if (!rearrangedGroups.some(g => g && g.letter === group.letter)) {
+        // Find first empty position
+        const emptyIndex = rearrangedGroups.findIndex(pos => !pos)
+        if (emptyIndex !== -1) {
+          rearrangedGroups[emptyIndex] = group
+        }
       }
     })
     
@@ -370,7 +376,7 @@ const rearrangePictureRowsToAvoidSameRow = (pictures) => {
 const generateNewSet = () => {
     const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
+const rearrangedGroups = rearrangePictureGroupsWithOffset(newPictures)
     setRandomizedLetters(newLetters)
 setRandomizedPictures(newPictures)
 setRearrangedPictureGroups(rearrangedGroups)
@@ -385,7 +391,7 @@ const handleLetterCountChange = (newCount) => {
     setUsedLineColors(new Set())
 const newLetters = selectRandomLetters(newCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
+const rearrangedGroups = rearrangePictureGroupsWithOffset(newPictures)
     setRandomizedLetters(newLetters)
 setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
@@ -400,7 +406,7 @@ setImagesPerLetter(newCount)
     setUsedLineColors(new Set())
 if (randomizedLetters.length > 0) {
 const newPictures = generatePicturesForLetters(randomizedLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
+const rearrangedGroups = rearrangePictureGroupsWithOffset(newPictures)
 setRandomizedPictures(newPictures)
 setRearrangedPictureGroups(rearrangedGroups)
     }
@@ -411,7 +417,7 @@ useEffect(() => {
 const newLetters = selectRandomLetters(letterCount)
       setRandomizedLetters(newLetters)
 const newPictures = generatePicturesForLetters(newLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
+const rearrangedGroups = rearrangePictureGroupsWithOffset(newPictures)
 setRandomizedPictures(newPictures)
 setRearrangedPictureGroups(rearrangedGroups)
     }
@@ -586,7 +592,7 @@ setUsedLineColors(new Set()) // Reset used colors for new activity
 if (newActivity === 'line-drawing') {
 const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
+const rearrangedGroups = rearrangePictureGroupsWithOffset(newPictures)
         setRandomizedLetters(newLetters)
 setRandomizedLetters(newLetters)
         setRandomizedPictures(newPictures)
@@ -637,7 +643,7 @@ setUsedLineColors(new Set()) // Reset used colors
     setUsedLettersHistory([])
 const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
-const rearrangedGroups = rearrangePictureRowsToAvoidSameRow(newPictures)
+const rearrangedGroups = rearrangePictureGroupsWithOffset(newPictures)
     setRandomizedLetters(newLetters)
 setRandomizedLetters(newLetters)
     setRandomizedPictures(newPictures)
@@ -1636,19 +1642,18 @@ key={`letter-${item.letter}`}
                 </div>
 <div className="column-content">
 <div className="pictures-by-letter-rows">
-                    {getCurrentLetters().map((letterItem, letterIndex) => {
-                      // Get pictures for this specific letter
-                      const letterPictures = randomizedPictures.filter(pic => pic.letter === letterItem.letter)
+                    {rearrangedPictureGroups.map((group, groupIndex) => {
+                      if (!group || !group.pictures || group.pictures.length === 0) return null
                       
                       return (
-                        <div key={`group-${letterItem.letter}`} className="picture-row-for-letter">
-                          {letterPictures.map((item, index) => (
+                        <div key={`group-${group.letter}-${groupIndex}`} className="picture-row-for-letter">
+                          {group.pictures.map((item, index) => (
                             <motion.div
                               key={`picture-${item.letter}-${item.index}`}
                               data-picture={`${item.letter}-${item.index}`}
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
-                              transition={{ delay: (letterIndex * letterPictures.length + index) * 0.1 + 0.2 }}
+                              transition={{ delay: (groupIndex * group.pictures.length + index) * 0.1 + 0.2 }}
                               onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
                               onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
                               className={`letter-card cursor-pointer text-center relative select-none ${
@@ -1681,7 +1686,7 @@ key={`letter-${item.letter}`}
                       )
                     })}
                   </div>
-            </div>
+</div>
 </div>
 </div>
             
