@@ -418,8 +418,18 @@ setShuffledPictureGroups(shuffledGroups)
         })
         
 // Register picture connection points
-        shuffledPictureGroups.forEach((group) => {
-          group.pictures.forEach((item) => {
+        if (randomizedPictures && randomizedPictures.length > 0) {
+          // Group pictures by letter for display
+          const pictureGroups = {}
+          randomizedPictures.forEach(picture => {
+            if (!pictureGroups[picture.letter]) {
+              pictureGroups[picture.letter] = []
+            }
+            pictureGroups[picture.letter].push(picture)
+          })
+          
+          // Register connection points for all pictures
+          Object.values(pictureGroups).flat().forEach((item) => {
             const pictureElement = document.querySelector(`[data-picture="${item.letter}-${item.index}"]`)
             if (pictureElement) {
               const center = getElementCenter(pictureElement)
@@ -431,7 +441,7 @@ setShuffledPictureGroups(shuffledGroups)
               }
             }
           })
-        })
+        }
         
         setConnectionPoints(newConnectionPoints)
       }
@@ -440,7 +450,7 @@ setShuffledPictureGroups(shuffledGroups)
       const timer = setTimeout(registerConnectionPoints, 100)
       return () => clearTimeout(timer)
     }
-}, [currentActivity, randomizedLetters, shuffledPictureGroups])
+}, [currentActivity, randomizedLetters, randomizedPictures])
 
   // Audio simulation (in real app, this would play actual audio files)
 const playSound = (letter, type = 'letter') => {
@@ -1540,49 +1550,54 @@ key={`letter-${item.letter}`}
                   <h3 className="text-xl font-bold text-center text-secondary mb-6">Pictures</h3>
                 </div>
 <div className="column-content">
-                  <div className="pictures-by-letter-rows">
-                    {shuffledPictureGroups.map((group, groupIndex) => (
-                      <div key={`group-${group.letter}`} className="picture-row-for-letter">
-                        {group.pictures.map((item, index) => (
-                          <motion.div
-                            key={`picture-${item.letter}-${item.index}`}
-                            data-picture={`${item.letter}-${item.index}`}
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: (groupIndex * group.pictures.length + index) * 0.1 + 0.2 }}
-                            onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
-                            onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
-                            className={`letter-card cursor-pointer text-center relative select-none ${
-                              completedLetters.has(item.letter)
-                                ? 'bg-green-100 border-green-300 opacity-75'
-                                : 'hover:shadow-playful hover:scale-105'
-                            }`}
-                          >
-                            {completedLetters.has(item.letter) && (
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
-                              >
-                                <ApperIcon name="Check" className="w-4 h-4 text-white" />
-                              </motion.div>
-                            )}
-                            
-                            <div className="text-4xl sm:text-5xl mb-2 pointer-events-none">
-                              {item.emoji}
-                            </div>
-                            
-                            {/* Connection Point */}
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                              <div className="w-3 h-3 bg-secondary rounded-full opacity-20"></div>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    ))}
+<div className="pictures-by-letter-rows">
+                    {getCurrentLetters().map((letterItem, letterIndex) => {
+                      // Get pictures for this specific letter
+                      const letterPictures = randomizedPictures.filter(pic => pic.letter === letterItem.letter)
+                      
+                      return (
+                        <div key={`group-${letterItem.letter}`} className="picture-row-for-letter">
+                          {letterPictures.map((item, index) => (
+                            <motion.div
+                              key={`picture-${item.letter}-${item.index}`}
+                              data-picture={`${item.letter}-${item.index}`}
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ delay: (letterIndex * letterPictures.length + index) * 0.1 + 0.2 }}
+                              onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
+                              onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
+                              className={`letter-card cursor-pointer text-center relative select-none ${
+                                completedLetters.has(item.letter)
+                                  ? 'bg-green-100 border-green-300 opacity-75'
+                                  : 'hover:shadow-playful hover:scale-105'
+                              }`}
+                            >
+                              {completedLetters.has(item.letter) && (
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                                >
+                                  <ApperIcon name="Check" className="w-4 h-4 text-white" />
+                                </motion.div>
+                              )}
+                              
+                              <div className="text-4xl sm:text-5xl mb-2 pointer-events-none">
+                                {item.emoji}
+                              </div>
+                              
+                              {/* Connection Point */}
+                              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div className="w-3 h-3 bg-secondary rounded-full opacity-20"></div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      )
+                    })}
                   </div>
-                </div>
             </div>
+</div>
 </div>
             
             {isDrawing && currentLine && (
