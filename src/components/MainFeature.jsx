@@ -397,10 +397,6 @@ const shufflePicturesByDifferentLetters = (pictures) => {
     return availableColors[0]
   }
 
-  const getCurrentLetters = () => {
-    if (currentActivity === 'line-drawing') {
-      return randomizedLetters
-    }
 const getCurrentLetters = () => {
     if (currentActivity === 'line-drawing') {
       return randomizedLetters
@@ -428,36 +424,49 @@ const getCurrentLetters = () => {
     }
     return numbers
   }
-const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
+
+  const generateNewSet = () => {
+    // Clear all connected lines and game state when generating new set
+    setDrawingLines([])
+    setCompletedLetters(new Set())
+    setMatchedPairs(new Set())
+    setUsedLineColors(new Set())
+    
+    const newLetters = selectRandomLetters(letterCount)
+    const newPictures = generatePicturesForLetters(newLetters)
+    const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
     setRandomizedLetters(newLetters)
-setRandomizedPictures(shuffledPictures)
+    setRandomizedPictures(shuffledPictures)
     setRandomSeed(prev => prev + 1)
   }
-const handleLetterCountChange = (newCount) => {
+
+  const handleLetterCountChange = (newCount) => {
     setLetterCount(newCount)
-// Clear all connected lines and game state when settings change
+    // Clear all connected lines and game state when settings change
     setDrawingLines([])
     setCompletedLetters(new Set())
     setMatchedPairs(new Set())
     setUsedLineColors(new Set())
-const newLetters = selectRandomLetters(newCount)
-const newPictures = generatePicturesForLetters(newLetters)
-const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
+    
+    const newLetters = selectRandomLetters(newCount)
+    const newPictures = generatePicturesForLetters(newLetters)
+    const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
     setRandomizedLetters(newLetters)
-setRandomizedLetters(newLetters)
-setRandomizedPictures(shuffledPictures)
+    setRandomizedPictures(shuffledPictures)
   }
-const handleImagesPerLetterChange = (newCount) => {
-setImagesPerLetter(newCount)
-// Clear all connected lines and game state when settings change
+
+  const handleImagesPerLetterChange = (newCount) => {
+    setImagesPerLetter(newCount)
+    // Clear all connected lines and game state when settings change
     setDrawingLines([])
     setCompletedLetters(new Set())
     setMatchedPairs(new Set())
     setUsedLineColors(new Set())
-if (randomizedLetters.length > 0) {
-const newPictures = generatePicturesForLetters(randomizedLetters)
-const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
-setRandomizedPictures(shuffledPictures)
+    
+    if (randomizedLetters.length > 0) {
+      const newPictures = generatePicturesForLetters(randomizedLetters)
+      const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
+      setRandomizedPictures(shuffledPictures)
     }
   }
   // Generate initial randomized letters
@@ -634,35 +643,37 @@ setScore(prev => prev + 10)
       playSound(selectedPicture?.letter, 'incorrect')
       setSelectedPicture(null)
 setSelectedPicture(null)
-      setDraggedLetter(null)
-    }
+    setDraggedLetter(null)
   }
-    if (selectedNumber && selectedNumber.number === targetNumber) {
-      // Correct match
-      setScore(prev => prev + 10)
-      setCompletedLetters(prev => new Set([...prev, targetNumber.toString()]))
-      setMatchedPairs(prev => new Set([...prev, targetNumber.toString()]))
-      playSound(targetNumber, 'correct')
-      setSelectedNumber(null)
-      
-      // Check if level is complete
-      if (completedLetters.size + 1 >= getCurrentNumbers().length) {
-        setGameState('celebrating')
-        setTimeout(() => {
-          setLevel(prev => prev + 1)
-          setCompletedLetters(new Set())
-          setMatchedPairs(new Set())
-          setGameState('playing')
-          setCurrentNumbers(generateNumberSet())
-          toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
-        }, 2000)
-      }
-    } else {
-      // Incorrect match
-      playSound(selectedNumber?.number, 'incorrect')
-      setSelectedNumber(null)
+}
+
+const handleNumberMatch = (targetNumber) => {
+  if (selectedNumber && selectedNumber.number === targetNumber) {
+    // Correct match
+    setScore(prev => prev + 10)
+    setCompletedLetters(prev => new Set([...prev, targetNumber.toString()]))
+    setMatchedPairs(prev => new Set([...prev, targetNumber.toString()]))
+    playSound(targetNumber, 'correct')
+    setSelectedNumber(null)
+    
+    // Check if level is complete
+    if (completedLetters.size + 1 >= getCurrentNumbers().length) {
+      setGameState('celebrating')
+      setTimeout(() => {
+        setLevel(prev => prev + 1)
+        setCompletedLetters(new Set())
+        setMatchedPairs(new Set())
+        setGameState('playing')
+        setCurrentNumbers(generateNumberSet())
+        toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
+      }, 2000)
     }
+  } else {
+    // Incorrect match
+    playSound(selectedNumber?.number, 'incorrect')
+    setSelectedNumber(null)
   }
+}
 
 const switchActivity = (newActivity) => {
     if (newActivity !== currentActivity) {
@@ -682,25 +693,24 @@ const newPictures = generatePicturesForLetters(newLetters)
 const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
         setRandomizedLetters(newLetters)
 setRandomizedLetters(newLetters)
-setRandomizedPictures(shuffledPictures)
-      }
-      
-      const activityNames = {
-        'letter-match': 'Letter to Word',
-'letter-match': 'Letter to Word',
-        'picture-match': 'Picture to Letter',
-        'line-drawing': 'Draw Lines',
-        'number-match': 'Count & Match'
-      }
-      
-      // Generate initial number set for number matching
-      if (newActivity === 'number-match') {
-        setCurrentNumbers(generateNumberSet())
-      }
-      
-      toast.info(`Switched to ${activityNames[newActivity]} matching!`)
+      setRandomizedPictures(shuffledPictures)
     }
+    
+    const activityNames = {
+      'letter-match': 'Letter to Word',
+      'picture-match': 'Picture to Letter',
+      'line-drawing': 'Draw Lines',
+      'number-match': 'Count & Match'
+    }
+    
+    // Generate initial number set for number matching
+    if (newActivity === 'number-match') {
+      setCurrentNumbers(generateNumberSet())
+    }
+    
+    toast.info(`Switched to ${activityNames[newActivity]} matching!`)
   }
+}
 const resetActivity = () => {
     setSelectedLetter(null)
     setSelectedPicture(null)
@@ -718,35 +728,34 @@ setUsedLineColors(new Set()) // Reset used colors
 
 const resetGame = () => {
 setScore(0)
-    setLevel(1)
-setAttempts(0)
-    setCompletedLetters(new Set())
-    setMatchedPairs(new Set())
-    setSelectedLetter(null)
-    setSelectedNumber(null)
-    setSelectedPicture(null)
-    setDraggedLetter(null)
-    setDrawingLines([])
-    setCurrentLine(null)
-    setIsDrawing(false)
-    setCurrentActivity('letter-match')
-    setGameState('playing')
-    // Generate new randomized letters for line-drawing mode
-setUsedLineColors(new Set()) // Reset used colors
-// Reset letter history for fresh start
-    setUsedLettersHistory([])
-const newLetters = selectRandomLetters(letterCount)
-const newPictures = generatePicturesForLetters(newLetters)
-const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
-    setRandomizedLetters(newLetters)
-setRandomizedLetters(newLetters)
-setRandomizedPictures(shuffledPictures)
-    toast.info('🔄 Game reset! Let\'s start fresh!')
-  }
+  setLevel(1)
+  setAttempts(0)
+  setCompletedLetters(new Set())
+  setMatchedPairs(new Set())
+  setSelectedLetter(null)
+  setSelectedNumber(null)
+  setSelectedPicture(null)
+  setDraggedLetter(null)
+  setDrawingLines([])
+  setCurrentLine(null)
+  setIsDrawing(false)
+  setCurrentActivity('letter-match')
+  setGameState('playing')
+  setUsedLineColors(new Set()) // Reset used colors
+  // Reset letter history for fresh start
+  setUsedLettersHistory([])
+  
+  const newLetters = selectRandomLetters(letterCount)
+  const newPictures = generatePicturesForLetters(newLetters)
+  const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
+  setRandomizedLetters(newLetters)
+  setRandomizedPictures(shuffledPictures)
+  toast.info('🔄 Game reset! Let\'s start fresh!')
+}
 
-  const toggleHint = () => {
-setShowHint(!showHint)
-  }
+const toggleHint = () => {
+  setShowHint(!showHint)
+}
 
   const getCurrentItems = () => {
     if (currentActivity === 'number-match') {
@@ -875,7 +884,7 @@ setTimeout(() => {
           setDrawingLines([])
           setUsedLineColors(new Set()) // Reset colors for new level
           setGameState('playing')
-// Automatically generate new letters for the next level in line-drawing mode
+          // Automatically generate new letters for the next level in line-drawing mode
           generateNewSet()
         }, 2000)
       }
@@ -1721,7 +1730,7 @@ Level {level} Progress
                   transition={{ delay: index * 0.1 + 0.2 }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => handleItemMatch(item.number)}
+onClick={() => handleNumberMatch(item.number)}
                   className={`letter-card cursor-pointer text-center relative ${
                     !selectedNumber 
                       ? 'opacity-50 cursor-not-allowed' 
