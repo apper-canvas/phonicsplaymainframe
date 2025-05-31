@@ -1571,12 +1571,21 @@ key={`letter-${item.letter}`}
                           animate={{ scale: 1 }}
                           className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
                         >
-                          <ApperIcon name="Check" className="w-4 h-4 text-white" />
+<ApperIcon name="Check" className="w-4 h-4 text-white" />
                         </motion.div>
                       )}
                       
                       <div className="text-3xl sm:text-4xl font-bold text-primary mb-2 font-heading pointer-events-none">
                         {item.letter}
+                      </div>
+                      
+                      {/* Relevant picture names for this letter */}
+                      <div className="text-xs text-surface-600 mb-2 pointer-events-none leading-tight">
+                        {randomizedPictures
+                          .filter(pic => pic.letter === item.letter)
+                          .map(pic => pic.word)
+                          .join(', ')
+                        }
                       </div>
                       
                       {/* Connection Point */}
@@ -1620,11 +1629,8 @@ key={`letter-${item.letter}`}
 </motion.div>
                         )}
                         
-                        <div className="text-4xl sm:text-5xl mb-1 pointer-events-none">
+<div className="text-4xl sm:text-5xl mb-3 pointer-events-none">
                           {item.emoji}
-                        </div>
-                        <div className="text-xs text-surface-500 mb-1 pointer-events-none">
-                          {item.word}
                         </div>
                         
                         {/* Connection Point */}
