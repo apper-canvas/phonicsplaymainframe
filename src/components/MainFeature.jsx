@@ -256,11 +256,14 @@ const generatePicturesForLetters = (letters) => {
       const letterData = alphabetData.find(item => item.letter === letterItem.letter)
       
       if (letterData && letterData.words && letterData.words.length > 0) {
+        // Shuffle the available words to randomize selection
+        const shuffledWords = shuffleArray([...letterData.words])
+        
         // Generate exactly imagesPerLetter pictures for this letter
         for (let i = 0; i < imagesPerLetter; i++) {
-          // Use modulo to cycle through available words if we need more than available
-          const wordIndex = i % letterData.words.length
-          const selectedWord = letterData.words[wordIndex]
+          // Use modulo to cycle through shuffled words if we need more than available
+          const wordIndex = i % shuffledWords.length
+          const selectedWord = shuffledWords[wordIndex]
           
           pictures.push({
             letter: letterItem.letter,
