@@ -795,11 +795,9 @@ setScore(0)
   const newLetters = selectRandomLetters(letterCount)
   const newPictures = generatePicturesForLetters(newLetters)
   const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
-  setRandomizedLetters(newLetters)
+setRandomizedLetters(newLetters)
   setRandomizedPictures(shuffledPictures)
-  toast.info('🔄 Game reset! Let\'s start fresh!')
 }
-
 const toggleHint = () => {
   setShowHint(!showHint)
 }
