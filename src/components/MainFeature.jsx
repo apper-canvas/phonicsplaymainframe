@@ -848,8 +848,14 @@ const toggleHint = () => {
       y: (e.clientY || e.changedTouches?.[0]?.clientY || 0) - svgRect.top
     }
     
-    // Check if line ends near a valid target
-    const targetType = currentLine.startType === 'letter' ? 'picture' : 'letter'
+// Check if line ends near a valid target
+    let targetType
+    if (currentActivity === 'number-match') {
+      targetType = currentLine.startType === 'number' ? 'item' : 'number'
+    } else {
+      targetType = currentLine.startType === 'letter' ? 'picture' : 'letter'
+    }
+    
     let closestTarget = null
     let minDistance = Infinity
     
@@ -862,7 +868,6 @@ const toggleHint = () => {
         }
       }
     })
-    
     if (closestTarget && currentLine.startItem.letter === closestTarget.item.letter) {
       // Correct connection
 const lineColor = getNextAvailableColor()
