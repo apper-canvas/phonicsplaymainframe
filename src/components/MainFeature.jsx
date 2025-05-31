@@ -965,9 +965,11 @@ if (currentActivity === 'number-match' && currentNumbers.length === 0) {
     } else {
       // Incorrect connection
       playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
-    }
-    
-    setCurrentLine(null)
+setCurrentLine(null)
+    setIsDrawing(false)
+  }
+
+setCurrentLine(null)
     setIsDrawing(false)
   }
 
@@ -975,10 +977,6 @@ if (currentActivity === 'number-match' && currentNumbers.length === 0) {
     <div className="w-full max-w-7xl mx-auto">
       {/* Game Header with Stats */}
       <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="activity-card mb-6 sm:mb-8"
-      >
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4 sm:gap-6">
             <div className="text-center">
