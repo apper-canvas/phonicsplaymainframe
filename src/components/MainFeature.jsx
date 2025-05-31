@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { toast } from 'react-toastify'
 import ApperIcon from './ApperIcon'
-
 const MainFeature = () => {
 const [currentActivity, setCurrentActivity] = useState('letter-match') // 'letter-match', 'picture-match', 'line-drawing', or 'number-match'
   const [selectedLetter, setSelectedLetter] = useState(null)
@@ -582,41 +580,25 @@ setRandomizedPictures(shuffledPictures)
     }
   }, [currentActivity, randomizedLetters, randomizedPictures, currentNumbers, shuffledItemGroups])
 
-  // Audio simulation (in real app, this would play actual audio files)
+// Audio simulation (in real app, this would play actual audio files)
 const playSound = (letter, type = 'letter') => {
     // Simulate audio feedback
     if (type === 'correct') {
-      const message = currentActivity === 'picture-match' 
-        ? '🎉 Perfect match! You matched the picture to the letter!'
-        : '🎉 Excellent! You got it right!'
-      toast.success(message, {
-        autoClose: 2000,
-        hideProgressBar: false
-      })
+      // Audio feedback for correct answers
+      console.log('Correct answer audio feedback')
     } else if (type === 'incorrect') {
-      const message = currentActivity === 'picture-match'
-        ? 'Try again! Look at the picture and find its starting letter!'
-        : 'Try again! You can do it!'
-      toast.error(message, {
-        autoClose: 1500,
-        hideProgressBar: false
-      })
+      // Audio feedback for incorrect answers
+      console.log('Incorrect answer audio feedback')
     } else if (type === 'picture') {
-      toast.info(`This picture starts with the letter "${letter}"`, {
-        autoClose: 2000,
-        hideProgressBar: false
-      })
+      // Audio feedback for picture selection
+      console.log(`Picture audio: ${letter}`)
     } else {
 if (type === 'number') {
-        toast.info(`Number ${letter}! Count carefully!`, {
-          autoClose: 2000,
-          hideProgressBar: false
-        })
+        // Audio feedback for number selection
+        console.log(`Number audio: ${letter}`)
       } else {
-        toast.info(`Letter ${letter} says "${getCurrentLetters().find(l => l.letter === letter)?.sound}"`, {
-          autoClose: 2000,
-          hideProgressBar: false
-        })
+        // Audio feedback for letter selection
+        console.log(`Letter audio: ${letter}`)
       }
     }
   }
@@ -651,10 +633,9 @@ setScore(prev => prev + 10)
         setGameState('celebrating')
         setTimeout(() => {
           setLevel(prev => prev + 1)
-          setCompletedLetters(new Set())
+setCompletedLetters(new Set())
           setMatchedPairs(new Set())
           setGameState('playing')
-          toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
         }, 2000)
       }
     } else {
@@ -679,10 +660,9 @@ setScore(prev => prev + 10)
         setGameState('celebrating')
         setTimeout(() => {
           setLevel(prev => prev + 1)
-          setCompletedLetters(new Set())
+setCompletedLetters(new Set())
           setMatchedPairs(new Set())
           setGameState('playing')
-          toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
         }, 2000)
       }
     } else {
@@ -709,10 +689,9 @@ const handleNumberMatch = (targetNumber) => {
       setTimeout(() => {
         setLevel(prev => prev + 1)
         setCompletedLetters(new Set())
-        setMatchedPairs(new Set())
+setMatchedPairs(new Set())
         setGameState('playing')
         setCurrentNumbers(generateNumberSet())
-        toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
       }, 2000)
     }
   } else {
@@ -752,10 +731,8 @@ setRandomizedLetters(newLetters)
     
     // Generate initial number set for number matching
     if (newActivity === 'number-match') {
-      setCurrentNumbers(generateNumberSet())
+setCurrentNumbers(generateNumberSet())
     }
-    
-    toast.info(`Switched to ${activityNames[newActivity]} matching!`)
   }
 }
 const resetActivity = () => {
