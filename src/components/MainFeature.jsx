@@ -1656,7 +1656,7 @@ Level {level} Progress
             transition={{ delay: 0.2 }}
             className="activity-card"
           >
-            <div className="flex items-center gap-3 mb-6">
+<div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-bubble flex items-center justify-center">
                 <ApperIcon name="Hash" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
@@ -1665,11 +1665,13 @@ Level {level} Progress
               </h2>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               {getCurrentNumbers().map((item, index) => (
                 <motion.div
                   key={item.number}
                   initial={{ scale: 0 }}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
@@ -1733,14 +1735,14 @@ Level {level} Progress
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
                 Count and Match
-              </h2>
-            </div>
+</div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               {shuffledItemGroups.map((item, index) => (
                 <motion.div
                   key={`items-${item.number}-${index}`}
                   initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: index * 0.1 + 0.2 }}
                   whileHover={{ scale: 1.05 }}
