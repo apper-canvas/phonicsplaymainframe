@@ -10,9 +10,14 @@ const [currentActivity, setCurrentActivity] = useState('letter-match') // 'lette
   const [level, setLevel] = useState(1)
   const [attempts, setAttempts] = useState(0)
   const [completedLetters, setCompletedLetters] = useState(new Set())
-  const [gameState, setGameState] = useState('playing') // playing, celebrating, completed
+const [gameState, setGameState] = useState('playing') // playing, celebrating, completed
   const [showHint, setShowHint] = useState(false)
   const audioRef = useRef(null)
+  
+  // Scroll lock state management for mobile devices
+  const [isScrollLocked, setIsScrollLocked] = useState(false)
+  const [isMobileDevice, setIsMobileDevice] = useState(false)
+  
 const [draggedLetter, setDraggedLetter] = useState(null)
   const [selectedPicture, setSelectedPicture] = useState(null)
 const [drawingLines, setDrawingLines] = useState([])
@@ -284,6 +289,16 @@ const [currentNumbers, setCurrentNumbers] = useState([])
 const [shuffledItemGroups, setShuffledItemGroups] = useState([])
 
 const [rearrangedPictureGroups, setRearrangedPictureGroups] = useState([])
+
+  // Mobile device detection utility
+  const detectMobileDevice = () => {
+    return (
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0 ||
+      navigator.msMaxTouchPoints > 0
+    )
+  }
+
   // Utility functions for randomization
   const shuffleArray = (array) => {
     const shuffled = [...array]
@@ -493,6 +508,62 @@ const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
 setRandomizedPictures(shuffledPictures)
     }
 }, [currentActivity, letterCount, imagesPerLetter])
+
+  // Initialize mobile device detection
+  useEffect(() => {
+    setIsMobileDevice(detectMobileDevice())
+  }, [])
+
+  // Scroll lock management for mobile devices
+  useEffect(() => {
+    const shouldLockScroll = isMobileDevice && (
+      isDrawing || 
+      selectedPicture !== null || 
+      selectedLetter !== null || 
+      selectedNumber !== null
+    )
+
+    if (shouldLockScroll && !isScrollLocked) {
+      // Apply scroll lock
+      setIsScrollLocked(true)
+      document.documentElement.classList.add('overflow-hidden-mobile')
+      document.body.classList.add('overflow-hidden-mobile')
+      document.documentElement.style.overflow = 'hidden'
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
+      document.body.style.height = '100%'
+      document.body.style.top = '0'
+      document.body.style.left = '0'
+    } else if (!shouldLockScroll && isScrollLocked) {
+      // Remove scroll lock
+      setIsScrollLocked(false)
+      document.documentElement.classList.remove('overflow-hidden-mobile')
+      document.body.classList.remove('overflow-hidden-mobile')
+      document.documentElement.style.overflow = ''
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+      document.body.style.height = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+    }
+
+    // Cleanup function to ensure scroll lock is removed
+    return () => {
+      if (isScrollLocked) {
+        document.documentElement.classList.remove('overflow-hidden-mobile')
+        document.body.classList.remove('overflow-hidden-mobile')
+        document.documentElement.style.overflow = ''
+        document.body.style.overflow = ''
+        document.body.style.position = ''
+        document.body.style.width = ''
+        document.body.style.height = ''
+        document.body.style.top = ''
+        document.body.style.left = ''
+      }
+    }
+  }, [isMobileDevice, isDrawing, selectedPicture, selectedLetter, selectedNumber, isScrollLocked])
 
 // Register connection points for all interactive elements
   useEffect(() => {
@@ -934,9 +1005,8 @@ const handleDrawingStart = (e, type, item) => {
     setCurrentLine(null)
     setIsDrawing(false)
   }
-
-  return (
-    <div className="w-full max-w-7xl mx-auto">
+return (
+    <div className={`w-full max-w-7xl mx-auto ${isMobileDevice && isScrollLocked ? 'fit-screen' : ''}`}>
       {/* Game Header with Stats */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
@@ -1713,13 +1783,13 @@ Level {level} Progress
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="relative"
+          className={`relative ${isMobileDevice ? 'mobile-matching-container interaction-locked' : ''}`}
           onMouseMove={handleDrawingMove}
           onMouseUp={handleDrawingEnd}
           onTouchMove={handleDrawingMove}
           onTouchEnd={handleDrawingEnd}
         >
-          <div className="activity-card relative overflow-hidden">
+          <div className={`activity-card relative overflow-hidden ${isMobileDevice && isScrollLocked ? 'scrollable-content locked' : ''}`}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-bubble flex items-center justify-center">
                 <ApperIcon name="Pen" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -1972,19 +2042,19 @@ Level {level} Progress
             </motion.div>
           )}
         </motion.div>
-      ) : (
+) : (
         // Line Drawing Mode
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="relative"
+          className={`relative ${isMobileDevice ? 'mobile-drawing-container interaction-locked' : ''}`}
           onMouseMove={handleDrawingMove}
           onMouseUp={handleDrawingEnd}
           onTouchMove={handleDrawingMove}
           onTouchEnd={handleDrawingEnd}
         >
-          <div className="activity-card relative overflow-hidden">
+          <div className={`activity-card relative overflow-hidden ${isMobileDevice && isScrollLocked ? 'scrollable-content locked' : ''}`}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-accent rounded-bubble flex items-center justify-center">
                 <ApperIcon name="Pen" className="w-4 h-4 sm:w-5 sm:h-5 text-surface-700" />
