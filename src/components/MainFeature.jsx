@@ -1630,30 +1630,29 @@ key={`letter-${item.letter}`}
                         {/* Connection Point */}
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                           <div className="w-3 h-3 bg-secondary rounded-full opacity-20"></div>
-                        </div>
+</div>
                       </motion.div>
                     ))}
-))}
-                  </div>
-                  </div>
-            </div>
-          </div>
-        </motion.div>
-            {isDrawing && currentLine && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-6 p-4 bg-accent/10 rounded-bubble border border-accent/20"
-              >
-                <div className="flex items-center gap-3 justify-center">
-                  <ApperIcon name="Hand" className="w-5 h-5 text-accent" />
-<div className="text-sm sm:text-base text-surface-700 font-medium">
-                    Draw a line to connect <strong>{currentLine.startItem.letter}</strong> with its matching picture!
                   </div>
                 </div>
-              </motion.div>
-            )}
-          </div>
+              </div>
+            </div>
+</div>
+          
+          {isDrawing && currentLine && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6 p-4 bg-accent/10 rounded-bubble border border-accent/20"
+            >
+              <div className="flex items-center gap-3 justify-center">
+                <ApperIcon name="Hand" className="w-5 h-5 text-accent" />
+                <div className="text-sm sm:text-base text-surface-700 font-medium">
+                  Draw a line to connect <strong>{currentLine.startItem.letter}</strong> with its matching picture!
+                </div>
+              </div>
+            </motion.div>
+          )}
         </motion.div>
       )}
 
