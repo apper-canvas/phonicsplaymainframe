@@ -967,16 +967,22 @@ if (currentActivity === 'number-match' && currentNumbers.length === 0) {
       playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
 setCurrentLine(null)
     setIsDrawing(false)
-  }
-
 setCurrentLine(null)
     setIsDrawing(false)
   }
+
+  setCurrentLine(null)
+  setIsDrawing(false)
+}
 
   return (
     <div className="w-full max-w-7xl mx-auto">
       {/* Game Header with Stats */}
       <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="activity-card mb-6"
+      >
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4 sm:gap-6">
             <div className="text-center">
@@ -2317,7 +2323,7 @@ d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + c
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+</AnimatePresence>
     </div>
   )
 }
