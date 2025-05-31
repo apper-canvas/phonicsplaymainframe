@@ -282,6 +282,7 @@ const [imagesPerLetter, setImagesPerLetter] = useState(1) // Default to 1 image 
 // Number activity states
 const [numberRange, setNumberRange] = useState(5) // Default to 1-5 numbers
 const [currentNumbers, setCurrentNumbers] = useState([])
+const [shuffledItemGroups, setShuffledItemGroups] = useState([])
 
 const [rearrangedPictureGroups, setRearrangedPictureGroups] = useState([])
   // Utility functions for randomization
@@ -411,17 +412,31 @@ const getCurrentLetters = () => {
     return []
   }
 
-  const generateNumberSet = () => {
+const generateNumberSet = () => {
     const numbers = []
+    const items = []
+    
     for (let i = 1; i <= numberRange; i++) {
       const availableItems = numberData[i] || []
       const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)]
+      
       numbers.push({
         number: i,
         items: randomItem.items,
         displayItems: randomItem.items
       })
+      
+      items.push({
+        number: i,
+        items: randomItem.items,
+        displayItems: randomItem.items
+      })
     }
+    
+    // Shuffle items to different positions than numbers
+    const shuffledItems = shuffleArray([...items])
+    setShuffledItemGroups(shuffledItems)
+    
     return numbers
   }
 
@@ -1632,7 +1647,7 @@ Level {level} Progress
             )}
 </motion.div>
         </div>
-      ) : currentActivity === 'number-match' ? (
+) : currentActivity === 'number-match' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {/* Numbers Section */}
           <motion.div
@@ -1705,7 +1720,7 @@ Level {level} Progress
             </div>
           </motion.div>
 
-          {/* Items Section */}
+          {/* Items Section - Shuffled positioning */}
           <motion.div
             initial={{ x: 50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -1722,15 +1737,15 @@ Level {level} Progress
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {getCurrentNumbers().map((item, index) => (
+              {shuffledItemGroups.map((item, index) => (
                 <motion.div
-                  key={`items-${item.number}`}
+                  key={`items-${item.number}-${index}`}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: index * 0.1 + 0.2 }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-onClick={() => handleNumberMatch(item.number)}
+                  onClick={() => handleNumberMatch(item.number)}
                   className={`letter-card cursor-pointer text-center relative ${
                     !selectedNumber 
                       ? 'opacity-50 cursor-not-allowed' 
