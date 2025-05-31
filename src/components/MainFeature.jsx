@@ -514,6 +514,7 @@ setRandomizedPictures(shuffledPictures)
     setIsMobileDevice(detectMobileDevice())
   }, [])
 // Scroll lock management for mobile devices
+// Scroll lock management for mobile devices
   useEffect(() => {
     const shouldLockScroll = isMobileDevice && (
       isDrawing || 
@@ -523,25 +524,61 @@ setRandomizedPictures(shuffledPictures)
     )
 
     if (shouldLockScroll && !isScrollLocked) {
-      // Apply scroll lock using CSS classes to prevent scroll jump
+      // Store current scroll position before locking
+      const currentScrollY = window.pageYOffset
+      
+      // Apply comprehensive scroll lock for mobile devices
       setIsScrollLocked(true)
-      document.documentElement.classList.add('scroll-position-lock', 'no-scroll-bounce')
-      document.body.classList.add('mobile-scroll-lock', 'no-scroll-bounce')
+      setScrollPosition(currentScrollY)
+      
+      // Apply fixed positioning to prevent scroll
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${currentScrollY}px`
+      document.body.style.width = '100%'
+      document.body.style.overflowY = 'hidden'
+      document.body.style.touchAction = 'none'
+      document.body.style.overscrollBehavior = 'none'
+      
+      document.documentElement.style.overflowY = 'hidden'
+      document.documentElement.style.touchAction = 'none'
+      document.documentElement.style.overscrollBehavior = 'none'
+      
     } else if (!shouldLockScroll && isScrollLocked) {
-      // Remove scroll lock
+      // Remove scroll lock and restore position
       setIsScrollLocked(false)
-      document.documentElement.classList.remove('scroll-position-lock', 'no-scroll-bounce')
-      document.body.classList.remove('mobile-scroll-lock', 'no-scroll-bounce')
+      
+      // Remove fixed positioning
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      document.body.style.overflowY = ''
+      document.body.style.touchAction = ''
+      document.body.style.overscrollBehavior = ''
+      
+      document.documentElement.style.overflowY = ''
+      document.documentElement.style.touchAction = ''
+      document.documentElement.style.overscrollBehavior = ''
+      
+      // Restore scroll position
+      window.scrollTo(0, scrollPosition)
     }
 
     // Cleanup function to ensure scroll lock is removed
     return () => {
       if (isScrollLocked) {
-        document.documentElement.classList.remove('scroll-position-lock', 'no-scroll-bounce')
-        document.body.classList.remove('mobile-scroll-lock', 'no-scroll-bounce')
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.width = ''
+        document.body.style.overflowY = ''
+        document.body.style.touchAction = ''
+        document.body.style.overscrollBehavior = ''
+        
+document.documentElement.style.overflowY = ''
+        document.documentElement.style.touchAction = ''
+        document.documentElement.style.overscrollBehavior = ''
       }
     }
-  }, [isMobileDevice, isDrawing, selectedPicture, selectedLetter, selectedNumber, isScrollLocked])
+  }, [isMobileDevice, isDrawing, selectedPicture, selectedLetter, selectedNumber, isScrollLocked, scrollPosition])
 
 // Register connection points for all interactive elements
   useEffect(() => {
@@ -1762,25 +1799,23 @@ Level {level} Progress
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className={`relative ${isMobileDevice ? 'mobile-matching-container interaction-locked' : ''}`}
+className={`relative ${isMobileDevice ? 'mobile-matching-container interaction-locked' : ''}`}
           style={isMobileDevice ? { touchAction: 'none' } : {}}
           onMouseMove={handleDrawingMove}
           onMouseUp={handleDrawingEnd}
           onTouchMove={(e) => {
             if (isMobileDevice) {
-              localStorage.setItem('scrollPosition', window.pageYOffset.toString())
+              e.preventDefault()
+              e.stopPropagation()
             }
             handleDrawingMove(e)
           }}
           onTouchEnd={(e) => {
             if (isMobileDevice) {
               e.preventDefault()
-              const savedPosition = localStorage.getItem('scrollPosition')
-              if (savedPosition) {
-                setTimeout(() => window.scrollTo(0, parseInt(savedPosition)), 10)
-              }
+              e.stopPropagation()
             }
-handleDrawingEnd(e)
+            handleDrawingEnd(e)
           }}
         >
           <div className={`activity-card relative overflow-hidden ${isMobileDevice && isScrollLocked ? 'scrollable-content locked' : ''}`}>
@@ -1945,7 +1980,6 @@ onMouseDown={(e) => handleDrawingStart(e, 'number', item)}
                         if (isMobileDevice) {
                           e.preventDefault()
                           e.stopPropagation()
-                          localStorage.setItem('scrollPosition', window.pageYOffset.toString())
                         }
                         handleDrawingStart(e, 'number', item)
                       }}
@@ -1996,7 +2030,6 @@ onMouseDown={(e) => handleDrawingStart(e, 'item', item)}
                         if (isMobileDevice) {
                           e.preventDefault()
                           e.stopPropagation()
-                          localStorage.setItem('scrollPosition', window.pageYOffset.toString())
                         }
                         handleDrawingStart(e, 'item', item)
                       }}
@@ -2056,23 +2089,21 @@ style={isMobileDevice ? { touchAction: 'none' } : {}}
 initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className={`relative ${isMobileDevice ? 'mobile-drawing-container interaction-locked' : ''}`}
+className={`relative ${isMobileDevice ? 'mobile-drawing-container interaction-locked' : ''}`}
           style={isMobileDevice ? { touchAction: 'none' } : {}}
           onMouseMove={handleDrawingMove}
           onMouseUp={handleDrawingEnd}
           onTouchMove={(e) => {
             if (isMobileDevice) {
-              localStorage.setItem('scrollPosition', window.pageYOffset.toString())
+              e.preventDefault()
+              e.stopPropagation()
             }
             handleDrawingMove(e)
           }}
           onTouchEnd={(e) => {
             if (isMobileDevice) {
               e.preventDefault()
-              const savedPosition = localStorage.getItem('scrollPosition')
-              if (savedPosition) {
-                setTimeout(() => window.scrollTo(0, parseInt(savedPosition)), 10)
-              }
+              e.stopPropagation()
             }
             handleDrawingEnd(e)
           }}
@@ -2241,7 +2272,6 @@ onMouseDown={(e) => handleDrawingStart(e, 'letter', item)}
                         if (isMobileDevice) {
                           e.preventDefault()
                           e.stopPropagation()
-                          localStorage.setItem('scrollPosition', window.pageYOffset.toString())
                         }
                         handleDrawingStart(e, 'letter', item)
                       }}
@@ -2302,7 +2332,6 @@ onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
                           if (isMobileDevice) {
                             e.preventDefault()
                             e.stopPropagation()
-                            localStorage.setItem('scrollPosition', window.pageYOffset.toString())
                           }
                           handleDrawingStart(e, 'picture', item)
                         }}
