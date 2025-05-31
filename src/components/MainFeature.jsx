@@ -175,11 +175,11 @@ const [drawingLines, setDrawingLines] = useState([])
     ], sound: '/j/' },
     { letter: 'Z', words: [
       { word: 'Zebra', emoji: '🦓' },
-      { word: 'Zoo', emoji: '🏛️' },
-      { word: 'Zipper', emoji: '🤐' },
-      { word: 'Zero', emoji: '0️⃣' }
-], sound: '/z/' }
+{ word: 'Zero', emoji: '0️⃣' }
+    ], sound: '/z/' }
   ]
+
+  // Number data for number matching activity
 
   // Number data for number matching activity
   const numberData = {
@@ -494,77 +494,76 @@ setRandomizedPictures(shuffledPictures)
 }, [currentActivity, letterCount, imagesPerLetter])
 
 // Register connection points for all interactive elements
+// Register connection points for all interactive elements
   useEffect(() => {
     if ((currentActivity === 'line-drawing' || currentActivity === 'number-match') && drawingSvgRef.current) {
       const registerConnectionPoints = () => {
         const newConnectionPoints = {}
         
         if (currentActivity === 'line-drawing') {
-          // Register letter connection points
+          // Register letter connection points with improved element detection
           getCurrentLetters().forEach((item) => {
             const letterElement = document.querySelector(`[data-letter="${item.letter}"]`)
-            if (letterElement) {
+            if (letterElement && letterElement.offsetParent !== null) {
               const center = getElementCenter(letterElement)
-              newConnectionPoints[`letter${item.letter}`] = { 
-                x: center.x, 
-                y: center.y, 
-                type: 'letter', 
-                item 
+              if (center.x > 0 && center.y > 0) {
+                newConnectionPoints[`letter${item.letter}`] = { 
+                  x: center.x, 
+                  y: center.y, 
+                  type: 'letter', 
+                  item 
+                }
               }
             }
           })
           
-          // Register picture connection points
+          // Register picture connection points with better validation
           if (randomizedPictures && randomizedPictures.length > 0) {
-            // Group pictures by letter for display
-            const pictureGroups = {}
-            randomizedPictures.forEach(picture => {
-              if (!pictureGroups[picture.letter]) {
-                pictureGroups[picture.letter] = []
-              }
-              pictureGroups[picture.letter].push(picture)
-            })
-            
-            // Register connection points for all pictures
-            Object.values(pictureGroups).flat().forEach((item) => {
+            randomizedPictures.forEach((item) => {
               const pictureElement = document.querySelector(`[data-picture="${item.letter}-${item.index}"]`)
-              if (pictureElement) {
+              if (pictureElement && pictureElement.offsetParent !== null) {
                 const center = getElementCenter(pictureElement)
-                newConnectionPoints[`picture${item.letter}-${item.index}`] = {
-                  x: center.x, 
-                  y: center.y, 
-                  type: 'picture', 
-                  item 
+                if (center.x > 0 && center.y > 0) {
+                  newConnectionPoints[`picture${item.letter}-${item.index}`] = {
+                    x: center.x, 
+                    y: center.y, 
+                    type: 'picture', 
+                    item 
+                  }
                 }
               }
             })
           }
         } else if (currentActivity === 'number-match') {
-          // Register number connection points
+          // Register number connection points with improved detection
           getCurrentNumbers().forEach((item) => {
             const numberElement = document.querySelector(`[data-number="${item.number}"]`)
-            if (numberElement) {
+            if (numberElement && numberElement.offsetParent !== null) {
               const center = getElementCenter(numberElement)
-              newConnectionPoints[`number${item.number}`] = { 
-                x: center.x, 
-                y: center.y, 
-                type: 'number', 
-                item 
+              if (center.x > 0 && center.y > 0) {
+                newConnectionPoints[`number${item.number}`] = { 
+                  x: center.x, 
+                  y: center.y, 
+                  type: 'number', 
+                  item 
+                }
               }
             }
           })
           
-          // Register item connection points
+          // Register item connection points with better validation
           if (shuffledItemGroups && shuffledItemGroups.length > 0) {
             shuffledItemGroups.forEach((item, index) => {
               const itemElement = document.querySelector(`[data-item="${item.number}-${index}"]`)
-              if (itemElement) {
+              if (itemElement && itemElement.offsetParent !== null) {
                 const center = getElementCenter(itemElement)
-                newConnectionPoints[`item${item.number}-${index}`] = {
-                  x: center.x, 
-                  y: center.y, 
-                  type: 'item', 
-                  item 
+                if (center.x > 0 && center.y > 0) {
+                  newConnectionPoints[`item${item.number}-${index}`] = {
+                    x: center.x, 
+                    y: center.y, 
+                    type: 'item', 
+                    item 
+                  }
                 }
               }
             })
@@ -574,9 +573,16 @@ setRandomizedPictures(shuffledPictures)
         setConnectionPoints(newConnectionPoints)
       }
       
-      // Delay registration to ensure DOM elements are rendered
-      const timer = setTimeout(registerConnectionPoints, 100)
-      return () => clearTimeout(timer)
+      // Multiple registration attempts to ensure reliability
+      const timer1 = setTimeout(registerConnectionPoints, 100)
+      const timer2 = setTimeout(registerConnectionPoints, 300)
+      const timer3 = setTimeout(registerConnectionPoints, 500)
+      
+      return () => {
+        clearTimeout(timer1)
+        clearTimeout(timer2)
+clearTimeout(timer3)
+      }
     }
   }, [currentActivity, randomizedLetters, randomizedPictures, currentNumbers, shuffledItemGroups])
 
@@ -668,12 +674,10 @@ setCompletedLetters(new Set())
     } else {
       // Incorrect match
       playSound(selectedPicture?.letter, 'incorrect')
-      setSelectedPicture(null)
 setSelectedPicture(null)
-    setDraggedLetter(null)
+      setDraggedLetter(null)
+    }
   }
-}
-
 const handleNumberMatch = (targetNumber) => {
   if (selectedNumber && selectedNumber.number === targetNumber) {
     // Correct match
@@ -717,11 +721,10 @@ if (newActivity === 'line-drawing') {
 const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
 const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
-        setRandomizedLetters(newLetters)
 setRandomizedLetters(newLetters)
-      setRandomizedPictures(shuffledPictures)
+        setRandomizedPictures(shuffledPictures)
+      }
     }
-    
     const activityNames = {
       'letter-match': 'Letter to Word',
       'picture-match': 'Picture to Letter',
@@ -795,11 +798,17 @@ const toggleHint = () => {
     }
   }, [currentActivity, numberRange])
 
-// Line drawing functions
+// Line drawing functions with improved accuracy
   const getElementCenter = (element) => {
+    if (!element || !drawingSvgRef.current) return { x: 0, y: 0 }
+    
     const rect = element.getBoundingClientRect()
-    const svgRect = drawingSvgRef.current?.getBoundingClientRect()
-    if (!svgRect) return { x: 0, y: 0 }
+    const svgRect = drawingSvgRef.current.getBoundingClientRect()
+    
+    // Ensure we have valid dimensions
+    if (!rect.width || !rect.height || !svgRect.width || !svgRect.height) {
+      return { x: 0, y: 0 }
+    }
     
     return {
       x: rect.left + rect.width / 2 - svgRect.left,
@@ -810,13 +819,21 @@ const toggleHint = () => {
   const calculateDistance = (point1, point2) => {
     return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2))
   }
-
 const handleDrawingStart = (e, type, item) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
     const itemKey = currentActivity === 'number-match' ? item.number.toString() : item.letter
     if (completedLetters.has(itemKey)) return
     
     const element = e.currentTarget
     const center = getElementCenter(element)
+    
+    // Validate center coordinates
+    if (center.x <= 0 || center.y <= 0) {
+      console.warn('Invalid center coordinates for element:', element)
+      return
+    }
     
     const connectionKey = currentActivity === 'number-match' 
       ? type + item.number 
@@ -835,32 +852,45 @@ const handleDrawingStart = (e, type, item) => {
     })
     setIsDrawing(true)
     setAttempts(prev => prev + 1)
+    
+    // Play audio feedback
+    playSound(currentActivity === 'number-match' ? item.number : item.letter, type)
   }
 
   const handleDrawingMove = (e) => {
     if (!isDrawing || !currentLine || !drawingSvgRef.current) return
     
-    const svgRect = drawingSvgRef.current.getBoundingClientRect()
-    const point = {
-      x: (e.clientX || e.touches?.[0]?.clientX || 0) - svgRect.left,
-      y: (e.clientY || e.touches?.[0]?.clientY || 0) - svgRect.top
-    }
+    e.preventDefault()
     
+    const svgRect = drawingSvgRef.current.getBoundingClientRect()
+    const clientX = e.clientX || e.touches?.[0]?.clientX || 0
+    const clientY = e.clientY || e.touches?.[0]?.clientY || 0
+    
+    const point = {
+      x: clientX - svgRect.left,
+      y: clientY - svgRect.top
+    }
     setCurrentLine(prev => ({ ...prev, end: point }))
   }
 
-  const handleDrawingEnd = (e) => {
+const handleDrawingEnd = (e) => {
     if (!isDrawing || !currentLine) return
+    
+    e.preventDefault()
+    e.stopPropagation()
     
     const svgRect = drawingSvgRef.current?.getBoundingClientRect()
     if (!svgRect) return
     
+    const clientX = e.clientX || e.changedTouches?.[0]?.clientX || 0
+    const clientY = e.clientY || e.changedTouches?.[0]?.clientY || 0
+    
     const endPoint = {
-      x: (e.clientX || e.changedTouches?.[0]?.clientX || 0) - svgRect.left,
-      y: (e.clientY || e.changedTouches?.[0]?.clientY || 0) - svgRect.top
+      x: clientX - svgRect.left,
+      y: clientY - svgRect.top
     }
     
-    // Check if line ends near a valid target
+    // Determine target type based on activity and start type
     let targetType
     if (currentActivity === 'number-match') {
       targetType = currentLine.startType === 'number' ? 'item' : 'number'
@@ -870,11 +900,13 @@ const handleDrawingStart = (e, type, item) => {
     
     let closestTarget = null
     let minDistance = Infinity
+    const tolerance = 80 // Increased tolerance for better user experience
     
+    // Find the closest valid target within tolerance
     Object.entries(connectionPoints).forEach(([key, point]) => {
       if (point.type === targetType) {
         const distance = calculateDistance(endPoint, point)
-        if (distance < 60 && distance < minDistance) { // 60px tolerance
+        if (distance < tolerance && distance < minDistance) {
           minDistance = distance
           closestTarget = point
         }
@@ -1910,10 +1942,9 @@ Level {level} Progress
                       <div className="text-4xl sm:text-5xl font-bold text-green-600 mb-2 font-heading pointer-events-none">
                         {item.number}
                       </div>
-                      
-                      {/* Connection Point */}
+{/* Connection Point */}
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-3 h-3 bg-green-600 rounded-full opacity-20"></div>
+                        <div className="w-4 h-4 bg-green-600 rounded-full opacity-40 border-2 border-white shadow-sm"></div>
                       </div>
                     </motion.div>
                   ))}
@@ -1957,10 +1988,9 @@ Level {level} Progress
                       <div className="text-lg sm:text-xl font-bold text-surface-800 mb-1 pointer-events-none">
                         {item.items[0].name}
                       </div>
-                      
-                      {/* Connection Point */}
+{/* Connection Point */}
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-3 h-3 bg-blue-600 rounded-full opacity-20"></div>
+                        <div className="w-4 h-4 bg-blue-600 rounded-full opacity-40 border-2 border-white shadow-sm"></div>
                       </div>
                     </motion.div>
                   ))}
@@ -2186,10 +2216,9 @@ key={`letter-${item.letter}`}
                           .join(', ')
                         }
                       </div>
-                      
-                      {/* Connection Point */}
+{/* Connection Point */}
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-3 h-3 bg-primary rounded-full opacity-20"></div>
+                        <div className="w-4 h-4 bg-primary rounded-full opacity-40 border-2 border-white shadow-sm"></div>
                       </div>
                     </motion.div>
                   ))}
@@ -2231,10 +2260,9 @@ key={`letter-${item.letter}`}
 <div className="text-4xl sm:text-5xl mb-3 pointer-events-none">
                           {item.emoji}
                         </div>
-                        
-                        {/* Connection Point */}
+{/* Connection Point */}
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <div className="w-3 h-3 bg-secondary rounded-full opacity-20"></div>
+                          <div className="w-4 h-4 bg-secondary rounded-full opacity-40 border-2 border-white shadow-sm"></div>
                         </div>
                       </motion.div>
                     ))}
