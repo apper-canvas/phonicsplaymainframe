@@ -1694,14 +1694,9 @@ Level {level} Progress
                       <ApperIcon name="Check" className="w-4 h-4 text-white" />
                     </motion.div>
                   )}
-                  
-                  <div className="text-4xl sm:text-5xl font-bold text-green-600 mb-2 font-heading">
+<div className="text-4xl sm:text-5xl font-bold text-green-600 mb-2 font-heading">
                     {item.number}
                   </div>
-                  <div className="text-sm sm:text-base text-surface-600">
-                    Number {item.number}
-                  </div>
-                  
                   {selectedNumber?.number === item.number && (
                     <motion.div
                       initial={{ scale: 0 }}
