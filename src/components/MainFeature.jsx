@@ -1802,8 +1802,9 @@ Level {level} Progress
                 setTimeout(() => window.scrollTo(0, parseInt(savedPosition)), 10)
               }
             }
-            handleDrawingEnd(e)
+handleDrawingEnd(e)
           }}
+        >
           <div className={`activity-card relative overflow-hidden ${isMobileDevice && isScrollLocked ? 'scrollable-content locked' : ''}`}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-bubble flex items-center justify-center">
@@ -1970,9 +1971,8 @@ onMouseDown={(e) => handleDrawingStart(e, 'number', item)}
                         }
                         handleDrawingStart(e, 'number', item)
                       }}
-                      style={isMobileDevice ? { touchAction: 'none' } : {}}
+style={isMobileDevice ? { touchAction: 'none' } : {}}
                       className={`letter-card cursor-pointer text-center relative select-none ${
-                        completedLetters.has(item.number.toString())
                         completedLetters.has(item.number.toString())
                           ? 'bg-green-100 border-green-300 opacity-75'
                           : 'hover:shadow-playful hover:scale-105'
@@ -2022,9 +2022,8 @@ onMouseDown={(e) => handleDrawingStart(e, 'item', item)}
                         }
                         handleDrawingStart(e, 'item', item)
                       }}
-                      style={isMobileDevice ? { touchAction: 'none' } : {}}
+style={isMobileDevice ? { touchAction: 'none' } : {}}
                       className={`letter-card cursor-pointer text-center relative select-none ${
-                        completedLetters.has(item.number.toString())
                         completedLetters.has(item.number.toString())
                           ? 'bg-green-100 border-green-300 opacity-75'
                           : 'hover:shadow-playful hover:scale-105'
@@ -2268,9 +2267,8 @@ onMouseDown={(e) => handleDrawingStart(e, 'letter', item)}
                         }
                         handleDrawingStart(e, 'letter', item)
                       }}
-                      style={isMobileDevice ? { touchAction: 'none' } : {}}
+style={isMobileDevice ? { touchAction: 'none' } : {}}
                       className={`letter-card cursor-pointer text-center relative select-none ${
-                        completedLetters.has(item.letter)
                         completedLetters.has(item.letter)
                           ? 'bg-green-100 border-green-300 opacity-75'
                           : 'hover:shadow-playful hover:scale-105'
@@ -2330,9 +2328,8 @@ onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
                           }
                           handleDrawingStart(e, 'picture', item)
                         }}
-                        style={isMobileDevice ? { touchAction: 'none' } : {}}
+style={isMobileDevice ? { touchAction: 'none' } : {}}
                         className={`letter-card cursor-pointer text-center relative select-none ${
-                          completedLetters.has(item.letter)
                           completedLetters.has(item.letter)
                             ? 'bg-green-100 border-green-300 opacity-75'
                             : 'hover:shadow-playful hover:scale-105'
