@@ -1615,13 +1615,16 @@ key={`letter-${item.letter}`}
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
-                          >
+>
                             <ApperIcon name="Check" className="w-4 h-4 text-white" />
                           </motion.div>
                         )}
                         
                         <div className="text-4xl sm:text-5xl mb-2 pointer-events-none">
                           {item.emoji}
+                        </div>
+                        <div className="text-xs text-surface-500 mb-1 pointer-events-none">
+                          {item.word}
                         </div>
                         
                         {/* Connection Point */}
@@ -1630,6 +1633,7 @@ key={`letter-${item.letter}`}
                         </div>
                       </motion.div>
                     ))}
+                  </div>
                   </div>
             </div>
 </div>
