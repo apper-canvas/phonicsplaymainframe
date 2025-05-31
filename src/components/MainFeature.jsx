@@ -1667,11 +1667,9 @@ Level {level} Progress
             
             <div className="grid grid-cols-1 gap-3 sm:gap-4">
               {getCurrentNumbers().map((item, index) => (
-                <motion.div
+<motion.div
                   key={item.number}
                   initial={{ scale: 0 }}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
@@ -1733,16 +1731,16 @@ Level {level} Progress
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-bubble flex items-center justify-center">
                 <ApperIcon name="Eye" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
+<h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
                 Count and Match
-</div>
+              </h2>
+            </div>
             
             <div className="grid grid-cols-1 gap-3 sm:gap-4">
               {shuffledItemGroups.map((item, index) => (
-                <motion.div
+<motion.div
                   key={`items-${item.number}-${index}`}
                   initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: index * 0.1 + 0.2 }}
                   whileHover={{ scale: 1.05 }}
