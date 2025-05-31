@@ -38,6 +38,109 @@
     @apply h-full bg-gradient-to-r from-secondary to-accent transition-all duration-500 ease-out rounded-full;
   }
 }
+
+/* Star Rating System */
+.star-rating-container {
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm;
+}
+
+.star-rating-content {
+  @apply bg-white rounded-2xl p-8 shadow-playful flex flex-col items-center space-y-4;
+}
+
+.stars-container {
+  @apply flex space-x-2 md:space-x-4;
+}
+
+.star {
+  @apply text-6xl md:text-8xl transition-all duration-300 cursor-pointer;
+  filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.3));
+}
+
+.star-filled {
+  @apply text-yellow-400;
+}
+
+.star-empty {
+  @apply text-gray-300;
+}
+
+.star-animated {
+  @apply animate-star-pop;
+}
+
+.star-glow {
+  @apply animate-star-glow;
+}
+
+.star-bounce {
+  @apply animate-star-bounce;
+}
+
+.star-rotate {
+  @apply animate-star-rotate;
+}
+
+.star-pulse {
+  @apply animate-star-pulse;
+}
+
+/* Staggered animation delays for stars */
+.star-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.star-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.star-delay-3 {
+  animation-delay: 0.3s;
+}
+
+.star-delay-4 {
+  animation-delay: 0.4s;
+}
+
+.star-delay-5 {
+  animation-delay: 0.5s;
+}
+
+/* Combined animations */
+.star-pop-glow {
+  @apply animate-star-pop animate-star-glow;
+}
+
+.star-bounce-rotate {
+  @apply animate-star-bounce animate-star-rotate;
+}
+
+/* Responsive star sizes */
+@media (max-width: 640px) {
+  .star {
+    @apply text-4xl;
+  }
+  
+  .stars-container {
+    @apply space-x-1;
+  }
+  
+  .star-rating-content {
+    @apply p-6 mx-4;
+  }
+}
+
+/* Star hover effects */
+.star:hover {
+  @apply transform scale-110 transition-transform duration-200;
+}
+
+/* Completion celebration overlay */
+.celebration-overlay {
+  @apply fixed inset-0 z-40 pointer-events-none;
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.2) 0%, transparent 70%);
+}
+
 /* Line Drawing Layout Components */
   .drawing-columns-container {
 @apply grid grid-cols-2 gap-4 md:gap-8 lg:gap-12 relative z-0;

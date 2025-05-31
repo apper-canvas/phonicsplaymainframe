@@ -61,11 +61,16 @@ export default {
         '2xl': '1rem',
         'bubble': '2rem'
       },
-      animation: {
+animation: {
         'bounce-gentle': 'bounce 2s infinite',
         'wiggle': 'wiggle 1s ease-in-out infinite',
         'pop': 'pop 0.3s ease-out',
-        'float': 'float 3s ease-in-out infinite'
+        'float': 'float 3s ease-in-out infinite',
+        'star-pop': 'starPop 0.6s ease-out',
+        'star-glow': 'starGlow 1s ease-in-out',
+        'star-bounce': 'starBounce 0.8s ease-out',
+        'star-rotate': 'starRotate 0.5s ease-out',
+        'star-pulse': 'starPulse 0.4s ease-in-out'
       },
       keyframes: {
         wiggle: {
@@ -80,6 +85,29 @@ export default {
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' }
+        },
+        starPop: {
+          '0%': { transform: 'scale(0)', opacity: '0' },
+          '50%': { transform: 'scale(1.2)', opacity: '1' },
+          '100%': { transform: 'scale(1)', opacity: '1' }
+        },
+        starGlow: {
+          '0%, 100%': { filter: 'brightness(1)' },
+          '50%': { filter: 'brightness(1.3)' }
+        },
+        starBounce: {
+          '0%': { transform: 'translateY(0px)' },
+          '30%': { transform: 'translateY(-10px)' },
+          '60%': { transform: 'translateY(-5px)' },
+          '100%': { transform: 'translateY(0px)' }
+        },
+        starRotate: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' }
+        },
+        starPulse: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.7' }
         }
       }
     }
