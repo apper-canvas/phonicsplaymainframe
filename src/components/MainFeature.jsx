@@ -1785,11 +1785,25 @@ Level {level} Progress
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className={`relative ${isMobileDevice ? 'mobile-matching-container interaction-locked' : ''}`}
+          style={isMobileDevice ? { touchAction: 'none' } : {}}
           onMouseMove={handleDrawingMove}
           onMouseUp={handleDrawingEnd}
-          onTouchMove={handleDrawingMove}
-          onTouchEnd={handleDrawingEnd}
-        >
+          onTouchMove={(e) => {
+            if (isMobileDevice) {
+              localStorage.setItem('scrollPosition', window.pageYOffset.toString())
+            }
+            handleDrawingMove(e)
+          }}
+          onTouchEnd={(e) => {
+            if (isMobileDevice) {
+              e.preventDefault()
+              const savedPosition = localStorage.getItem('scrollPosition')
+              if (savedPosition) {
+                setTimeout(() => window.scrollTo(0, parseInt(savedPosition)), 10)
+              }
+            }
+            handleDrawingEnd(e)
+          }}
           <div className={`activity-card relative overflow-hidden ${isMobileDevice && isScrollLocked ? 'scrollable-content locked' : ''}`}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-bubble flex items-center justify-center">
@@ -1947,10 +1961,18 @@ Level {level} Progress
                       data-number={item.number}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ delay: index * 0.1 }}
-                      onMouseDown={(e) => handleDrawingStart(e, 'number', item)}
-                      onTouchStart={(e) => handleDrawingStart(e, 'number', item)}
+onMouseDown={(e) => handleDrawingStart(e, 'number', item)}
+                      onTouchStart={(e) => {
+                        if (isMobileDevice) {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          localStorage.setItem('scrollPosition', window.pageYOffset.toString())
+                        }
+                        handleDrawingStart(e, 'number', item)
+                      }}
+                      style={isMobileDevice ? { touchAction: 'none' } : {}}
                       className={`letter-card cursor-pointer text-center relative select-none ${
+                        completedLetters.has(item.number.toString())
                         completedLetters.has(item.number.toString())
                           ? 'bg-green-100 border-green-300 opacity-75'
                           : 'hover:shadow-playful hover:scale-105'
@@ -1991,10 +2013,18 @@ Level {level} Progress
                       data-item={`${item.number}-${index}`}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ delay: index * 0.1 + 0.2 }}
-                      onMouseDown={(e) => handleDrawingStart(e, 'item', item)}
-                      onTouchStart={(e) => handleDrawingStart(e, 'item', item)}
+onMouseDown={(e) => handleDrawingStart(e, 'item', item)}
+                      onTouchStart={(e) => {
+                        if (isMobileDevice) {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          localStorage.setItem('scrollPosition', window.pageYOffset.toString())
+                        }
+                        handleDrawingStart(e, 'item', item)
+                      }}
+                      style={isMobileDevice ? { touchAction: 'none' } : {}}
                       className={`letter-card cursor-pointer text-center relative select-none ${
+                        completedLetters.has(item.number.toString())
                         completedLetters.has(item.number.toString())
                           ? 'bg-green-100 border-green-300 opacity-75'
                           : 'hover:shadow-playful hover:scale-105'
@@ -2046,14 +2076,29 @@ Level {level} Progress
 ) : (
         // Line Drawing Mode
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className={`relative ${isMobileDevice ? 'mobile-drawing-container interaction-locked' : ''}`}
+          style={isMobileDevice ? { touchAction: 'none' } : {}}
           onMouseMove={handleDrawingMove}
           onMouseUp={handleDrawingEnd}
-          onTouchMove={handleDrawingMove}
-          onTouchEnd={handleDrawingEnd}
+          onTouchMove={(e) => {
+            if (isMobileDevice) {
+              localStorage.setItem('scrollPosition', window.pageYOffset.toString())
+            }
+            handleDrawingMove(e)
+          }}
+          onTouchEnd={(e) => {
+            if (isMobileDevice) {
+              e.preventDefault()
+              const savedPosition = localStorage.getItem('scrollPosition')
+              if (savedPosition) {
+                setTimeout(() => window.scrollTo(0, parseInt(savedPosition)), 10)
+              }
+            }
+            handleDrawingEnd(e)
+          }}
         >
           <div className={`activity-card relative overflow-hidden ${isMobileDevice && isScrollLocked ? 'scrollable-content locked' : ''}`}>
             <div className="flex items-center gap-3 mb-6">
@@ -2214,10 +2259,18 @@ key={`letter-${item.letter}`}
                       data-letter={item.letter}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ delay: index * 0.1 }}
-                      onMouseDown={(e) => handleDrawingStart(e, 'letter', item)}
-                      onTouchStart={(e) => handleDrawingStart(e, 'letter', item)}
+onMouseDown={(e) => handleDrawingStart(e, 'letter', item)}
+                      onTouchStart={(e) => {
+                        if (isMobileDevice) {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          localStorage.setItem('scrollPosition', window.pageYOffset.toString())
+                        }
+                        handleDrawingStart(e, 'letter', item)
+                      }}
+                      style={isMobileDevice ? { touchAction: 'none' } : {}}
                       className={`letter-card cursor-pointer text-center relative select-none ${
+                        completedLetters.has(item.letter)
                         completedLetters.has(item.letter)
                           ? 'bg-green-100 border-green-300 opacity-75'
                           : 'hover:shadow-playful hover:scale-105'
@@ -2268,14 +2321,18 @@ key={`letter-${item.letter}`}
                         data-picture={`${item.letter}-${item.index}`}
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ delay: index * 0.1 + 0.2 }}
 onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
                         onTouchStart={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
+                          if (isMobileDevice) {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            localStorage.setItem('scrollPosition', window.pageYOffset.toString())
+                          }
                           handleDrawingStart(e, 'picture', item)
                         }}
+                        style={isMobileDevice ? { touchAction: 'none' } : {}}
                         className={`letter-card cursor-pointer text-center relative select-none ${
+                          completedLetters.has(item.letter)
                           completedLetters.has(item.letter)
                             ? 'bg-green-100 border-green-300 opacity-75'
                             : 'hover:shadow-playful hover:scale-105'
