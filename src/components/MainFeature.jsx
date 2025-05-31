@@ -171,9 +171,9 @@ const [drawingLines, setDrawingLines] = useState([])
       { word: 'Yacht', emoji: '⛵' },
       { word: 'Yo-yo', emoji: '🪀' },
       { word: 'Yarn', emoji: '🧶' },
-      { word: 'Yak', emoji: '🐂' }
+{ word: 'Yak', emoji: '🐂' }
     ], sound: '/j/' },
-{ letter: 'Z', words: [
+    { letter: 'Z', words: [
       { word: 'Zebra', emoji: '🦓' },
       { word: 'Zero', emoji: '0️⃣' }
     ], sound: '/z/' }
@@ -973,7 +973,7 @@ const handleDrawingEnd = (e) => {
       playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
     }
     
-    setCurrentLine(null)
+setCurrentLine(null)
     setIsDrawing(false)
   }
 
