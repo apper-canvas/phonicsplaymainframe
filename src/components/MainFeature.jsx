@@ -4,8 +4,9 @@ import { toast } from 'react-toastify'
 import ApperIcon from './ApperIcon'
 
 const MainFeature = () => {
-const [currentActivity, setCurrentActivity] = useState('letter-match') // 'letter-match' or 'picture-match'
+const [currentActivity, setCurrentActivity] = useState('letter-match') // 'letter-match', 'picture-match', 'line-drawing', or 'number-match'
   const [selectedLetter, setSelectedLetter] = useState(null)
+  const [selectedNumber, setSelectedNumber] = useState(null)
   const [score, setScore] = useState(0)
   const [level, setLevel] = useState(1)
   const [attempts, setAttempts] = useState(0)
@@ -179,8 +180,72 @@ const [drawingLines, setDrawingLines] = useState([])
       { word: 'Zoo', emoji: '🏛️' },
       { word: 'Zipper', emoji: '🤐' },
       { word: 'Zero', emoji: '0️⃣' }
-    ], sound: '/z/' }
+], sound: '/z/' }
   ]
+
+  // Number data for number matching activity
+  const numberData = {
+    1: [
+      { number: 1, items: [{ name: 'Apple', emoji: '🍎' }] },
+      { number: 1, items: [{ name: 'Sun', emoji: '☀️' }] },
+      { number: 1, items: [{ name: 'Moon', emoji: '🌙' }] },
+      { number: 1, items: [{ name: 'Star', emoji: '⭐' }] }
+    ],
+    2: [
+      { number: 2, items: [{ name: 'Eyes', emoji: '👀' }] },
+      { number: 2, items: [{ name: 'Cherries', emoji: '🍒🍒' }] },
+      { number: 2, items: [{ name: 'Hands', emoji: '🤝' }] },
+      { number: 2, items: [{ name: 'Feet', emoji: '👣' }] }
+    ],
+    3: [
+      { number: 3, items: [{ name: 'Bears', emoji: '🐻🐻🐻' }] },
+      { number: 3, items: [{ name: 'Balloons', emoji: '🎈🎈🎈' }] },
+      { number: 3, items: [{ name: 'Hearts', emoji: '❤️❤️❤️' }] },
+      { number: 3, items: [{ name: 'Cars', emoji: '🚗🚗🚗' }] }
+    ],
+    4: [
+      { number: 4, items: [{ name: 'Flowers', emoji: '🌸🌸🌸🌸' }] },
+      { number: 4, items: [{ name: 'Books', emoji: '📚📚📚📚' }] },
+      { number: 4, items: [{ name: 'Cats', emoji: '🐱🐱🐱🐱' }] },
+      { number: 4, items: [{ name: 'Wheels', emoji: '🎡🎡🎡🎡' }] }
+    ],
+    5: [
+      { number: 5, items: [{ name: 'Fingers', emoji: '✋' }] },
+      { number: 5, items: [{ name: 'Stars', emoji: '⭐⭐⭐⭐⭐' }] },
+      { number: 5, items: [{ name: 'Fish', emoji: '🐠🐠🐠🐠🐠' }] },
+      { number: 5, items: [{ name: 'Cookies', emoji: '🍪🍪🍪🍪🍪' }] }
+    ],
+    6: [
+      { number: 6, items: [{ name: 'Eggs', emoji: '🥚🥚🥚🥚🥚🥚' }] },
+      { number: 6, items: [{ name: 'Cupcakes', emoji: '🧁🧁🧁🧁🧁🧁' }] },
+      { number: 6, items: [{ name: 'Butterflies', emoji: '🦋🦋🦋🦋🦋🦋' }] },
+      { number: 6, items: [{ name: 'Donuts', emoji: '🍩🍩🍩🍩🍩🍩' }] }
+    ],
+    7: [
+      { number: 7, items: [{ name: 'Rainbows', emoji: '🌈🌈🌈🌈🌈🌈🌈' }] },
+      { number: 7, items: [{ name: 'Candies', emoji: '🍬🍬🍬🍬🍬🍬🍬' }] },
+      { number: 7, items: [{ name: 'Mushrooms', emoji: '🍄🍄🍄🍄🍄🍄🍄' }] },
+      { number: 7, items: [{ name: 'Gems', emoji: '💎💎💎💎💎💎💎' }] }
+    ],
+    8: [
+      { number: 8, items: [{ name: 'Octopus Arms', emoji: '🐙' }] },
+      { number: 8, items: [{ name: 'Pizza Slices', emoji: '🍕🍕🍕🍕🍕🍕🍕🍕' }] },
+      { number: 8, items: [{ name: 'Snowflakes', emoji: '❄️❄️❄️❄️❄️❄️❄️❄️' }] },
+      { number: 8, items: [{ name: 'Crayons', emoji: '🖍️🖍️🖍️🖍️🖍️🖍️🖍️🖍️' }] }
+    ],
+    9: [
+      { number: 9, items: [{ name: 'Ice Creams', emoji: '🍦🍦🍦🍦🍦🍦🍦🍦🍦' }] },
+      { number: 9, items: [{ name: 'Robots', emoji: '🤖🤖🤖🤖🤖🤖🤖🤖🤖' }] },
+      { number: 9, items: [{ name: 'Rockets', emoji: '🚀🚀🚀🚀🚀🚀🚀🚀🚀' }] },
+      { number: 9, items: [{ name: 'Presents', emoji: '🎁🎁🎁🎁🎁🎁🎁🎁🎁' }] }
+    ],
+    10: [
+      { number: 10, items: [{ name: 'Fingers', emoji: '🙌' }] },
+      { number: 10, items: [{ name: 'Bowling Pins', emoji: '🎳🎳🎳🎳🎳🎳🎳🎳🎳🎳' }] },
+      { number: 10, items: [{ name: 'Candles', emoji: '🕯️🕯️🕯️🕯️🕯️🕯️🕯️🕯️🕯️🕯️' }] },
+      { number: 10, items: [{ name: 'Balloons', emoji: '🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈' }] }
+    ]
+  }
 
   // Convert to old format for compatibility with other game modes
   const getCompatibleAlphabetData = () => {
@@ -208,11 +273,15 @@ const [letterCount, setLetterCount] = useState(5) // Default to 5 letters
   const [randomSeed, setRandomSeed] = useState(0) // Force re-randomization
   const [matchedPairs, setMatchedPairs] = useState(new Set())
 const [usedLineColors, setUsedLineColors] = useState(new Set())
-  const availableColors = ['red', 'blue', 'green', 'orange', 'purple', 'pink', 'teal', 'yellow', 'indigo', 'lime']
+const availableColors = ['red', 'blue', 'green', 'orange', 'purple', 'pink', 'teal', 'yellow', 'indigo', 'lime']
 const [randomizedPictures, setRandomizedPictures] = useState([])
 // State to track letters used in the past 5 levels
   const [usedLettersHistory, setUsedLettersHistory] = useState([])
 const [imagesPerLetter, setImagesPerLetter] = useState(1) // Default to 1 image per letter
+
+// Number activity states
+const [numberRange, setNumberRange] = useState(5) // Default to 1-5 numbers
+const [currentNumbers, setCurrentNumbers] = useState([])
 
 const [rearrangedPictureGroups, setRearrangedPictureGroups] = useState([])
   // Utility functions for randomization
@@ -332,12 +401,33 @@ const shufflePicturesByDifferentLetters = (pictures) => {
     if (currentActivity === 'line-drawing') {
       return randomizedLetters
     }
+const getCurrentLetters = () => {
+    if (currentActivity === 'line-drawing') {
+      return randomizedLetters
+    }
     return letterData[level] || letterData[1]
   }
 
-const generateNewSet = () => {
-    const newLetters = selectRandomLetters(letterCount)
-const newPictures = generatePicturesForLetters(newLetters)
+  const getCurrentNumbers = () => {
+    if (currentActivity === 'number-match') {
+      return currentNumbers
+    }
+    return []
+  }
+
+  const generateNumberSet = () => {
+    const numbers = []
+    for (let i = 1; i <= numberRange; i++) {
+      const availableItems = numberData[i] || []
+      const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)]
+      numbers.push({
+        number: i,
+        items: randomItem.items,
+        displayItems: randomItem.items
+      })
+    }
+    return numbers
+  }
 const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
     setRandomizedLetters(newLetters)
 setRandomizedPictures(shuffledPictures)
@@ -461,18 +551,31 @@ const playSound = (letter, type = 'letter') => {
         hideProgressBar: false
       })
     } else {
-      toast.info(`Letter ${letter} says "${getCurrentLetters().find(l => l.letter === letter)?.sound}"`, {
-        autoClose: 2000,
-        hideProgressBar: false
-      })
+if (type === 'number') {
+        toast.info(`Number ${letter}! Count carefully!`, {
+          autoClose: 2000,
+          hideProgressBar: false
+        })
+      } else {
+        toast.info(`Letter ${letter} says "${getCurrentLetters().find(l => l.letter === letter)?.sound}"`, {
+          autoClose: 2000,
+          hideProgressBar: false
+        })
+      }
     }
   }
-
   const handleLetterSelect = (letter) => {
     setSelectedLetter(letter)
     setAttempts(prev => prev + 1)
-    playSound(letter.letter)
+playSound(letter.letter)
   }
+
+  const handleNumberSelect = (number) => {
+    setSelectedNumber(number)
+    setAttempts(prev => prev + 1)
+    playSound(number.number, 'number')
+  }
+
 const handlePictureSelect = (item) => {
     setSelectedPicture(item)
     setAttempts(prev => prev + 1)
@@ -482,12 +585,11 @@ const handlePictureSelect = (item) => {
 const handleWordMatch = (word) => {
     if (selectedLetter && selectedLetter.word.toLowerCase() === word.toLowerCase()) {
       // Correct match
-      setScore(prev => prev + 10)
+setScore(prev => prev + 10)
       setCompletedLetters(prev => new Set([...prev, selectedLetter.letter]))
       setMatchedPairs(prev => new Set([...prev, selectedLetter.letter]))
       playSound(selectedLetter.letter, 'correct')
       setSelectedLetter(null)
-      
       // Check if level is complete
       if (completedLetters.size + 1 >= getCurrentLetters().length) {
         setGameState('celebrating')
@@ -531,7 +633,34 @@ const handleWordMatch = (word) => {
       // Incorrect match
       playSound(selectedPicture?.letter, 'incorrect')
       setSelectedPicture(null)
+setSelectedPicture(null)
       setDraggedLetter(null)
+    }
+  }
+    if (selectedNumber && selectedNumber.number === targetNumber) {
+      // Correct match
+      setScore(prev => prev + 10)
+      setCompletedLetters(prev => new Set([...prev, targetNumber.toString()]))
+      setMatchedPairs(prev => new Set([...prev, targetNumber.toString()]))
+      playSound(targetNumber, 'correct')
+      setSelectedNumber(null)
+      
+      // Check if level is complete
+      if (completedLetters.size + 1 >= getCurrentNumbers().length) {
+        setGameState('celebrating')
+        setTimeout(() => {
+          setLevel(prev => prev + 1)
+          setCompletedLetters(new Set())
+          setMatchedPairs(new Set())
+          setGameState('playing')
+          setCurrentNumbers(generateNumberSet())
+          toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
+        }, 2000)
+      }
+    } else {
+      // Incorrect match
+      playSound(selectedNumber?.number, 'incorrect')
+      setSelectedNumber(null)
     }
   }
 
@@ -539,7 +668,7 @@ const switchActivity = (newActivity) => {
     if (newActivity !== currentActivity) {
       setCurrentActivity(newActivity)
       setSelectedLetter(null)
-      setSelectedPicture(null)
+      setSelectedNumber(null)
       setDraggedLetter(null)
       setDrawingLines([])
       setCurrentLine(null)
@@ -558,13 +687,20 @@ setRandomizedPictures(shuffledPictures)
       
       const activityNames = {
         'letter-match': 'Letter to Word',
+'letter-match': 'Letter to Word',
         'picture-match': 'Picture to Letter',
-        'line-drawing': 'Draw Lines'
+        'line-drawing': 'Draw Lines',
+        'number-match': 'Count & Match'
       }
+      
+      // Generate initial number set for number matching
+      if (newActivity === 'number-match') {
+        setCurrentNumbers(generateNumberSet())
+      }
+      
       toast.info(`Switched to ${activityNames[newActivity]} matching!`)
     }
   }
-
 const resetActivity = () => {
     setSelectedLetter(null)
     setSelectedPicture(null)
@@ -581,12 +717,13 @@ setUsedLineColors(new Set()) // Reset used colors
   }
 
 const resetGame = () => {
-    setScore(0)
+setScore(0)
     setLevel(1)
 setAttempts(0)
     setCompletedLetters(new Set())
     setMatchedPairs(new Set())
     setSelectedLetter(null)
+    setSelectedNumber(null)
     setSelectedPicture(null)
     setDraggedLetter(null)
     setDrawingLines([])
@@ -608,10 +745,25 @@ setRandomizedPictures(shuffledPictures)
   }
 
   const toggleHint = () => {
-    setShowHint(!showHint)
+setShowHint(!showHint)
   }
 
-  const progressPercentage = (completedLetters.size / getCurrentLetters().length) * 100
+  const getCurrentItems = () => {
+    if (currentActivity === 'number-match') {
+      return getCurrentNumbers()
+    }
+    return getCurrentLetters()
+  }
+
+  const progressPercentage = (completedLetters.size / getCurrentItems().length) * 100
+
+  // Initialize numbers when component mounts or activity changes
+  useEffect(() => {
+    if (currentActivity === 'number-match' && currentNumbers.length === 0) {
+      setCurrentNumbers(generateNumberSet())
+    }
+  }, [currentActivity, numberRange])
+
 // Line drawing functions
   const getElementCenter = (element) => {
     const rect = element.getBoundingClientRect()
@@ -794,10 +946,10 @@ setTimeout(() => {
         <div className="mt-4 sm:mt-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm sm:text-base font-medium text-surface-700">
-              Level {level} Progress
+Level {level} Progress
             </span>
             <span className="text-sm sm:text-base text-surface-600">
-              {completedLetters.size}/{getCurrentLetters().length}
+              {completedLetters.size}/{getCurrentItems().length}
             </span>
           </div>
           <div className="progress-bar">
@@ -858,10 +1010,90 @@ setTimeout(() => {
             }`}
           >
             <ApperIcon name="Pen" className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="font-medium text-sm sm:text-base">Draw Lines</span>
+<span className="font-medium text-sm sm:text-base">Draw Lines</span>
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => switchActivity('number-match')}
+            className={`flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-bubble transition-all duration-300 ${
+              currentActivity === 'number-match'
+                ? 'bg-green-500 text-white shadow-playful'
+                : 'bg-surface-100 text-surface-700 hover:bg-surface-200'
+            }`}
+          >
+            <ApperIcon name="Hash" className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium text-sm sm:text-base">Count & Match</span>
           </motion.button>
         </div>
       </motion.div>
+
+{/* Number Matching Configuration */}
+        {currentActivity === 'number-match' && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="activity-card mt-6"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-bubble flex items-center justify-center">
+                <ApperIcon name="Settings" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
+                Number Range Configuration
+              </h3>
+            </div>
+            
+            <div className="bg-gradient-to-br from-green-100 to-green-50 rounded-2xl p-6 border border-green-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center">
+                  <ApperIcon name="Hash" className="w-4 h-4 text-green-600" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-surface-800 font-heading">Number Range</h4>
+                  <p className="text-sm text-surface-600">Choose how many numbers to practice (1 to selected number)</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-center gap-3 mb-4 flex-wrap">
+                {[5, 6, 7, 8, 9, 10].map((range) => (
+                  <motion.button
+                    key={range}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => {
+                      setNumberRange(range)
+                      setCurrentNumbers(generateNumberSet())
+                      setCompletedLetters(new Set())
+                      setMatchedPairs(new Set())
+                    }}
+                    className={`w-12 h-12 rounded-full text-lg font-bold transition-all duration-300 ${
+                      numberRange === range
+                        ? 'bg-green-500 text-white shadow-playful ring-2 ring-green-300'
+                        : 'bg-surface-200 text-surface-600 hover:bg-surface-300 hover:shadow-soft'
+                    }`}
+                  >
+                    {range}
+                  </motion.button>
+                ))}
+              </div>
+              
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-200 rounded-bubble">
+                  <span className="text-sm font-medium text-surface-700">
+                    Currently: <strong>1 to {numberRange}</strong>
+                  </span>
+                </div>
+                <p className="text-xs text-surface-500 mt-2">
+                  Higher numbers = more challenging counting
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
 {/* Line Drawing Configuration */}
         {currentActivity === 'line-drawing' && (
           <motion.div
@@ -1023,11 +1255,17 @@ setTimeout(() => {
                     <li>Drag the picture to the correct letter</li>
                     <li>Match pictures to letters to earn points!</li>
                   </ol>
-                ) : (
+) : currentActivity === 'line-drawing' ? (
                   <ol className="list-decimal list-inside space-y-1">
                     <li>Click and hold on a letter or picture</li>
                     <li>Draw a line to connect it with its match</li>
                     <li>Release to complete the connection!</li>
+                  </ol>
+                ) : (
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>Click on a number to select it</li>
+                    <li>Count the items and find the matching number</li>
+                    <li>Match numbers to items to earn points!</li>
                   </ol>
                 )}
               </div>
@@ -1195,7 +1433,7 @@ setTimeout(() => {
               </motion.div>
             )}
           </motion.div>
-        </div>
+</div>
       ) : currentActivity === 'picture-match' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {/* Pictures Section */}
@@ -1379,6 +1617,165 @@ setTimeout(() => {
                   </div>
                   <div className="text-sm sm:text-base text-surface-700">
                     Drag "<strong>{selectedPicture.word}</strong>" to the letter "<strong>{selectedPicture.letter}</strong>"
+                  </div>
+                </div>
+              </motion.div>
+            )}
+</motion.div>
+        </div>
+      ) : currentActivity === 'number-match' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+          {/* Numbers Section */}
+          <motion.div
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="activity-card"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-bubble flex items-center justify-center">
+                <ApperIcon name="Hash" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
+                Choose a Number
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+              {getCurrentNumbers().map((item, index) => (
+                <motion.div
+                  key={item.number}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleNumberSelect(item)}
+                  className={`letter-card cursor-pointer text-center relative overflow-hidden ${
+                    selectedNumber?.number === item.number 
+                      ? 'ring-4 ring-green-500 shadow-playful' 
+                      : ''
+                  } ${
+                    completedLetters.has(item.number.toString())
+                      ? 'bg-green-100 border-green-300'
+                      : ''
+                  }`}
+                >
+                  {completedLetters.has(item.number.toString()) && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                    >
+                      <ApperIcon name="Check" className="w-4 h-4 text-white" />
+                    </motion.div>
+                  )}
+                  
+                  <div className="text-4xl sm:text-5xl font-bold text-green-600 mb-2 font-heading">
+                    {item.number}
+                  </div>
+                  <div className="text-sm sm:text-base text-surface-600">
+                    Number {item.number}
+                  </div>
+                  
+                  {selectedNumber?.number === item.number && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute inset-0 bg-green-500/10 flex items-center justify-center"
+                    >
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="w-8 h-8 border-3 border-green-500 border-t-transparent rounded-full"
+                      />
+                    </motion.div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Items Section */}
+          <motion.div
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="activity-card"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-bubble flex items-center justify-center">
+                <ApperIcon name="Eye" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
+                Count and Match
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {getCurrentNumbers().map((item, index) => (
+                <motion.div
+                  key={`items-${item.number}`}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: index * 0.1 + 0.2 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleItemMatch(item.number)}
+                  className={`letter-card cursor-pointer text-center relative ${
+                    !selectedNumber 
+                      ? 'opacity-50 cursor-not-allowed' 
+                      : 'hover:shadow-playful'
+                  } ${
+                    matchedPairs.has(item.number.toString())
+                      ? 'bg-green-100 border-green-300 opacity-50'
+                      : ''
+                  }`}
+                >
+                  <div className="text-2xl sm:text-3xl mb-3 leading-relaxed">
+                    {item.items[0].emoji}
+                  </div>
+                  <div className="text-lg sm:text-xl font-bold text-surface-800 mb-1">
+                    {item.items[0].name}
+                  </div>
+                  <div className="text-xs sm:text-sm text-surface-500">
+                    Count: {item.number} item{item.number !== 1 ? 's' : ''}
+                  </div>
+                  
+                  {matchedPairs.has(item.number.toString()) && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute inset-0 bg-green-200/50 flex items-center justify-center rounded-bubble"
+                    >
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: [0, 1.2, 1] }}
+                        transition={{ duration: 0.5 }}
+                        className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center"
+                      >
+                        <ApperIcon name="Check" className="w-6 h-6 text-white" />
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+            
+            {selectedNumber && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 p-4 bg-green-500/10 rounded-bubble border border-green-500/20"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">
+                      {selectedNumber.number}
+                    </span>
+                  </div>
+                  <div className="text-sm sm:text-base text-surface-700">
+                    Find the group that has <strong>{selectedNumber.number}</strong> item{selectedNumber.number !== 1 ? 's' : ''}
                   </div>
                 </div>
               </motion.div>
