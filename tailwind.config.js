@@ -123,16 +123,16 @@ animation: {
           'screen-safe-small': '100svh'
         },
         maxHeight: {
-          'screen-safe': '100vh',
+'screen-safe': '100vh',
           'screen-safe-small': '100svh'
+        },
+        gridTemplateColumns: {
+          'dynamic-1': 'repeat(1, minmax(0, 1fr))',
+          'dynamic-2': 'repeat(2, minmax(0, 1fr))',
+          'dynamic-3': 'repeat(3, minmax(0, 1fr))',
+          'dynamic-4': 'repeat(4, minmax(0, 1fr))'
         }
       }
-    },
-    gridTemplateColumns: {
-      'dynamic-1': 'repeat(1, minmax(0, 1fr))',
-      'dynamic-2': 'repeat(2, minmax(0, 1fr))',
-      'dynamic-3': 'repeat(3, minmax(0, 1fr))',
-      'dynamic-4': 'repeat(4, minmax(0, 1fr))'
     }
   },
   plugins: [],
