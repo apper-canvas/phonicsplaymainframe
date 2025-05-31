@@ -729,19 +729,19 @@ const switchActivity = (newActivity) => {
         setRandomizedLetters(newLetters)
         setRandomizedPictures(shuffledPictures)
       }
+      
+      // Generate initial number set for number matching
+      if (newActivity === 'number-match') {
+        setCurrentNumbers(generateNumberSet())
+      }
     }
-}
-const activityNames = {
-      'letter-match': 'Letter to Word',
-      'picture-match': 'Picture to Letter',
-      'line-drawing': 'Draw Lines',
-      'number-match': 'Count & Match'
-    }
-    
-    // Generate initial number set for number matching
-    if (newActivity === 'number-match') {
-      setCurrentNumbers(generateNumberSet())
-    }
+  }
+
+  const activityNames = {
+    'letter-match': 'Letter to Word',
+    'picture-match': 'Picture to Letter',
+    'line-drawing': 'Draw Lines',
+    'number-match': 'Count & Match'
   }
   const resetGame = () => {
     setScore(0)
