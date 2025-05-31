@@ -1617,10 +1617,10 @@ key={`letter-${item.letter}`}
                             className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
 >
                             <ApperIcon name="Check" className="w-4 h-4 text-white" />
-                          </motion.div>
+</motion.div>
                         )}
                         
-                        <div className="text-4xl sm:text-5xl mb-2 pointer-events-none">
+                        <div className="text-4xl sm:text-5xl mb-1 pointer-events-none">
                           {item.emoji}
                         </div>
                         <div className="text-xs text-surface-500 mb-1 pointer-events-none">
@@ -1630,7 +1630,7 @@ key={`letter-${item.letter}`}
                         {/* Connection Point */}
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                           <div className="w-3 h-3 bg-secondary rounded-full opacity-20"></div>
-</div>
+                        </div>
                       </motion.div>
                     ))}
                   </div>
