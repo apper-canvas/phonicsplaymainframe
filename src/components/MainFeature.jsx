@@ -495,50 +495,82 @@ setRandomizedPictures(shuffledPictures)
     }
 }, [currentActivity, letterCount, imagesPerLetter])
 
-  // Register connection points for all interactive elements
+// Register connection points for all interactive elements
   useEffect(() => {
-    if (currentActivity === 'line-drawing' && drawingSvgRef.current) {
+    if ((currentActivity === 'line-drawing' || currentActivity === 'number-match') && drawingSvgRef.current) {
       const registerConnectionPoints = () => {
         const newConnectionPoints = {}
         
-        // Register letter connection points
-        getCurrentLetters().forEach((item) => {
-          const letterElement = document.querySelector(`[data-letter="${item.letter}"]`)
-          if (letterElement) {
-            const center = getElementCenter(letterElement)
-            newConnectionPoints[`letter${item.letter}`] = { 
-              x: center.x, 
-              y: center.y, 
-              type: 'letter', 
-              item 
-            }
-          }
-        })
-        
-// Register picture connection points
-        if (randomizedPictures && randomizedPictures.length > 0) {
-          // Group pictures by letter for display
-          const pictureGroups = {}
-          randomizedPictures.forEach(picture => {
-            if (!pictureGroups[picture.letter]) {
-              pictureGroups[picture.letter] = []
-            }
-            pictureGroups[picture.letter].push(picture)
-          })
-          
-          // Register connection points for all pictures
-          Object.values(pictureGroups).flat().forEach((item) => {
-            const pictureElement = document.querySelector(`[data-picture="${item.letter}-${item.index}"]`)
-            if (pictureElement) {
-              const center = getElementCenter(pictureElement)
-              newConnectionPoints[`picture${item.letter}-${item.index}`] = {
+        if (currentActivity === 'line-drawing') {
+          // Register letter connection points
+          getCurrentLetters().forEach((item) => {
+            const letterElement = document.querySelector(`[data-letter="${item.letter}"]`)
+            if (letterElement) {
+              const center = getElementCenter(letterElement)
+              newConnectionPoints[`letter${item.letter}`] = { 
                 x: center.x, 
                 y: center.y, 
-                type: 'picture', 
+                type: 'letter', 
                 item 
               }
             }
           })
+          
+          // Register picture connection points
+          if (randomizedPictures && randomizedPictures.length > 0) {
+            // Group pictures by letter for display
+            const pictureGroups = {}
+            randomizedPictures.forEach(picture => {
+              if (!pictureGroups[picture.letter]) {
+                pictureGroups[picture.letter] = []
+              }
+              pictureGroups[picture.letter].push(picture)
+            })
+            
+            // Register connection points for all pictures
+            Object.values(pictureGroups).flat().forEach((item) => {
+              const pictureElement = document.querySelector(`[data-picture="${item.letter}-${item.index}"]`)
+              if (pictureElement) {
+                const center = getElementCenter(pictureElement)
+                newConnectionPoints[`picture${item.letter}-${item.index}`] = {
+                  x: center.x, 
+                  y: center.y, 
+                  type: 'picture', 
+                  item 
+                }
+              }
+            })
+          }
+        } else if (currentActivity === 'number-match') {
+          // Register number connection points
+          getCurrentNumbers().forEach((item) => {
+            const numberElement = document.querySelector(`[data-number="${item.number}"]`)
+            if (numberElement) {
+              const center = getElementCenter(numberElement)
+              newConnectionPoints[`number${item.number}`] = { 
+                x: center.x, 
+                y: center.y, 
+                type: 'number', 
+                item 
+              }
+            }
+          })
+          
+          // Register item connection points
+          if (shuffledItemGroups && shuffledItemGroups.length > 0) {
+            shuffledItemGroups.forEach((item, index) => {
+              const itemElement = document.querySelector(`[data-item="${item.number}-${index}"]`)
+              if (itemElement) {
+                const center = getElementCenter(itemElement)
+                newConnectionPoints[`item${item.number}-${index}`] = {
+                  x: center.x, 
+                  y: center.y, 
+                  type: 'item', 
+                  item 
+                }
+              }
+            })
+          }
         }
         
         setConnectionPoints(newConnectionPoints)
@@ -548,7 +580,7 @@ setRandomizedPictures(shuffledPictures)
       const timer = setTimeout(registerConnectionPoints, 100)
       return () => clearTimeout(timer)
     }
-}, [currentActivity, randomizedLetters, randomizedPictures])
+  }, [currentActivity, randomizedLetters, randomizedPictures, currentNumbers, shuffledItemGroups])
 
   // Audio simulation (in real app, this would play actual audio files)
 const playSound = (letter, type = 'letter') => {
@@ -804,15 +836,20 @@ const toggleHint = () => {
     return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2))
   }
 
-  const handleDrawingStart = (e, type, item) => {
-    if (completedLetters.has(item.letter)) return
+const handleDrawingStart = (e, type, item) => {
+    const itemKey = currentActivity === 'number-match' ? item.number.toString() : item.letter
+    if (completedLetters.has(itemKey)) return
     
     const element = e.currentTarget
     const center = getElementCenter(element)
     
+    const connectionKey = currentActivity === 'number-match' 
+      ? type + item.number 
+      : type + item.letter
+    
     setConnectionPoints(prev => ({
       ...prev,
-      [type + item.letter]: { x: center.x, y: center.y, type, item }
+      [connectionKey]: { x: center.x, y: center.y, type, item }
     }))
     
     setCurrentLine({
@@ -848,7 +885,7 @@ const toggleHint = () => {
       y: (e.clientY || e.changedTouches?.[0]?.clientY || 0) - svgRect.top
     }
     
-// Check if line ends near a valid target
+    // Check if line ends near a valid target
     let targetType
     if (currentActivity === 'number-match') {
       targetType = currentLine.startType === 'number' ? 'item' : 'number'
@@ -868,35 +905,55 @@ const toggleHint = () => {
         }
       }
     })
-    if (closestTarget && currentLine.startItem.letter === closestTarget.item.letter) {
+    
+    // Check for correct connection based on activity type
+    const isCorrectConnection = currentActivity === 'number-match'
+      ? closestTarget && currentLine.startItem.number === closestTarget.item.number
+      : closestTarget && currentLine.startItem.letter === closestTarget.item.letter
+    
+    if (isCorrectConnection) {
       // Correct connection
-const lineColor = getNextAvailableColor()
+      const lineColor = getNextAvailableColor()
       setUsedLineColors(prev => new Set([...prev, lineColor]))
+      
+      const itemKey = currentActivity === 'number-match' 
+        ? currentLine.startItem.number.toString()
+        : currentLine.startItem.letter
       
       const newLine = {
         start: currentLine.start,
         end: { x: closestTarget.x, y: closestTarget.y },
         startItem: currentLine.startItem,
         endItem: closestTarget.item,
-id: `${currentLine.startItem.letter}-correct`,
+        id: `${itemKey}-correct`,
         color: lineColor
       }
       
       setDrawingLines(prev => [...prev, newLine])
       setScore(prev => prev + 20)
-      setCompletedLetters(prev => new Set([...prev, currentLine.startItem.letter]))
-      setMatchedPairs(prev => new Set([...prev, currentLine.startItem.letter]))
+      setCompletedLetters(prev => new Set([...prev, itemKey]))
+      setMatchedPairs(prev => new Set([...prev, itemKey]))
+      
+      playSound(itemKey, 'correct')
       
       // Check if level is complete
-      if (completedLetters.size + 1 >= getCurrentLetters().length) {
+      const currentItems = currentActivity === 'number-match' ? getCurrentNumbers() : getCurrentLetters()
+      if (completedLetters.size + 1 >= currentItems.length) {
         setGameState('celebrating')
-setTimeout(() => {
-          // Add current level's letters to history before moving to next level
-          setUsedLettersHistory(prev => {
-            const newHistory = [...prev, getCurrentLetters()]
-            // Keep only the last 5 levels
-            return newHistory.slice(-5)
-          })
+        setTimeout(() => {
+          if (currentActivity === 'line-drawing') {
+            // Add current level's letters to history before moving to next level
+            setUsedLettersHistory(prev => {
+              const newHistory = [...prev, getCurrentLetters()]
+              // Keep only the last 5 levels
+              return newHistory.slice(-5)
+            })
+            // Automatically generate new letters for the next level in line-drawing mode
+            generateNewSet()
+          } else if (currentActivity === 'number-match') {
+            // Generate new number set for next level
+            setCurrentNumbers(generateNumberSet())
+          }
           
           setLevel(prev => prev + 1)
           setCompletedLetters(new Set())
@@ -904,12 +961,11 @@ setTimeout(() => {
           setDrawingLines([])
           setUsedLineColors(new Set()) // Reset colors for new level
           setGameState('playing')
-          // Automatically generate new letters for the next level in line-drawing mode
-          generateNewSet()
         }, 2000)
       }
     } else {
       // Incorrect connection
+      playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
     }
     
     setCurrentLine(null)
@@ -1689,155 +1745,270 @@ Level {level} Progress
 </motion.div>
         </div>
 ) : currentActivity === 'number-match' ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          {/* Numbers Section */}
-          <motion.div
-            initial={{ x: -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="activity-card"
-          >
-<div className="flex items-center gap-3 mb-6">
+        // Number Line Drawing Mode
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="relative"
+          onMouseMove={handleDrawingMove}
+          onMouseUp={handleDrawingEnd}
+          onTouchMove={handleDrawingMove}
+          onTouchEnd={handleDrawingEnd}
+        >
+          <div className="activity-card relative overflow-hidden">
+            <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-bubble flex items-center justify-center">
-                <ApperIcon name="Hash" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                <ApperIcon name="Pen" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
-                Choose a Number
-</h2>
+                Draw Lines to Count and Match
+              </h2>
             </div>
             
-            <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
-              {getCurrentNumbers().map((item, index) => (
-                <motion.div
-                  key={item.number}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleNumberSelect(item)}
-                  className={`letter-card cursor-pointer text-center relative overflow-hidden ${
-                    selectedNumber?.number === item.number 
-                      ? 'ring-4 ring-green-500 shadow-playful' 
-                      : ''
-                  } ${
-                    completedLetters.has(item.number.toString())
-                      ? 'bg-green-100 border-green-300'
-                      : ''
-                  }`}
-                >
-                  {completedLetters.has(item.number.toString()) && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
-                    >
-                      <ApperIcon name="Check" className="w-4 h-4 text-white" />
-                    </motion.div>
-                  )}
-<div className="text-4xl sm:text-5xl font-bold text-green-600 mb-2 font-heading">
-                    {item.number}
-                  </div>
-                  {selectedNumber?.number === item.number && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute inset-0 bg-green-500/10 flex items-center justify-center"
-                    >
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                        className="w-8 h-8 border-3 border-green-500 border-t-transparent rounded-full"
-                      />
-                    </motion.div>
-                  )}
-                </motion.div>
+            {/* Drawing Canvas */}
+            <svg
+              ref={drawingSvgRef}
+              className="absolute inset-0 w-full h-full pointer-events-none z-10"
+              style={{ minHeight: '600px' }}
+            >
+              {/* Completed Lines */}
+              {drawingLines.map((line, index) => (
+                <motion.path
+                  key={line.id}
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.5 }}
+                  d={`M ${line.start.x} ${line.start.y} Q ${(line.start.x + line.end.x) / 2} ${Math.min(line.start.y, line.end.y) - 50} ${line.end.x} ${line.end.y}`}
+                  stroke={`url(#${line.color}-gradient)`}
+                  strokeWidth="8"
+                  fill="none"
+                  strokeDasharray="0"
+                  strokeLinecap="round"
+                  filter="url(#glow-effect)"
+                  style={{
+                    dropShadow: '0 0 8px rgba(16, 185, 129, 0.6)'
+                  }}
+                />
               ))}
-            </div>
-          </motion.div>
-
-          {/* Items Section - Shuffled positioning */}
-          <motion.div
-            initial={{ x: 50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="activity-card"
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-bubble flex items-center justify-center">
-                <ApperIcon name="Eye" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              </div>
-<h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
-                Count and Match
-</h2>
-            </div>
+              
+              {/* Current Drawing Line */}
+              {currentLine && (
+                <motion.path
+                  d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + currentLine.end.x) / 2} ${Math.min(currentLine.start.y, currentLine.end.y) - 50} ${currentLine.end.x} ${currentLine.end.y}`}
+                  stroke="url(#active-gradient)"
+                  strokeWidth="6"
+                  fill="none"
+                  strokeDasharray="12,6"
+                  strokeLinecap="round"
+                  filter="url(#active-glow-effect)"
+                  className="animate-pulse"
+                  style={{
+                    dropShadow: '0 0 12px rgba(255, 230, 109, 0.8)'
+                  }}
+                />
+              )}
+              
+              <defs>
+                {/* Individual Color Gradients for Each Line */}
+                <linearGradient id="red-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FF6B6B" />
+                  <stop offset="50%" stopColor="#FF8E8E" />
+                  <stop offset="100%" stopColor="#FF6B6B" />
+                </linearGradient>
+                
+                <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#4ECDC4" />
+                  <stop offset="50%" stopColor="#7DD3CC" />
+                  <stop offset="100%" stopColor="#4ECDC4" />
+                </linearGradient>
+                
+                <linearGradient id="green-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#96CEB4" />
+                  <stop offset="50%" stopColor="#B8E6D1" />
+                  <stop offset="100%" stopColor="#96CEB4" />
+                </linearGradient>
+                
+                <linearGradient id="orange-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FFB347" />
+                  <stop offset="50%" stopColor="#FFCC73" />
+                  <stop offset="100%" stopColor="#FFB347" />
+                </linearGradient>
+                
+                <linearGradient id="purple-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#DDA0DD" />
+                  <stop offset="50%" stopColor="#E6B3E6" />
+                  <stop offset="100%" stopColor="#DDA0DD" />
+                </linearGradient>
+                
+                <linearGradient id="pink-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FF69B4" />
+                  <stop offset="50%" stopColor="#FF8CC8" />
+                  <stop offset="100%" stopColor="#FF69B4" />
+                </linearGradient>
+                
+                <linearGradient id="teal-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#20B2AA" />
+                  <stop offset="50%" stopColor="#48D1CA" />
+                  <stop offset="100%" stopColor="#20B2AA" />
+                </linearGradient>
+                
+                <linearGradient id="yellow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FFE66D" />
+                  <stop offset="50%" stopColor="#FFF088" />
+                  <stop offset="100%" stopColor="#FFE66D" />
+                </linearGradient>
+                
+                <linearGradient id="indigo-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#6A5ACD" />
+                  <stop offset="50%" stopColor="#8A7FDE" />
+                  <stop offset="100%" stopColor="#6A5ACD" />
+                </linearGradient>
+                
+                <linearGradient id="lime-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#32CD32" />
+                  <stop offset="50%" stopColor="#5ED65E" />
+                  <stop offset="100%" stopColor="#32CD32" />
+                </linearGradient>
+                
+                {/* Active Drawing Gradient */}
+                <linearGradient id="active-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FFD700" />
+                  <stop offset="25%" stopColor="#FF69B4" />
+                  <stop offset="50%" stopColor="#00CED1" />
+                  <stop offset="75%" stopColor="#32CD32" />
+                  <stop offset="100%" stopColor="#FFD700" />
+                </linearGradient>
+                
+                {/* Glow Effect for Completed Lines */}
+                <filter id="glow-effect" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge> 
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                
+                {/* Active Glow Effect for Drawing Lines */}
+                <filter id="active-glow-effect" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                  <feMerge> 
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+            </svg>
             
-            <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
-              {shuffledItemGroups.map((item, index) => (
-                <motion.div
-                  key={`items-${item.number}-${index}`}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: index * 0.1 + 0.2 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleNumberMatch(item.number)}
-                  className={`letter-card cursor-pointer text-center relative ${
-                    !selectedNumber 
-                      ? 'opacity-50 cursor-not-allowed' 
-                      : 'hover:shadow-playful'
-                  } ${
-                    matchedPairs.has(item.number.toString())
-                      ? 'bg-green-100 border-green-300 opacity-50'
-                      : ''
-                  }`}
->
-                  <div className="text-2xl sm:text-3xl mb-3 leading-relaxed">
-                    {item.items[0].emoji}
-                  </div>
-                  <div className="text-lg sm:text-xl font-bold text-surface-800 mb-1">
-                    {item.items[0].name}
-                  </div>
-                  {matchedPairs.has(item.number.toString()) && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute inset-0 bg-green-200/50 flex items-center justify-center rounded-bubble"
-                    >
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: [0, 1.2, 1] }}
-                        transition={{ duration: 0.5 }}
-                        className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center"
-                      >
-                        <ApperIcon name="Check" className="w-6 h-6 text-white" />
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-            
-            {selectedNumber && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-6 p-4 bg-green-500/10 rounded-bubble border border-green-500/20"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">
-                      {selectedNumber.number}
-                    </span>
-                  </div>
-                  <div className="text-sm sm:text-base text-surface-700">
-                    Find the group that has <strong>{selectedNumber.number}</strong> item{selectedNumber.number !== 1 ? 's' : ''}
-                  </div>
+            <div className="drawing-columns-container">
+              {/* Numbers Column - Left Side */}
+              <div className="drawing-column numbers-column">
+                <div className="column-header">
+                  <h3 className="text-xl font-bold text-center text-green-600 mb-6">Numbers</h3>
                 </div>
-              </motion.div>
-            )}
-          </motion.div>
-        </div>
+                <div className="column-content">
+                  {getCurrentNumbers().map((item, index) => (
+                    <motion.div
+                      key={`number-${item.number}`}
+                      data-number={item.number}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      onMouseDown={(e) => handleDrawingStart(e, 'number', item)}
+                      onTouchStart={(e) => handleDrawingStart(e, 'number', item)}
+                      className={`letter-card cursor-pointer text-center relative select-none ${
+                        completedLetters.has(item.number.toString())
+                          ? 'bg-green-100 border-green-300 opacity-75'
+                          : 'hover:shadow-playful hover:scale-105'
+                      }`}
+                    >
+                      {completedLetters.has(item.number.toString()) && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        >
+                          <ApperIcon name="Check" className="w-4 h-4 text-white" />
+                        </motion.div>
+                      )}
+                      
+                      <div className="text-4xl sm:text-5xl font-bold text-green-600 mb-2 font-heading pointer-events-none">
+                        {item.number}
+                      </div>
+                      
+                      {/* Connection Point */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-3 h-3 bg-green-600 rounded-full opacity-20"></div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Items Column - Right Side */}
+              <div className="drawing-column items-column">
+                <div className="column-header">
+                  <h3 className="text-xl font-bold text-center text-blue-600 mb-6">Count Items</h3>
+                </div>
+                <div className="column-content">
+                  {shuffledItemGroups.map((item, index) => (
+                    <motion.div
+                      key={`item-${item.number}-${index}`}
+                      data-item={`${item.number}-${index}`}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: index * 0.1 + 0.2 }}
+                      onMouseDown={(e) => handleDrawingStart(e, 'item', item)}
+                      onTouchStart={(e) => handleDrawingStart(e, 'item', item)}
+                      className={`letter-card cursor-pointer text-center relative select-none ${
+                        completedLetters.has(item.number.toString())
+                          ? 'bg-green-100 border-green-300 opacity-75'
+                          : 'hover:shadow-playful hover:scale-105'
+                      }`}
+                    >
+                      {completedLetters.has(item.number.toString()) && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                        >
+                          <ApperIcon name="Check" className="w-4 h-4 text-white" />
+                        </motion.div>
+                      )}
+                      
+                      <div className="text-2xl sm:text-3xl mb-3 leading-relaxed pointer-events-none">
+                        {item.items[0].emoji}
+                      </div>
+                      <div className="text-lg sm:text-xl font-bold text-surface-800 mb-1 pointer-events-none">
+                        {item.items[0].name}
+                      </div>
+                      
+                      {/* Connection Point */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-3 h-3 bg-blue-600 rounded-full opacity-20"></div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {isDrawing && currentLine && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6 p-4 bg-green-500/10 rounded-bubble border border-green-500/20"
+            >
+              <div className="flex items-center gap-3 justify-center">
+                <ApperIcon name="Hand" className="w-5 h-5 text-green-600" />
+                <div className="text-sm sm:text-base text-surface-700 font-medium">
+                  Draw a line to connect <strong>{currentLine.startItem.number}</strong> with the matching items!
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
       ) : (
         // Line Drawing Mode
         <motion.div
