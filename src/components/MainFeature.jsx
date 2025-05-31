@@ -22,16 +22,23 @@ const [draggedLetter, setDraggedLetter] = useState(null)
   const [selectedPicture, setSelectedPicture] = useState(null)
 const [drawingLines, setDrawingLines] = useState([])
 const [isDrawing, setIsDrawing] = useState(false)
-  const [currentLine, setCurrentLine] = useState(null)
+const [currentLine, setCurrentLine] = useState(null)
   const drawingSvgRef = useRef(null)
-  const [selectedNumber, setSelectedNumber] = useState('');
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [isScrollLocked, setIsScrollLocked] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const [isPreventingScroll, setIsPreventingScroll] = useState(false);
+  const [connectionPoints, setConnectionPoints] = useState({})
+  const [currentMode, setCurrentMode] = useState('letter-match')
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [scrollPosition, setScrollPosition] = useState(0)
+  const [isPreventingScroll, setIsPreventingScroll] = useState(false)
   
-  // Audio state
+  // Initialize audio function
+  const initializeAudio = () => {
+    // Audio initialization logic would go here
+    console.log('Audio initialized')
+  }
+
+  // Alphabet data with expanded word options for each letter
+  const alphabetData = [
+    { letter: 'A', words: [
       { word: 'Ant', emoji: '🐜' },
       { word: 'Airplane', emoji: '✈️' },
       { word: 'Anchor', emoji: '⚓' }
@@ -85,64 +92,6 @@ const [isDrawing, setIsDrawing] = useState(false)
       { word: 'Iron', emoji: '👕' }
     ], sound: '/aɪ/' },
     { letter: 'J', words: [
-}, [isDrawing, selectedPicture, selectedLetter, selectedNumber]);
-  
-  // Effect to preserve scroll position during number selection on mobile
-  useEffect(() => {
-    const isMobile = window.innerWidth <= 1024 && 'ontouchstart' in window;
-    
-    if (isMobile && currentMode === 'count' && selectedNumber && !isPreventingScroll) {
-      // Save current scroll position before state change
-      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-      setScrollPosition(currentScroll);
-      setIsPreventingScroll(true);
-      
-      // Prevent scroll jump by maintaining position
-      setTimeout(() => {
-        window.scrollTo(0, currentScroll);
-        document.body.style.scrollBehavior = 'auto';
-        
-        // Reset after a short delay
-        setTimeout(() => {
-          setIsPreventingScroll(false);
-          document.body.style.scrollBehavior = '';
-        }, 100);
-      }, 0);
-    }
-  }, [selectedNumber, currentMode, isPreventingScroll]);
-  
-  // Effect to handle touch scrolling prevention during number interactions
-  useEffect(() => {
-    const isMobile = window.innerWidth <= 1024 && 'ontouchstart' in window;
-    
-    if (isMobile && currentMode === 'count' && (selectedNumber || isPreventingScroll)) {
-      document.body.classList.add('touch-manipulation');
-      
-      // Prevent default touch behaviors that cause scrolling
-      const preventTouchScroll = (e) => {
-        if (e.target.closest('.number-button')) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      };
-      
-      document.addEventListener('touchstart', preventTouchScroll, { passive: false });
-      document.addEventListener('touchmove', preventTouchScroll, { passive: false });
-      
-      return () => {
-        document.body.classList.remove('touch-manipulation');
-        document.removeEventListener('touchstart', preventTouchScroll);
-        document.removeEventListener('touchmove', preventTouchScroll);
-      };
-    }
-  }, [selectedNumber, currentMode, isPreventingScroll]);
-  
-  // Effect to handle audio state changes
-  useEffect(() => {
-    if (isPlaying && !audioRef.current) {
-      initializeAudio();
-    }
-      { word: 'Key', emoji: '🔑' },
       { word: 'King', emoji: '👑' },
       { word: 'Kangaroo', emoji: '🦘' }
     ], sound: '/k/' },
@@ -1223,30 +1172,27 @@ Level {level} Progress
                 <div>
                   <h4 className="text-lg font-bold text-surface-800 font-heading">Number Range</h4>
                   <p className="text-sm text-surface-600">Choose how many numbers to practice (1 to selected number)</p>
-                </div>
+</div>
               </div>
-{numbers.map((number) => (
+              
+              <div className="flex items-center justify-center gap-3 mb-4">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((range) => (
                   <motion.button
-                    key={number}
-                    onClick={() => handleNumberMatch(number)}
-                    onTouchStart={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+                    key={range}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => {
+                      setNumberRange(range)
+                      setCurrentNumbers(generateNumberSet())
+                      setCompletedLetters(new Set())
+                      setMatchedPairs(new Set())
+                      setSelectedNumber(null)
                     }}
-                    className={`letter-card number-button text-2xl md:text-3xl font-bold transition-all duration-300 touch-manipulation ${
-                      selectedNumber === number 
-                        ? 'bg-secondary text-white shadow-playful scale-105' 
-                        : 'hover:shadow-playful hover:scale-105'
+                    className={`w-12 h-12 rounded-full text-lg font-bold transition-all duration-300 ${
+                      numberRange === range
+                        ? 'bg-green-500 text-white shadow-playful ring-2 ring-green-500/50'
+                        : 'bg-surface-200 text-surface-600 hover:bg-surface-300 hover:shadow-soft'
                     }`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  >
-                    {number}
-                  </motion.button>
-                ))}
-              </div>
-            </div>
                   >
                     {range}
                   </motion.button>
