@@ -1755,17 +1755,13 @@ Level {level} Progress
                       ? 'bg-green-100 border-green-300 opacity-50'
                       : ''
                   }`}
-                >
+>
                   <div className="text-2xl sm:text-3xl mb-3 leading-relaxed">
                     {item.items[0].emoji}
                   </div>
                   <div className="text-lg sm:text-xl font-bold text-surface-800 mb-1">
                     {item.items[0].name}
                   </div>
-                  <div className="text-xs sm:text-sm text-surface-500">
-                    Count: {item.number} item{item.number !== 1 ? 's' : ''}
-                  </div>
-                  
                   {matchedPairs.has(item.number.toString()) && (
                     <motion.div
                       initial={{ scale: 0 }}
