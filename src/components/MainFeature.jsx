@@ -965,6 +965,7 @@ setUsedLineColors(new Set()) // Reset colors for new level
     } else {
       // Incorrect connection
       playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
+playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
     }
     
     setCurrentLine(null)
