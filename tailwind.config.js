@@ -105,52 +105,18 @@ animation: {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(360deg)' }
         },
-starPulse: {
+        starPulse: {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.7' }
-        },
-        overflow: {
-          'hidden-mobile': 'hidden',
-          'scroll-lock': 'hidden',
-          'scroll-unlock': 'auto'
-        },
-        touchAction: {
-          'none': 'none',
-          'pan-x': 'pan-x',
-          'pan-y': 'pan-y',
-          'manipulation': 'manipulation',
-          'pinch-zoom': 'pinch-zoom'
-        },
-        height: {
-          'screen-safe': '100vh',
-          'screen-safe-small': '100svh',
-          'viewport': '100vh',
-          'viewport-small': '100svh'
-        },
-        maxHeight: {
-          'screen-safe': '100vh',
-          'screen-safe-small': '100svh',
-          'viewport': '100vh',
-          'viewport-small': '100svh'
-        },
-        position: {
-          'scroll-lock': 'fixed',
-          'scroll-unlock': 'static'
-        },
-        width: {
-          'scroll-lock': '100%'
-        },
-        inset: {
-          'scroll-lock': '0'
-        },
-        gridTemplateColumns: {
-          'dynamic-1': 'repeat(1, minmax(0, 1fr))',
-          'dynamic-2': 'repeat(2, minmax(0, 1fr))',
-          'dynamic-3': 'repeat(3, minmax(0, 1fr))',
-          'dynamic-4': 'repeat(4, minmax(0, 1fr))'
         }
       }
     }
+  },
+gridTemplateColumns: {
+    'dynamic-1': 'repeat(1, minmax(0, 1fr))',
+    'dynamic-2': 'repeat(2, minmax(0, 1fr))',
+    'dynamic-3': 'repeat(3, minmax(0, 1fr))',
+    'dynamic-4': 'repeat(4, minmax(0, 1fr))'
   },
   plugins: [],
   darkMode: 'class',

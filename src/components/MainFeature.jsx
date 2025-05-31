@@ -1,39 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'react-toastify'
 import ApperIcon from './ApperIcon'
-import { useMainFeatureData } from './MainFeatureData'
 
 const MainFeature = () => {
-  // Import data and functions from the data hook
-  const {
-    letterData,
-    randomizedLetters,
-    setRandomizedLetters,
-    letterCount,
-    setLetterCount,
-    usedLineColors,
-    setUsedLineColors,
-    availableColors,
-    randomizedPictures,
-    setRandomizedPictures,
-    usedLettersHistory,
-    setUsedLettersHistory,
-    imagesPerLetter,
-    setImagesPerLetter,
-    numberRange,
-    setNumberRange,
-    currentNumbers,
-    setCurrentNumbers,
-    shuffledItemGroups,
-    setShuffledItemGroups,
-    getNextAvailableColor,
-    generateNumberSet,
-    generateNewSet,
-    handleLetterCountChange,
-    handleImagesPerLetterChange
-  } = useMainFeatureData()
-
-  const [currentActivity, setCurrentActivity] = useState('letter-match') // 'letter-match', 'picture-match', 'line-drawing', or 'number-match'
+const [currentActivity, setCurrentActivity] = useState('letter-match') // 'letter-match', 'picture-match', 'line-drawing', or 'number-match'
   const [selectedLetter, setSelectedLetter] = useState(null)
   const [selectedNumber, setSelectedNumber] = useState(null)
   const [score, setScore] = useState(0)
@@ -43,106 +14,486 @@ const MainFeature = () => {
   const [gameState, setGameState] = useState('playing') // playing, celebrating, completed
   const [showHint, setShowHint] = useState(false)
   const audioRef = useRef(null)
-  
-  // Scroll lock state management for mobile devices
-  const [isScrollLocked, setIsScrollLocked] = useState(false)
-  const [isMobileDevice, setIsMobileDevice] = useState(false)
-  
-  const [draggedLetter, setDraggedLetter] = useState(null)
+const [draggedLetter, setDraggedLetter] = useState(null)
   const [selectedPicture, setSelectedPicture] = useState(null)
-  const [drawingLines, setDrawingLines] = useState([])
+const [drawingLines, setDrawingLines] = useState([])
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentLine, setCurrentLine] = useState(null)
   const drawingSvgRef = useRef(null)
   const [connectionPoints, setConnectionPoints] = useState({})
-  const [currentMode, setCurrentMode] = useState('letter-match')
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [scrollPosition, setScrollPosition] = useState(0)
-  const [isPreventingScroll, setIsPreventingScroll] = useState(false)
+
+// Complete A-Z alphabet data for randomized selection
+// Complete A-Z alphabet data with multiple options per letter
+  const alphabetData = [
+    { letter: 'A', words: [
+      { word: 'Apple', emoji: '🍎' },
+      { word: 'Ant', emoji: '🐜' },
+      { word: 'Airplane', emoji: '✈️' },
+      { word: 'Anchor', emoji: '⚓' }
+    ], sound: '/eɪ/' },
+    { letter: 'B', words: [
+      { word: 'Ball', emoji: '⚽' },
+      { word: 'Bear', emoji: '🐻' },
+      { word: 'Book', emoji: '📚' },
+      { word: 'Butterfly', emoji: '🦋' }
+    ], sound: '/b/' },
+    { letter: 'C', words: [
+      { word: 'Cat', emoji: '🐱' },
+      { word: 'Car', emoji: '🚗' },
+      { word: 'Cookie', emoji: '🍪' },
+      { word: 'Crown', emoji: '👑' }
+    ], sound: '/k/' },
+    { letter: 'D', words: [
+      { word: 'Dog', emoji: '🐕' },
+      { word: 'Duck', emoji: '🦆' },
+      { word: 'Drum', emoji: '🥁' },
+      { word: 'Diamond', emoji: '💎' }
+    ], sound: '/d/' },
+    { letter: 'E', words: [
+      { word: 'Elephant', emoji: '🐘' },
+      { word: 'Eagle', emoji: '🦅' },
+      { word: 'Egg', emoji: '🥚' },
+      { word: 'Earth', emoji: '🌍' }
+    ], sound: '/ɛ/' },
+    { letter: 'F', words: [
+      { word: 'Fish', emoji: '🐠' },
+      { word: 'Flower', emoji: '🌸' },
+      { word: 'Fire', emoji: '🔥' },
+      { word: 'Frog', emoji: '🐸' }
+    ], sound: '/f/' },
+    { letter: 'G', words: [
+      { word: 'Giraffe', emoji: '🦒' },
+      { word: 'Guitar', emoji: '🎸' },
+      { word: 'Gift', emoji: '🎁' },
+      { word: 'Grapes', emoji: '🍇' }
+    ], sound: '/g/' },
+    { letter: 'H', words: [
+      { word: 'House', emoji: '🏠' },
+      { word: 'Horse', emoji: '🐴' },
+      { word: 'Heart', emoji: '❤️' },
+      { word: 'Hat', emoji: '🎩' }
+    ], sound: '/h/' },
+    { letter: 'I', words: [
+      { word: 'Ice cream', emoji: '🍦' },
+      { word: 'Island', emoji: '🏝️' },
+      { word: 'Igloo', emoji: '⛄' },
+      { word: 'Iron', emoji: '👕' }
+    ], sound: '/aɪ/' },
+    { letter: 'J', words: [
+      { word: 'Juice', emoji: '🧃' },
+      { word: 'Jet', emoji: '🛩️' },
+      { word: 'Jewel', emoji: '💍' },
+      { word: 'Jacket', emoji: '🧥' }
+    ], sound: '/dʒ/' },
+    { letter: 'K', words: [
+      { word: 'Kite', emoji: '🪁' },
+      { word: 'Key', emoji: '🔑' },
+      { word: 'King', emoji: '👑' },
+      { word: 'Kangaroo', emoji: '🦘' }
+    ], sound: '/k/' },
+    { letter: 'L', words: [
+      { word: 'Lion', emoji: '🦁' },
+      { word: 'Leaf', emoji: '🍃' },
+      { word: 'Lamp', emoji: '💡' },
+      { word: 'Lemon', emoji: '🍋' }
+    ], sound: '/l/' },
+    { letter: 'M', words: [
+      { word: 'Mouse', emoji: '🐭' },
+      { word: 'Moon', emoji: '🌙' },
+      { word: 'Music', emoji: '🎵' },
+      { word: 'Mountain', emoji: '⛰️' }
+    ], sound: '/m/' },
+    { letter: 'N', words: [
+      { word: 'Nest', emoji: '🪺' },
+      { word: 'Nose', emoji: '👃' },
+      { word: 'Night', emoji: '🌃' },
+      { word: 'Nut', emoji: '🥜' }
+    ], sound: '/n/' },
+    { letter: 'O', words: [
+      { word: 'Orange', emoji: '🍊' },
+      { word: 'Owl', emoji: '🦉' },
+      { word: 'Ocean', emoji: '🌊' },
+      { word: 'Octopus', emoji: '🐙' }
+    ], sound: '/ɔ/' },
+    { letter: 'P', words: [
+      { word: 'Pizza', emoji: '🍕' },
+      { word: 'Penguin', emoji: '🐧' },
+      { word: 'Piano', emoji: '🎹' },
+      { word: 'Pineapple', emoji: '🍍' }
+    ], sound: '/p/' },
+    { letter: 'Q', words: [
+      { word: 'Queen', emoji: '👸' },
+      { word: 'Question', emoji: '❓' },
+      { word: 'Quilt', emoji: '🛏️' },
+      { word: 'Quail', emoji: '🐦' }
+    ], sound: '/kw/' },
+    { letter: 'R', words: [
+      { word: 'Robot', emoji: '🤖' },
+      { word: 'Rainbow', emoji: '🌈' },
+      { word: 'Rocket', emoji: '🚀' },
+      { word: 'Rose', emoji: '🌹' }
+    ], sound: '/r/' },
+    { letter: 'S', words: [
+      { word: 'Sun', emoji: '☀️' },
+      { word: 'Star', emoji: '⭐' },
+      { word: 'Snake', emoji: '🐍' },
+      { word: 'Ship', emoji: '🚢' }
+    ], sound: '/s/' },
+    { letter: 'T', words: [
+      { word: 'Tree', emoji: '🌳' },
+      { word: 'Tiger', emoji: '🐅' },
+      { word: 'Train', emoji: '🚂' },
+      { word: 'Turtle', emoji: '🐢' }
+    ], sound: '/t/' },
+    { letter: 'U', words: [
+      { word: 'Umbrella', emoji: '☂️' },
+      { word: 'Unicorn', emoji: '🦄' },
+      { word: 'UFO', emoji: '🛸' },
+      { word: 'Uniform', emoji: '👮' }
+    ], sound: '/ʌ/' },
+    { letter: 'V', words: [
+      { word: 'Violin', emoji: '🎻' },
+      { word: 'Volcano', emoji: '🌋' },
+      { word: 'Van', emoji: '🚐' },
+      { word: 'Vase', emoji: '🏺' }
+    ], sound: '/v/' },
+    { letter: 'W', words: [
+      { word: 'Whale', emoji: '🐋' },
+      { word: 'Water', emoji: '💧' },
+      { word: 'Watch', emoji: '⌚' },
+      { word: 'Wolf', emoji: '🐺' }
+    ], sound: '/w/' },
+    { letter: 'X', words: [
+      { word: 'Xylophone', emoji: '🎵' },
+      { word: 'X-ray', emoji: '🦴' },
+      { word: 'Xbox', emoji: '🎮' },
+      { word: 'Xerox', emoji: '📄' }
+    ], sound: '/ks/' },
+    { letter: 'Y', words: [
+      { word: 'Yacht', emoji: '⛵' },
+      { word: 'Yo-yo', emoji: '🪀' },
+      { word: 'Yarn', emoji: '🧶' },
+      { word: 'Yak', emoji: '🐂' }
+    ], sound: '/j/' },
+    { letter: 'Z', words: [
+      { word: 'Zebra', emoji: '🦓' },
+      { word: 'Zoo', emoji: '🏛️' },
+      { word: 'Zipper', emoji: '🤐' },
+      { word: 'Zero', emoji: '0️⃣' }
+], sound: '/z/' }
+  ]
+
+  // Number data for number matching activity
+  const numberData = {
+    1: [
+      { number: 1, items: [{ name: 'Apple', emoji: '🍎' }] },
+      { number: 1, items: [{ name: 'Sun', emoji: '☀️' }] },
+      { number: 1, items: [{ name: 'Moon', emoji: '🌙' }] },
+      { number: 1, items: [{ name: 'Star', emoji: '⭐' }] }
+    ],
+    2: [
+      { number: 2, items: [{ name: 'Eyes', emoji: '👀' }] },
+      { number: 2, items: [{ name: 'Cherries', emoji: '🍒🍒' }] },
+      { number: 2, items: [{ name: 'Hands', emoji: '🤝' }] },
+      { number: 2, items: [{ name: 'Feet', emoji: '👣' }] }
+    ],
+    3: [
+      { number: 3, items: [{ name: 'Bears', emoji: '🐻🐻🐻' }] },
+      { number: 3, items: [{ name: 'Balloons', emoji: '🎈🎈🎈' }] },
+      { number: 3, items: [{ name: 'Hearts', emoji: '❤️❤️❤️' }] },
+      { number: 3, items: [{ name: 'Cars', emoji: '🚗🚗🚗' }] }
+    ],
+    4: [
+      { number: 4, items: [{ name: 'Flowers', emoji: '🌸🌸🌸🌸' }] },
+      { number: 4, items: [{ name: 'Books', emoji: '📚📚📚📚' }] },
+      { number: 4, items: [{ name: 'Cats', emoji: '🐱🐱🐱🐱' }] },
+      { number: 4, items: [{ name: 'Wheels', emoji: '🎡🎡🎡🎡' }] }
+    ],
+    5: [
+      { number: 5, items: [{ name: 'Fingers', emoji: '✋' }] },
+      { number: 5, items: [{ name: 'Stars', emoji: '⭐⭐⭐⭐⭐' }] },
+      { number: 5, items: [{ name: 'Fish', emoji: '🐠🐠🐠🐠🐠' }] },
+      { number: 5, items: [{ name: 'Cookies', emoji: '🍪🍪🍪🍪🍪' }] }
+    ],
+    6: [
+      { number: 6, items: [{ name: 'Eggs', emoji: '🥚🥚🥚🥚🥚🥚' }] },
+      { number: 6, items: [{ name: 'Cupcakes', emoji: '🧁🧁🧁🧁🧁🧁' }] },
+      { number: 6, items: [{ name: 'Butterflies', emoji: '🦋🦋🦋🦋🦋🦋' }] },
+      { number: 6, items: [{ name: 'Donuts', emoji: '🍩🍩🍩🍩🍩🍩' }] }
+    ],
+    7: [
+      { number: 7, items: [{ name: 'Rainbows', emoji: '🌈🌈🌈🌈🌈🌈🌈' }] },
+      { number: 7, items: [{ name: 'Candies', emoji: '🍬🍬🍬🍬🍬🍬🍬' }] },
+      { number: 7, items: [{ name: 'Mushrooms', emoji: '🍄🍄🍄🍄🍄🍄🍄' }] },
+      { number: 7, items: [{ name: 'Gems', emoji: '💎💎💎💎💎💎💎' }] }
+    ],
+    8: [
+      { number: 8, items: [{ name: 'Octopus Arms', emoji: '🐙' }] },
+      { number: 8, items: [{ name: 'Pizza Slices', emoji: '🍕🍕🍕🍕🍕🍕🍕🍕' }] },
+      { number: 8, items: [{ name: 'Snowflakes', emoji: '❄️❄️❄️❄️❄️❄️❄️❄️' }] },
+      { number: 8, items: [{ name: 'Crayons', emoji: '🖍️🖍️🖍️🖍️🖍️🖍️🖍️🖍️' }] }
+    ],
+    9: [
+      { number: 9, items: [{ name: 'Ice Creams', emoji: '🍦🍦🍦🍦🍦🍦🍦🍦🍦' }] },
+      { number: 9, items: [{ name: 'Robots', emoji: '🤖🤖🤖🤖🤖🤖🤖🤖🤖' }] },
+      { number: 9, items: [{ name: 'Rockets', emoji: '🚀🚀🚀🚀🚀🚀🚀🚀🚀' }] },
+      { number: 9, items: [{ name: 'Presents', emoji: '🎁🎁🎁🎁🎁🎁🎁🎁🎁' }] }
+    ],
+    10: [
+      { number: 10, items: [{ name: 'Fingers', emoji: '🙌' }] },
+      { number: 10, items: [{ name: 'Bowling Pins', emoji: '🎳🎳🎳🎳🎳🎳🎳🎳🎳🎳' }] },
+      { number: 10, items: [{ name: 'Candles', emoji: '🕯️🕯️🕯️🕯️🕯️🕯️🕯️🕯️🕯️🕯️' }] },
+      { number: 10, items: [{ name: 'Balloons', emoji: '🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈' }] }
+    ]
+  }
+
+  // Convert to old format for compatibility with other game modes
+  const getCompatibleAlphabetData = () => {
+    return alphabetData.map(item => ({
+      letter: item.letter,
+      word: item.words[0].word,
+      sound: item.sound,
+      emoji: item.words[0].emoji
+    }))
+  }
+
+  // Level-based letter data for letter-match and picture-match modes
+  const letterData = {
+1: getCompatibleAlphabetData().slice(0, 4),   // A-D
+2: getCompatibleAlphabetData().slice(4, 8),   // E-H
+3: getCompatibleAlphabetData().slice(8, 12),  // I-L
+4: getCompatibleAlphabetData().slice(12, 16), // M-P
+5: getCompatibleAlphabetData().slice(16, 20), // Q-T
+6: getCompatibleAlphabetData().slice(20, 26)  // U-Z
+  }
+
+  // State for randomized letters in line-drawing mode
+  const [randomizedLetters, setRandomizedLetters] = useState([])
+const [letterCount, setLetterCount] = useState(5) // Default to 5 letters
+  const [randomSeed, setRandomSeed] = useState(0) // Force re-randomization
   const [matchedPairs, setMatchedPairs] = useState(new Set())
-  
-  // Initialize audio function
-  const initializeAudio = () => {
-    // Audio initialization logic would go here
-    console.log('Audio initialized')
+const [usedLineColors, setUsedLineColors] = useState(new Set())
+const availableColors = ['red', 'blue', 'green', 'orange', 'purple', 'pink', 'teal', 'yellow', 'indigo', 'lime']
+const [randomizedPictures, setRandomizedPictures] = useState([])
+// State to track letters used in the past 5 levels
+  const [usedLettersHistory, setUsedLettersHistory] = useState([])
+const [imagesPerLetter, setImagesPerLetter] = useState(1) // Default to 1 image per letter
+
+// Number activity states
+const [numberRange, setNumberRange] = useState(5) // Default to 1-5 numbers
+const [currentNumbers, setCurrentNumbers] = useState([])
+const [shuffledItemGroups, setShuffledItemGroups] = useState([])
+
+const [rearrangedPictureGroups, setRearrangedPictureGroups] = useState([])
+  // Utility functions for randomization
+  const shuffleArray = (array) => {
+    const shuffled = [...array]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
   }
 
-  // Mobile device detection utility
-  const detectMobileDevice = () => {
-    return (
-      'ontouchstart' in window ||
-      navigator.maxTouchPoints > 0 ||
-      navigator.msMaxTouchPoints > 0
+const selectRandomLetters = (count) => {
+    // Get all letters used in the past 5 levels
+    const recentlyUsedLetters = usedLettersHistory.flat().map(item => item.letter)
+    
+    // Filter out recently used letters from available alphabet
+const availableLetters = getCompatibleAlphabetData().filter(item =>
+      !recentlyUsedLetters.includes(item.letter)
     )
+    
+    // If we don't have enough unused letters, fall back to full alphabet
+const lettersToUse = availableLetters.length >= count
+? availableLetters
+: getCompatibleAlphabetData()
+    
+    // Shuffle and select the requested count
+    const shuffled = shuffleArray(lettersToUse)
+    return shuffled.slice(0, Math.min(count, lettersToUse.length))
+  }
+const shufflePictures = (letters) => {
+    return shuffleArray([...letters])
+  }
+// Generate pictures for letters based on imagesPerLetter setting
+// Generate pictures for letters based on imagesPerLetter setting
+const generatePicturesForLetters = (letters) => {
+    const pictures = []
+    
+    // Process each letter and generate exactly imagesPerLetter pictures
+    letters.forEach((letterItem, letterIndex) => {
+      const letterData = alphabetData.find(item => item.letter === letterItem.letter)
+      
+      if (letterData && letterData.words && letterData.words.length > 0) {
+        // Shuffle the available words to randomize selection
+        const shuffledWords = shuffleArray([...letterData.words])
+        
+        // Generate exactly imagesPerLetter pictures for this letter
+        for (let i = 0; i < imagesPerLetter; i++) {
+          // Use modulo to cycle through shuffled words if we need more than available
+          const wordIndex = i % shuffledWords.length
+          const selectedWord = shuffledWords[wordIndex]
+          
+          pictures.push({
+            letter: letterItem.letter,
+            word: selectedWord.word,
+            emoji: selectedWord.emoji,
+            sound: letterData.sound,
+            index: i, // Unique index for each picture within the letter
+            globalIndex: letterIndex * imagesPerLetter + i // Global unique index
+          })
+        }
+      } else {
+        // Fallback: if no letter data found, create placeholder pictures
+        for (let i = 0; i < imagesPerLetter; i++) {
+          pictures.push({
+            letter: letterItem.letter,
+            word: `${letterItem.letter}word${i + 1}`,
+            emoji: '❓',
+            sound: letterItem.sound || '/unknown/',
+            index: i,
+            globalIndex: letterIndex * imagesPerLetter + i
+          })
+        }
+      }
+    })
+    
+    return pictures
+  }
+// Group pictures by letter for display
+const groupPicturesByLetter = (pictures) => {
+    const groups = {}
+    pictures.forEach(picture => {
+      if (!groups[picture.letter]) {
+        groups[picture.letter] = []
+      }
+      groups[picture.letter].push(picture)
+    })
+    
+    // Return array of groups maintaining the order of letters
+    return getCurrentLetters().map(letterItem => ({
+      letter: letterItem.letter,
+      pictures: groups[letterItem.letter] || []
+}))
+  }
+// Randomization functions for display order
+  const shuffleLetterOrder = (letters) => {
+    return shuffleArray([...letters])
+  }
+  
+const shufflePicturesByDifferentLetters = (pictures) => {
+    return shuffleArray([...pictures])
+  }
+// Color management for lines
+  const getNextAvailableColor = () => {
+    // Find the first color that hasn't been used
+    for (let color of availableColors) {
+      if (!usedLineColors.has(color)) {
+        return color
+      }
+    }
+    // If all colors are used, cycle back to start
+    setUsedLineColors(new Set())
+    return availableColors[0]
   }
 
-  const getCurrentLetters = () => {
+const getCurrentLetters = () => {
     if (currentActivity === 'line-drawing') {
       return randomizedLetters
     }
     return letterData[level] || letterData[1]
   }
 
-const getCurrentNumbers = () => {
-    return currentNumbers
+  const getCurrentNumbers = () => {
+    if (currentActivity === 'number-match') {
+      return currentNumbers
+    }
+    return []
   }
-  // Initialize mobile device detection
-  useEffect(() => {
-    setIsMobileDevice(detectMobileDevice())
-  }, [])
-// Scroll lock management for mobile devices
-// Scroll lock management for mobile devices
-  useEffect(() => {
-    const shouldLockScroll = isMobileDevice && (
-      isDrawing || 
-      selectedPicture !== null || 
-      selectedLetter !== null || 
-      selectedNumber !== null
-    )
 
-    if (shouldLockScroll && !isScrollLocked) {
-      // Apply immediate scroll lock without position changes
-      setIsScrollLocked(true)
+const generateNumberSet = () => {
+    const numbers = []
+    const items = []
+    
+    for (let i = 1; i <= numberRange; i++) {
+      const availableItems = numberData[i] || []
+      const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)]
       
-      // Apply CSS-based scroll prevention without position manipulation
-      document.body.style.overflow = 'hidden'
-      document.body.style.touchAction = 'none'
-      document.body.style.overscrollBehavior = 'none'
-      document.body.style.position = 'relative'
+      numbers.push({
+        number: i,
+        items: randomItem.items,
+        displayItems: randomItem.items
+      })
       
-      document.documentElement.style.overflow = 'hidden'
-      document.documentElement.style.touchAction = 'none'
-      document.documentElement.style.overscrollBehavior = 'none'
-      
-    } else if (!shouldLockScroll && isScrollLocked) {
-      // Remove scroll lock without position restoration
-      setIsScrollLocked(false)
-      
-      // Remove CSS-based scroll prevention
-      document.body.style.overflow = ''
-      document.body.style.touchAction = ''
-      document.body.style.overscrollBehavior = ''
-      document.body.style.position = ''
-      
-      document.documentElement.style.overflow = ''
-      document.documentElement.style.touchAction = ''
-      document.documentElement.style.overscrollBehavior = ''
+      items.push({
+        number: i,
+        items: randomItem.items,
+        displayItems: randomItem.items
+      })
     }
+    
+    // Shuffle items to different positions than numbers
+    const shuffledItems = shuffleArray([...items])
+    setShuffledItemGroups(shuffledItems)
+    
+    return numbers
+  }
 
-    // Cleanup function to ensure scroll lock is removed
-    return () => {
-      if (isScrollLocked) {
-        document.body.style.overflow = ''
-        document.body.style.touchAction = ''
-        document.body.style.overscrollBehavior = ''
-        document.body.style.position = ''
-        
-        document.documentElement.style.overflow = ''
-        document.documentElement.style.touchAction = ''
-        document.documentElement.style.overscrollBehavior = ''
-      }
+  const generateNewSet = () => {
+    // Clear all connected lines and game state when generating new set
+    setDrawingLines([])
+    setCompletedLetters(new Set())
+    setMatchedPairs(new Set())
+    setUsedLineColors(new Set())
+    
+    const newLetters = selectRandomLetters(letterCount)
+    const newPictures = generatePicturesForLetters(newLetters)
+    const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
+    setRandomizedLetters(newLetters)
+    setRandomizedPictures(shuffledPictures)
+    setRandomSeed(prev => prev + 1)
+  }
+
+  const handleLetterCountChange = (newCount) => {
+    setLetterCount(newCount)
+    // Clear all connected lines and game state when settings change
+    setDrawingLines([])
+    setCompletedLetters(new Set())
+    setMatchedPairs(new Set())
+    setUsedLineColors(new Set())
+    
+    const newLetters = selectRandomLetters(newCount)
+    const newPictures = generatePicturesForLetters(newLetters)
+    const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
+    setRandomizedLetters(newLetters)
+    setRandomizedPictures(shuffledPictures)
+  }
+
+  const handleImagesPerLetterChange = (newCount) => {
+    setImagesPerLetter(newCount)
+    // Clear all connected lines and game state when settings change
+    setDrawingLines([])
+    setCompletedLetters(new Set())
+    setMatchedPairs(new Set())
+    setUsedLineColors(new Set())
+    
+    if (randomizedLetters.length > 0) {
+      const newPictures = generatePicturesForLetters(randomizedLetters)
+      const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
+      setRandomizedPictures(shuffledPictures)
     }
-  }, [isMobileDevice, isDrawing, selectedPicture, selectedLetter, selectedNumber, isScrollLocked])
+  }
+  // Generate initial randomized letters
+useEffect(() => {
+    if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
+const newLetters = selectRandomLetters(letterCount)
+      setRandomizedLetters(newLetters)
+const newPictures = generatePicturesForLetters(newLetters)
+const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
+setRandomizedPictures(shuffledPictures)
+    }
+}, [currentActivity, letterCount, imagesPerLetter])
 
 // Register connection points for all interactive elements
   useEffect(() => {
@@ -231,25 +582,41 @@ const getCurrentNumbers = () => {
     }
   }, [currentActivity, randomizedLetters, randomizedPictures, currentNumbers, shuffledItemGroups])
 
-// Audio simulation (in real app, this would play actual audio files)
+  // Audio simulation (in real app, this would play actual audio files)
 const playSound = (letter, type = 'letter') => {
     // Simulate audio feedback
     if (type === 'correct') {
-      // Audio feedback for correct answers
-      console.log('Correct answer audio feedback')
+      const message = currentActivity === 'picture-match' 
+        ? '🎉 Perfect match! You matched the picture to the letter!'
+        : '🎉 Excellent! You got it right!'
+      toast.success(message, {
+        autoClose: 2000,
+        hideProgressBar: false
+      })
     } else if (type === 'incorrect') {
-      // Audio feedback for incorrect answers
-      console.log('Incorrect answer audio feedback')
+      const message = currentActivity === 'picture-match'
+        ? 'Try again! Look at the picture and find its starting letter!'
+        : 'Try again! You can do it!'
+      toast.error(message, {
+        autoClose: 1500,
+        hideProgressBar: false
+      })
     } else if (type === 'picture') {
-      // Audio feedback for picture selection
-      console.log(`Picture audio: ${letter}`)
+      toast.info(`This picture starts with the letter "${letter}"`, {
+        autoClose: 2000,
+        hideProgressBar: false
+      })
     } else {
-      if (type === 'number') {
-        // Audio feedback for number selection
-        console.log(`Number audio: ${letter}`)
+if (type === 'number') {
+        toast.info(`Number ${letter}! Count carefully!`, {
+          autoClose: 2000,
+          hideProgressBar: false
+        })
       } else {
-        // Audio feedback for letter selection
-        console.log(`Letter audio: ${letter}`)
+        toast.info(`Letter ${letter} says "${getCurrentLetters().find(l => l.letter === letter)?.sound}"`, {
+          autoClose: 2000,
+          hideProgressBar: false
+        })
       }
     }
   }
@@ -280,13 +647,14 @@ setScore(prev => prev + 10)
       playSound(selectedLetter.letter, 'correct')
       setSelectedLetter(null)
       // Check if level is complete
-if (completedLetters.size + 1 >= getCurrentLetters().length) {
+      if (completedLetters.size + 1 >= getCurrentLetters().length) {
         setGameState('celebrating')
         setTimeout(() => {
           setLevel(prev => prev + 1)
           setCompletedLetters(new Set())
           setMatchedPairs(new Set())
           setGameState('playing')
+          toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
         }, 2000)
       }
     } else {
@@ -306,21 +674,26 @@ if (completedLetters.size + 1 >= getCurrentLetters().length) {
       setSelectedPicture(null)
       setDraggedLetter(null)
       
-if (completedLetters.size + 1 >= getCurrentLetters().length) {
+      // Check if level is complete
+      if (completedLetters.size + 1 >= getCurrentLetters().length) {
         setGameState('celebrating')
         setTimeout(() => {
           setLevel(prev => prev + 1)
           setCompletedLetters(new Set())
           setMatchedPairs(new Set())
-}, 2000)
+          setGameState('playing')
+          toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
+        }, 2000)
       }
     } else {
       // Incorrect match
       playSound(selectedPicture?.letter, 'incorrect')
       setSelectedPicture(null)
-      setDraggedLetter(null)
-    }
+setSelectedPicture(null)
+    setDraggedLetter(null)
   }
+}
+
 const handleNumberMatch = (targetNumber) => {
   if (selectedNumber && selectedNumber.number === targetNumber) {
     // Correct match
@@ -330,6 +703,7 @@ const handleNumberMatch = (targetNumber) => {
     playSound(targetNumber, 'correct')
     setSelectedNumber(null)
     
+    // Check if level is complete
     if (completedLetters.size + 1 >= getCurrentNumbers().length) {
       setGameState('celebrating')
       setTimeout(() => {
@@ -338,6 +712,7 @@ const handleNumberMatch = (targetNumber) => {
         setMatchedPairs(new Set())
         setGameState('playing')
         setCurrentNumbers(generateNumberSet())
+        toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
       }, 2000)
     }
   } else {
@@ -346,6 +721,7 @@ const handleNumberMatch = (targetNumber) => {
     setSelectedNumber(null)
   }
 }
+
 const switchActivity = (newActivity) => {
     if (newActivity !== currentActivity) {
       setCurrentActivity(newActivity)
@@ -363,15 +739,25 @@ const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
 const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
         setRandomizedLetters(newLetters)
-        setRandomizedPictures(shuffledPictures)
-      }
-      
-      if (newActivity === 'number-match') {
-        setCurrentNumbers(generateNumberSet())
-      }
+setRandomizedLetters(newLetters)
+      setRandomizedPictures(shuffledPictures)
     }
+    
+    const activityNames = {
+      'letter-match': 'Letter to Word',
+      'picture-match': 'Picture to Letter',
+      'line-drawing': 'Draw Lines',
+      'number-match': 'Count & Match'
+    }
+    
+    // Generate initial number set for number matching
+    if (newActivity === 'number-match') {
+      setCurrentNumbers(generateNumberSet())
+    }
+    
+    toast.info(`Switched to ${activityNames[newActivity]} matching!`)
   }
-
+}
 const resetActivity = () => {
     setSelectedLetter(null)
     setSelectedPicture(null)
@@ -406,11 +792,12 @@ setScore(0)
   // Reset letter history for fresh start
   setUsedLettersHistory([])
   
-const newLetters = selectRandomLetters(letterCount)
+  const newLetters = selectRandomLetters(letterCount)
   const newPictures = generatePicturesForLetters(newLetters)
   const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
   setRandomizedLetters(newLetters)
   setRandomizedPictures(shuffledPictures)
+  toast.info('🔄 Game reset! Let\'s start fresh!')
 }
 
 const toggleHint = () => {
@@ -584,8 +971,9 @@ const handleDrawingStart = (e, type, item) => {
     setCurrentLine(null)
     setIsDrawing(false)
   }
-return (
-    <div className={`w-full max-w-7xl mx-auto ${isMobileDevice && isScrollLocked ? 'fit-screen' : ''}`}>
+
+  return (
+    <div className="w-full max-w-7xl mx-auto">
       {/* Game Header with Stats */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
@@ -751,11 +1139,11 @@ Level {level} Progress
                 <div>
                   <h4 className="text-lg font-bold text-surface-800 font-heading">Number Range</h4>
                   <p className="text-sm text-surface-600">Choose how many numbers to practice (1 to selected number)</p>
-</div>
+                </div>
               </div>
               
-              <div className="flex items-center justify-center gap-3 mb-4">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((range) => (
+              <div className="flex items-center justify-center gap-3 mb-4 flex-wrap">
+                {[5, 6, 7, 8, 9, 10].map((range) => (
                   <motion.button
                     key={range}
                     whileHover={{ scale: 1.1 }}
@@ -765,11 +1153,10 @@ Level {level} Progress
                       setCurrentNumbers(generateNumberSet())
                       setCompletedLetters(new Set())
                       setMatchedPairs(new Set())
-                      setSelectedNumber(null)
                     }}
                     className={`w-12 h-12 rounded-full text-lg font-bold transition-all duration-300 ${
                       numberRange === range
-                        ? 'bg-green-500 text-white shadow-playful ring-2 ring-green-500/50'
+                        ? 'bg-green-500 text-white shadow-playful ring-2 ring-green-300'
                         : 'bg-surface-200 text-surface-600 hover:bg-surface-300 hover:shadow-soft'
                     }`}
                   >
@@ -1363,32 +1750,13 @@ Level {level} Progress
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className={`relative ${isMobileDevice ? 'mobile-matching-container interaction-locked' : ''}`}
-          style={isMobileDevice ? { touchAction: 'none', overflow: 'hidden' } : {}}
+          className="relative"
           onMouseMove={handleDrawingMove}
           onMouseUp={handleDrawingEnd}
-          onTouchMove={(e) => {
-            if (isMobileDevice) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-            handleDrawingMove(e)
-          }}
-          onTouchEnd={(e) => {
-            if (isMobileDevice) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-            handleDrawingEnd(e)
-          }}
-          onTouchStart={(e) => {
-            if (isMobileDevice) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-          }}
+          onTouchMove={handleDrawingMove}
+          onTouchEnd={handleDrawingEnd}
         >
-          <div className={`activity-card relative overflow-hidden ${isMobileDevice && isScrollLocked ? 'scrollable-content locked' : ''}`}>
+          <div className="activity-card relative overflow-hidden">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-bubble flex items-center justify-center">
                 <ApperIcon name="Pen" className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -1545,15 +1913,9 @@ Level {level} Progress
                       data-number={item.number}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-onMouseDown={(e) => handleDrawingStart(e, 'number', item)}
-                      onTouchStart={(e) => {
-                        if (isMobileDevice) {
-                          e.preventDefault()
-                          e.stopPropagation()
-                        }
-                        handleDrawingStart(e, 'number', item)
-                      }}
-                      style={isMobileDevice ? { touchAction: 'none' } : {}}
+                      transition={{ delay: index * 0.1 }}
+                      onMouseDown={(e) => handleDrawingStart(e, 'number', item)}
+                      onTouchStart={(e) => handleDrawingStart(e, 'number', item)}
                       className={`letter-card cursor-pointer text-center relative select-none ${
                         completedLetters.has(item.number.toString())
                           ? 'bg-green-100 border-green-300 opacity-75'
@@ -1595,15 +1957,9 @@ onMouseDown={(e) => handleDrawingStart(e, 'number', item)}
                       data-item={`${item.number}-${index}`}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-onMouseDown={(e) => handleDrawingStart(e, 'item', item)}
-                      onTouchStart={(e) => {
-                        if (isMobileDevice) {
-                          e.preventDefault()
-                          e.stopPropagation()
-                        }
-                        handleDrawingStart(e, 'item', item)
-                      }}
-                      style={isMobileDevice ? { touchAction: 'none' } : {}}
+                      transition={{ delay: index * 0.1 + 0.2 }}
+                      onMouseDown={(e) => handleDrawingStart(e, 'item', item)}
+                      onTouchStart={(e) => handleDrawingStart(e, 'item', item)}
                       className={`letter-card cursor-pointer text-center relative select-none ${
                         completedLetters.has(item.number.toString())
                           ? 'bg-green-100 border-green-300 opacity-75'
@@ -1653,38 +2009,19 @@ onMouseDown={(e) => handleDrawingStart(e, 'item', item)}
             </motion.div>
           )}
         </motion.div>
-) : (
+      ) : (
         // Line Drawing Mode
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className={`relative ${isMobileDevice ? 'mobile-drawing-container interaction-locked' : ''}`}
-          style={isMobileDevice ? { touchAction: 'none', overflow: 'hidden' } : {}}
+          className="relative"
           onMouseMove={handleDrawingMove}
           onMouseUp={handleDrawingEnd}
-          onTouchMove={(e) => {
-            if (isMobileDevice) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-            handleDrawingMove(e)
-          }}
-          onTouchEnd={(e) => {
-            if (isMobileDevice) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-            handleDrawingEnd(e)
-          }}
-          onTouchStart={(e) => {
-            if (isMobileDevice) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-          }}
+          onTouchMove={handleDrawingMove}
+          onTouchEnd={handleDrawingEnd}
         >
-          <div className={`activity-card relative overflow-hidden ${isMobileDevice && isScrollLocked ? 'scrollable-content locked' : ''}`}>
+          <div className="activity-card relative overflow-hidden">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-accent rounded-bubble flex items-center justify-center">
                 <ApperIcon name="Pen" className="w-4 h-4 sm:w-5 sm:h-5 text-surface-700" />
@@ -1733,9 +2070,9 @@ stroke="url(#active-gradient)"
                   className="animate-pulse"
                   style={{
                     dropShadow: '0 0 12px rgba(255, 230, 109, 0.8)'
-}}
+                  }}
                 />
-              )}
+)}
               
               <defs>
               
@@ -1843,15 +2180,9 @@ key={`letter-${item.letter}`}
                       data-letter={item.letter}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-onMouseDown={(e) => handleDrawingStart(e, 'letter', item)}
-                      onTouchStart={(e) => {
-                        if (isMobileDevice) {
-                          e.preventDefault()
-                          e.stopPropagation()
-                        }
-                        handleDrawingStart(e, 'letter', item)
-                      }}
-                      style={isMobileDevice ? { touchAction: 'none' } : {}}
+                      transition={{ delay: index * 0.1 }}
+                      onMouseDown={(e) => handleDrawingStart(e, 'letter', item)}
+                      onTouchStart={(e) => handleDrawingStart(e, 'letter', item)}
                       className={`letter-card cursor-pointer text-center relative select-none ${
                         completedLetters.has(item.letter)
                           ? 'bg-green-100 border-green-300 opacity-75'
@@ -1903,15 +2234,9 @@ onMouseDown={(e) => handleDrawingStart(e, 'letter', item)}
                         data-picture={`${item.letter}-${item.index}`}
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
-                        onTouchStart={(e) => {
-                          if (isMobileDevice) {
-                            e.preventDefault()
-                            e.stopPropagation()
-                          }
-                          handleDrawingStart(e, 'picture', item)
-                        }}
-                        style={isMobileDevice ? { touchAction: 'none' } : {}}
+                        transition={{ delay: index * 0.1 + 0.2 }}
+                        onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
+                        onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
                         className={`letter-card cursor-pointer text-center relative select-none ${
                           completedLetters.has(item.letter)
                             ? 'bg-green-100 border-green-300 opacity-75'
@@ -1921,11 +2246,11 @@ onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
                         {completedLetters.has(item.letter) && (
                           <motion.div
                             initial={{ scale: 0 }}
-animate={{ scale: 1 }}
+                            animate={{ scale: 1 }}
                             className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
-                          >
+>
                             <ApperIcon name="Check" className="w-4 h-4 text-white" />
-                          </motion.div>
+</motion.div>
                         )}
                         
 <div className="text-4xl sm:text-5xl mb-3 pointer-events-none">
