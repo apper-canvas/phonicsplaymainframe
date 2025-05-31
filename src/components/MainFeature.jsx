@@ -1105,14 +1105,50 @@ Level {level} Progress
               </div>
               
               <div className="text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-200 rounded-bubble">
-                  <span className="text-sm font-medium text-surface-700">
-                    Currently: <strong>1 to {numberRange}</strong>
-                  </span>
+<div className="inline-flex items-center gap-2 px-3 py-2 bg-green-200 rounded-bubble">
+                    <span className="text-sm font-medium text-surface-700">
+                      Currently: <strong>1 to {numberRange}</strong>
+                    </span>
+                  </div>
+                  <p className="text-xs text-surface-500 mt-2">
+                    Higher numbers = more challenging counting
+                  </p>
                 </div>
-                <p className="text-xs text-surface-500 mt-2">
-                  Higher numbers = more challenging counting
-                </p>
+              </div>
+
+              {/* Action Section */}
+            <div className="mt-6 pt-6 border-t border-surface-200">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-center sm:text-left">
+                  <div className="flex items-center gap-2 text-surface-700 mb-1">
+                    <ApperIcon name="Hash" className="w-4 h-4" />
+                    <span className="font-medium">Current Selection</span>
+                  </div>
+                  <div className="text-sm text-surface-600">
+                    <span className="font-medium">Range:</span> 1 to {numberRange}
+                  </div>
+                  <div className="text-xs text-surface-500 mt-1">
+                    {numberRange} numbers to practice
+                  </div>
+                </div>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    setCurrentNumbers(generateNumberSet())
+                    setCompletedLetters(new Set())
+                    setMatchedPairs(new Set())
+                    setSelectedNumber(null)
+                  }}
+                  className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-bubble shadow-soft hover:shadow-playful transition-all duration-300"
+                >
+                  <ApperIcon name="Shuffle" className="w-5 h-5" />
+                  <div className="text-left">
+                    <div className="font-bold text-sm">Generate New Set</div>
+                    <div className="text-xs opacity-90">Get different items</div>
+                  </div>
+                </motion.button>
               </div>
             </div>
           </motion.div>
