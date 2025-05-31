@@ -311,11 +311,11 @@ const selectRandomLetters = (count) => {
     return shuffled.slice(0, Math.min(count, lettersToUse.length))
   }
 }
+  
   const shufflePictures = (letters) => {
     return shuffleArray([...letters])
   }
-}
-  // Generate pictures for letters based on imagesPerLetter setting
+  
   // Generate pictures for letters based on imagesPerLetter setting
   const generatePicturesForLetters = (letters) => {
     const pictures = []
@@ -374,9 +374,9 @@ const selectRandomLetters = (count) => {
     return getCurrentLetters().map(letterItem => ({
       letter: letterItem.letter,
       pictures: groups[letterItem.letter] || []
-    }))
+}))
   }
-}
+  
   // Randomization functions for display order
   const shuffleLetterOrder = (letters) => {
     return shuffleArray([...letters])
@@ -385,7 +385,7 @@ const selectRandomLetters = (count) => {
   const shufflePicturesByDifferentLetters = (pictures) => {
     return shuffleArray([...pictures])
   }
-}
+  
   // Color management for lines
   const getNextAvailableColor = () => {
     // Find the first color that hasn't been used
@@ -410,9 +410,8 @@ const selectRandomLetters = (count) => {
     if (currentActivity === 'number-match') {
       return currentNumbers
     }
-    return []
+return []
   }
-}
 
   const generateNumberSet = () => {
     const numbers = []
@@ -440,6 +439,7 @@ const selectRandomLetters = (count) => {
     setShuffledItemGroups(shuffledItems)
     
     return numbers
+  }
 
   const generateNewSet = () => {
     // Clear all connected lines and game state when generating new set
@@ -482,9 +482,10 @@ const selectRandomLetters = (count) => {
     if (randomizedLetters.length > 0) {
       const newPictures = generatePicturesForLetters(randomizedLetters)
       const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
-      setRandomizedPictures(shuffledPictures)
+setRandomizedPictures(shuffledPictures)
     }
-}
+  }
+  
   // Generate initial randomized letters
   useEffect(() => {
     if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
@@ -495,7 +496,6 @@ const selectRandomLetters = (count) => {
       setRandomizedPictures(shuffledPictures)
     }
   }, [currentActivity, letterCount, imagesPerLetter])
-}, [currentActivity, letterCount, imagesPerLetter])
 
   // Register connection points for all interactive elements
   // Register connection points for all interactive elements
@@ -587,9 +587,8 @@ const selectRandomLetters = (count) => {
         clearTimeout(timer2)
         clearTimeout(timer3)
       }
-    }
+}
   }, [currentActivity, randomizedLetters, randomizedPictures, currentNumbers, shuffledItemGroups])
-}, [currentActivity, randomizedLetters, randomizedPictures, currentNumbers, shuffledItemGroups])
 
   // Audio simulation (in real app, this would play actual audio files)
   const playSound = (letter, type = 'letter') => {
@@ -622,15 +621,14 @@ playSound(letter.letter)
   const handleNumberSelect = (number) => {
     setSelectedNumber(number)
     setAttempts(prev => prev + 1)
-    playSound(number.number, 'number')
+playSound(number.number, 'number')
   }
-}
 
   const handlePictureSelect = (item) => {
     setSelectedPicture(item)
     setAttempts(prev => prev + 1)
     playSound(item.letter, 'picture')
-}
+  }
 
   const handleWordMatch = (word) => {
     if (selectedLetter && selectedLetter.word.toLowerCase() === word.toLowerCase()) {
@@ -680,10 +678,10 @@ setTimeout(() => {
 // Incorrect match
       playSound(selectedPicture?.letter, 'incorrect')
       setSelectedPicture(null)
-      setDraggedLetter(null)
+setDraggedLetter(null)
     }
   }
-}
+  
   const handleNumberMatch = (targetNumber) => {
     if (selectedNumber && selectedNumber.number === targetNumber) {
       // Correct match
@@ -739,11 +737,12 @@ const switchActivity = (newActivity) => {
     }
     
     // Generate initial number set for number matching
-    if (newActivity === 'number-match') {
+if (newActivity === 'number-match') {
       setCurrentNumbers(generateNumberSet())
     }
   }
-const resetGame = () => {
+
+  const resetGame = () => {
     setScore(0)
     setLevel(1)
     setAttempts(0)
@@ -768,7 +767,7 @@ const resetGame = () => {
     setRandomizedLetters(newLetters)
     setRandomizedPictures(shuffledPictures)
   }
-}
+  
   const toggleHint = () => {
     setShowHint(!showHint)
   }
@@ -786,9 +785,8 @@ const resetGame = () => {
   useEffect(() => {
     if (currentActivity === 'number-match' && currentNumbers.length === 0) {
       setCurrentNumbers(generateNumberSet())
-    }
+}
   }, [currentActivity, numberRange])
-}, [currentActivity, numberRange])
 
   // Line drawing functions with improved accuracy
   const getElementCenter = (element) => {
@@ -861,10 +859,9 @@ const resetGame = () => {
     const point = {
       x: clientX - svgRect.left,
       y: clientY - svgRect.top
-    }
+}
     setCurrentLine(prev => ({ ...prev, end: point }))
   }
-}
 
   const handleDrawingEnd = (e) => {
     if (!isDrawing || !currentLine) return
@@ -967,10 +964,10 @@ const resetGame = () => {
       // Incorrect connection
       playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
     }
-}
     
     setCurrentLine(null)
     setIsDrawing(false)
+  }
 
   return (
     <div className="w-full max-w-7xl mx-auto">
@@ -1045,9 +1042,8 @@ const resetGame = () => {
               className="progress-fill"
             />
           </div>
-        </div>
+</div>
       </motion.div>
-</motion.div>
 
       {/* Activity Selector */}
       <motion.div
@@ -1112,11 +1108,11 @@ const resetGame = () => {
             <ApperIcon name="Hash" className="w-4 h-4 sm:w-5 sm:h-5" />
             <span className="font-medium text-sm sm:text-base">Count & Match</span>
           </motion.button>
-        </div>
+</div>
       </motion.div>
-</motion.div>
 
       {/* Number Matching Configuration */}
+      {currentActivity === 'number-match' && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -1213,11 +1209,11 @@ const resetGame = () => {
                 </motion.button>
               </div>
             </div>
-          </motion.div>
+</motion.div>
         )}
-)}
 
       {/* Line Drawing Configuration */}
+      {currentActivity === 'line-drawing' && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -1348,7 +1344,7 @@ const resetGame = () => {
                   </div>
                 </motion.button>
               </div>
-            </div>
+</div>
           </motion.div>
         )}
 
@@ -1362,9 +1358,8 @@ const resetGame = () => {
             className="activity-card mb-6 bg-accent/20 border-accent/30"
           >
             <div className="flex items-start gap-3">
-              <ApperIcon name="Info" className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
+<ApperIcon name="Info" className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
               <div className="text-sm sm:text-base text-surface-700">
-<div className="text-sm sm:text-base text-surface-700">
                 <p className="font-medium mb-2">How to play:</p>
                 {currentActivity === 'letter-match' ? (
                   <ol className="list-decimal list-inside space-y-1">
@@ -1377,7 +1372,7 @@ const resetGame = () => {
                     <li>Click on a picture to hear what it starts with</li>
                     <li>Drag the picture to the correct letter</li>
                     <li>Match pictures to letters to earn points!</li>
-</ol>
+                  </ol>
                 ) : currentActivity === 'line-drawing' ? (
                   <ol className="list-decimal list-inside space-y-1">
                     <li>Click and hold on a letter or picture</li>
@@ -1397,10 +1392,8 @@ const resetGame = () => {
         )}
       </AnimatePresence>
 
-{/* Main Game Area */}
-      {currentActivity === 'letter-match' ? (
       {/* Main Game Area */}
-{currentActivity === 'letter-match' ? (
+      {currentActivity === 'letter-match' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {/* Letters Section */}
           <motion.div
@@ -1555,9 +1548,9 @@ const resetGame = () => {
                     Find a word that starts with "<strong>{selectedLetter.letter}</strong>"
                   </div>
                 </div>
-              </motion.div>
-            )}
 </motion.div>
+            )}
+          </motion.div>
         </div>
       ) : currentActivity === 'picture-match' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
@@ -1743,9 +1736,9 @@ const resetGame = () => {
                   <div className="text-sm sm:text-base text-surface-700">
                     Drag "<strong>{selectedPicture.word}</strong>" to the letter "<strong>{selectedPicture.letter}</strong>"
                   </div>
-                </div>
+</div>
               </motion.div>
-)}
+            )}
           </motion.div>
         </div>
 ) : currentActivity === 'number-match' ? (
@@ -2072,8 +2065,8 @@ d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + c
                   className="animate-pulse"
                   style={{
                     dropShadow: '0 0 12px rgba(255, 230, 109, 0.8)'
-                  }}
-/>
+}}
+                />
               )}
               
               <defs>
@@ -2163,19 +2156,18 @@ d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + c
                   <feMerge> 
                     <feMergeNode in="coloredBlur"/>
                     <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
+</feMerge>
                 </filter>
-</defs>
+              </defs>
             </svg>
-<div className="drawing-columns-container">
+            
+            <div className="drawing-columns-container">
               {/* Letters Column - Left Side */}
               <div className="drawing-column letters-column">
                 <div className="column-header">
                   <h3 className="text-xl font-bold text-center text-primary mb-6">Letters</h3>
-                </div>
-                <div className="column-content">
+<div className="column-content">
                   {getCurrentLetters().map((item, index) => (
-{getCurrentLetters().map((item, index) => (
                     <motion.div
                       key={`letter-${item.letter}`}
                       data-letter={item.letter}
@@ -2209,9 +2201,10 @@ d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + c
                         {randomizedPictures
                           .filter(pic => pic.letter === item.letter)
                           .map(pic => pic.word)
-                          .join(', ')
+.join(', ')
                         }
-}
+                      </div>
+                      
                       {/* Connection Point */}
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="w-4 h-4 bg-primary rounded-full opacity-40 border-2 border-white shadow-sm"></div>
@@ -2223,9 +2216,9 @@ d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + c
               
               {/* Pictures Column - Right Side */}
               <div className="drawing-column pictures-column">
-                <div className="column-header">
+<div className="column-header">
                   <h3 className="text-xl font-bold text-center text-secondary mb-6">Pictures</h3>
-</div>
+                </div>
                 <div className="column-content">
                   <div className={`grid grid-cols-dynamic-${imagesPerLetter} gap-3 md:gap-4`}>
                     {randomizedPictures.map((item, index) => (
@@ -2245,16 +2238,18 @@ d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + c
                       >
                         {completedLetters.has(item.letter) && (
                           <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+animate={{ scale: 1 }}
+                            className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
                           >
                             <ApperIcon name="Check" className="w-4 h-4 text-white" />
                           </motion.div>
                         )}
-<div className="text-4xl sm:text-5xl mb-3 pointer-events-none">
+                        
+                        <div className="text-4xl sm:text-5xl mb-3 pointer-events-none">
                           {item.emoji}
                         </div>
+                        
+                        {/* Connection Point */}
                         {/* Connection Point */}
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                           <div className="w-4 h-4 bg-secondary rounded-full opacity-40 border-2 border-white shadow-sm"></div>
@@ -2262,11 +2257,10 @@ className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-c
                       </motion.div>
                     ))}
                   </div>
-                </div>
-              </div>
 </div>
+              </div>
             </div>
-          
+          </div>
           {isDrawing && currentLine && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
