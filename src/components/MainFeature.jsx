@@ -1662,10 +1662,10 @@ Level {level} Progress
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
                 Choose a Number
-              </h2>
+</h2>
             </div>
             
-            <div className="grid grid-cols-1 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
               {getCurrentNumbers().map((item, index) => (
 <motion.div
                   key={item.number}
@@ -1728,10 +1728,10 @@ Level {level} Progress
               </div>
 <h2 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
                 Count and Match
-              </h2>
+</h2>
             </div>
             
-            <div className="grid grid-cols-1 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
               {shuffledItemGroups.map((item, index) => (
 <motion.div
                   key={`items-${item.number}-${index}`}
