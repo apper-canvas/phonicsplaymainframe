@@ -513,8 +513,7 @@ setRandomizedPictures(shuffledPictures)
   useEffect(() => {
     setIsMobileDevice(detectMobileDevice())
   }, [])
-
-  // Scroll lock management for mobile devices
+// Scroll lock management for mobile devices
   useEffect(() => {
     const shouldLockScroll = isMobileDevice && (
       isDrawing || 
@@ -524,43 +523,22 @@ setRandomizedPictures(shuffledPictures)
     )
 
     if (shouldLockScroll && !isScrollLocked) {
-      // Apply scroll lock
+      // Apply scroll lock using CSS classes to prevent scroll jump
       setIsScrollLocked(true)
-      document.documentElement.classList.add('overflow-hidden-mobile')
-      document.body.classList.add('overflow-hidden-mobile')
-      document.documentElement.style.overflow = 'hidden'
-      document.body.style.overflow = 'hidden'
-      document.body.style.position = 'fixed'
-      document.body.style.width = '100%'
-      document.body.style.height = '100%'
-      document.body.style.top = '0'
-      document.body.style.left = '0'
+      document.documentElement.classList.add('scroll-position-lock', 'no-scroll-bounce')
+      document.body.classList.add('mobile-scroll-lock', 'no-scroll-bounce')
     } else if (!shouldLockScroll && isScrollLocked) {
       // Remove scroll lock
       setIsScrollLocked(false)
-      document.documentElement.classList.remove('overflow-hidden-mobile')
-      document.body.classList.remove('overflow-hidden-mobile')
-      document.documentElement.style.overflow = ''
-      document.body.style.overflow = ''
-      document.body.style.position = ''
-      document.body.style.width = ''
-      document.body.style.height = ''
-      document.body.style.top = ''
-      document.body.style.left = ''
+      document.documentElement.classList.remove('scroll-position-lock', 'no-scroll-bounce')
+      document.body.classList.remove('mobile-scroll-lock', 'no-scroll-bounce')
     }
 
     // Cleanup function to ensure scroll lock is removed
     return () => {
       if (isScrollLocked) {
-        document.documentElement.classList.remove('overflow-hidden-mobile')
-        document.body.classList.remove('overflow-hidden-mobile')
-        document.documentElement.style.overflow = ''
-        document.body.style.overflow = ''
-        document.body.style.position = ''
-        document.body.style.width = ''
-        document.body.style.height = ''
-        document.body.style.top = ''
-        document.body.style.left = ''
+        document.documentElement.classList.remove('scroll-position-lock', 'no-scroll-bounce')
+        document.body.classList.remove('mobile-scroll-lock', 'no-scroll-bounce')
       }
     }
   }, [isMobileDevice, isDrawing, selectedPicture, selectedLetter, selectedNumber, isScrollLocked])
