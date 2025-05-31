@@ -1633,12 +1633,12 @@ key={`letter-${item.letter}`}
                         </div>
                       </motion.div>
                     ))}
+))}
                   </div>
                   </div>
             </div>
-</div>
-</div>
-            
+          </div>
+        </motion.div>
             {isDrawing && currentLine && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -1647,7 +1647,7 @@ key={`letter-${item.letter}`}
               >
                 <div className="flex items-center gap-3 justify-center">
                   <ApperIcon name="Hand" className="w-5 h-5 text-accent" />
-                  <div className="text-sm sm:text-base text-surface-700 font-medium">
+<div className="text-sm sm:text-base text-surface-700 font-medium">
                     Draw a line to connect <strong>{currentLine.startItem.letter}</strong> with its matching picture!
                   </div>
                 </div>
