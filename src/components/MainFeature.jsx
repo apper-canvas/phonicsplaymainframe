@@ -2269,8 +2269,12 @@ key={`letter-${item.letter}`}
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ delay: index * 0.1 + 0.2 }}
-                        onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
-                        onTouchStart={(e) => handleDrawingStart(e, 'picture', item)}
+onMouseDown={(e) => handleDrawingStart(e, 'picture', item)}
+                        onTouchStart={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          handleDrawingStart(e, 'picture', item)
+                        }}
                         className={`letter-card cursor-pointer text-center relative select-none ${
                           completedLetters.has(item.letter)
                             ? 'bg-green-100 border-green-300 opacity-75'
