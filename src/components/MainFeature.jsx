@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { toast } from 'react-toastify'
 import ApperIcon from './ApperIcon'
 
 const MainFeature = () => {
@@ -582,41 +581,25 @@ setRandomizedPictures(shuffledPictures)
     }
   }, [currentActivity, randomizedLetters, randomizedPictures, currentNumbers, shuffledItemGroups])
 
-  // Audio simulation (in real app, this would play actual audio files)
+// Audio simulation (in real app, this would play actual audio files)
 const playSound = (letter, type = 'letter') => {
     // Simulate audio feedback
     if (type === 'correct') {
-      const message = currentActivity === 'picture-match' 
-        ? '🎉 Perfect match! You matched the picture to the letter!'
-        : '🎉 Excellent! You got it right!'
-      toast.success(message, {
-        autoClose: 2000,
-        hideProgressBar: false
-      })
+      // Audio feedback for correct answers
+      console.log('Correct answer audio feedback')
     } else if (type === 'incorrect') {
-      const message = currentActivity === 'picture-match'
-        ? 'Try again! Look at the picture and find its starting letter!'
-        : 'Try again! You can do it!'
-      toast.error(message, {
-        autoClose: 1500,
-        hideProgressBar: false
-      })
+      // Audio feedback for incorrect answers
+      console.log('Incorrect answer audio feedback')
     } else if (type === 'picture') {
-      toast.info(`This picture starts with the letter "${letter}"`, {
-        autoClose: 2000,
-        hideProgressBar: false
-      })
+      // Audio feedback for picture selection
+      console.log(`Picture audio: ${letter}`)
     } else {
-if (type === 'number') {
-        toast.info(`Number ${letter}! Count carefully!`, {
-          autoClose: 2000,
-          hideProgressBar: false
-        })
+      if (type === 'number') {
+        // Audio feedback for number selection
+        console.log(`Number audio: ${letter}`)
       } else {
-        toast.info(`Letter ${letter} says "${getCurrentLetters().find(l => l.letter === letter)?.sound}"`, {
-          autoClose: 2000,
-          hideProgressBar: false
-        })
+        // Audio feedback for letter selection
+        console.log(`Letter audio: ${letter}`)
       }
     }
   }
@@ -647,14 +630,13 @@ setScore(prev => prev + 10)
       playSound(selectedLetter.letter, 'correct')
       setSelectedLetter(null)
       // Check if level is complete
-      if (completedLetters.size + 1 >= getCurrentLetters().length) {
+if (completedLetters.size + 1 >= getCurrentLetters().length) {
         setGameState('celebrating')
         setTimeout(() => {
           setLevel(prev => prev + 1)
           setCompletedLetters(new Set())
           setMatchedPairs(new Set())
           setGameState('playing')
-          toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
         }, 2000)
       }
     } else {
@@ -674,26 +656,23 @@ setScore(prev => prev + 10)
       setSelectedPicture(null)
       setDraggedLetter(null)
       
-      // Check if level is complete
-      if (completedLetters.size + 1 >= getCurrentLetters().length) {
+if (completedLetters.size + 1 >= getCurrentLetters().length) {
         setGameState('celebrating')
         setTimeout(() => {
           setLevel(prev => prev + 1)
           setCompletedLetters(new Set())
           setMatchedPairs(new Set())
-          setGameState('playing')
-          toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
-        }, 2000)
+}, 2000)
       }
     } else {
       // Incorrect match
       playSound(selectedPicture?.letter, 'incorrect')
       setSelectedPicture(null)
-setSelectedPicture(null)
-    setDraggedLetter(null)
+      setDraggedLetter(null)
+    }
   }
-}
 
+const handleNumberMatch = (targetNumber) => {
 const handleNumberMatch = (targetNumber) => {
   if (selectedNumber && selectedNumber.number === targetNumber) {
     // Correct match
@@ -703,8 +682,7 @@ const handleNumberMatch = (targetNumber) => {
     playSound(targetNumber, 'correct')
     setSelectedNumber(null)
     
-    // Check if level is complete
-    if (completedLetters.size + 1 >= getCurrentNumbers().length) {
+if (completedLetters.size + 1 >= getCurrentNumbers().length) {
       setGameState('celebrating')
       setTimeout(() => {
         setLevel(prev => prev + 1)
@@ -712,8 +690,7 @@ const handleNumberMatch = (targetNumber) => {
         setMatchedPairs(new Set())
         setGameState('playing')
         setCurrentNumbers(generateNumberSet())
-        toast.success(`🌟 Level ${level} Complete! Moving to Level ${level + 1}!`)
-      }, 2000)
+}, 2000)
     }
   } else {
     // Incorrect match
@@ -739,25 +716,15 @@ const newLetters = selectRandomLetters(letterCount)
 const newPictures = generatePicturesForLetters(newLetters)
 const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
         setRandomizedLetters(newLetters)
-setRandomizedLetters(newLetters)
-      setRandomizedPictures(shuffledPictures)
+        setRandomizedPictures(shuffledPictures)
+      }
+      
+      if (newActivity === 'number-match') {
+        setCurrentNumbers(generateNumberSet())
+      }
     }
-    
-    const activityNames = {
-      'letter-match': 'Letter to Word',
-      'picture-match': 'Picture to Letter',
-      'line-drawing': 'Draw Lines',
-      'number-match': 'Count & Match'
-    }
-    
-    // Generate initial number set for number matching
-    if (newActivity === 'number-match') {
-      setCurrentNumbers(generateNumberSet())
-    }
-    
-    toast.info(`Switched to ${activityNames[newActivity]} matching!`)
   }
-}
+
 const resetActivity = () => {
     setSelectedLetter(null)
     setSelectedPicture(null)
@@ -792,12 +759,11 @@ setScore(0)
   // Reset letter history for fresh start
   setUsedLettersHistory([])
   
-  const newLetters = selectRandomLetters(letterCount)
+const newLetters = selectRandomLetters(letterCount)
   const newPictures = generatePicturesForLetters(newLetters)
   const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
   setRandomizedLetters(newLetters)
   setRandomizedPictures(shuffledPictures)
-  toast.info('🔄 Game reset! Let\'s start fresh!')
 }
 
 const toggleHint = () => {
