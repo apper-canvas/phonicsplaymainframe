@@ -173,9 +173,9 @@ const [drawingLines, setDrawingLines] = useState([])
       { word: 'Yarn', emoji: '🧶' },
       { word: 'Yak', emoji: '🐂' }
     ], sound: '/j/' },
-    { letter: 'Z', words: [
+{ letter: 'Z', words: [
       { word: 'Zebra', emoji: '🦓' },
-{ word: 'Zero', emoji: '0️⃣' }
+      { word: 'Zero', emoji: '0️⃣' }
     ], sound: '/z/' }
   ]
 
@@ -725,7 +725,7 @@ setRandomizedLetters(newLetters)
         setRandomizedPictures(shuffledPictures)
       }
     }
-    const activityNames = {
+const activityNames = {
       'letter-match': 'Letter to Word',
       'picture-match': 'Picture to Letter',
       'line-drawing': 'Draw Lines',
@@ -734,11 +734,9 @@ setRandomizedLetters(newLetters)
     
     // Generate initial number set for number matching
     if (newActivity === 'number-match') {
-setCurrentNumbers(generateNumberSet())
+      setCurrentNumbers(generateNumberSet())
     }
   }
-}
-const resetActivity = () => {
     setSelectedLetter(null)
     setSelectedPicture(null)
     setDraggedLetter(null)
