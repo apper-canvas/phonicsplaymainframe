@@ -1665,9 +1665,9 @@ Level {level} Progress
 </h2>
             </div>
             
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+            <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
               {getCurrentNumbers().map((item, index) => (
-<motion.div
+                <motion.div
                   key={item.number}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -1731,9 +1731,9 @@ Level {level} Progress
 </h2>
             </div>
             
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+            <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
               {shuffledItemGroups.map((item, index) => (
-<motion.div
+                <motion.div
                   key={`items-${item.number}-${index}`}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
