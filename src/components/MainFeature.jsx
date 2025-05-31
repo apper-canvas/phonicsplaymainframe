@@ -177,11 +177,11 @@ const [drawingLines, setDrawingLines] = useState([])
     { letter: 'Z', words: [
       { word: 'Zebra', emoji: '🦓' },
       { word: 'Zoo', emoji: '🏛️' },
-      { word: 'Zipper', emoji: '🤐' },
-      { word: 'Zero', emoji: '0️⃣' }
-], sound: '/z/' }
+{ word: 'Zero', emoji: '0️⃣' }
+    ], sound: '/z/' }
   ]
 
+  // Number data for number matching activity
   // Number data for number matching activity
   const numberData = {
     1: [
@@ -671,8 +671,6 @@ if (completedLetters.size + 1 >= getCurrentLetters().length) {
       setDraggedLetter(null)
     }
   }
-
-const handleNumberMatch = (targetNumber) => {
 const handleNumberMatch = (targetNumber) => {
   if (selectedNumber && selectedNumber.number === targetNumber) {
     // Correct match
@@ -682,7 +680,7 @@ const handleNumberMatch = (targetNumber) => {
     playSound(targetNumber, 'correct')
     setSelectedNumber(null)
     
-if (completedLetters.size + 1 >= getCurrentNumbers().length) {
+    if (completedLetters.size + 1 >= getCurrentNumbers().length) {
       setGameState('celebrating')
       setTimeout(() => {
         setLevel(prev => prev + 1)
@@ -690,7 +688,7 @@ if (completedLetters.size + 1 >= getCurrentNumbers().length) {
         setMatchedPairs(new Set())
         setGameState('playing')
         setCurrentNumbers(generateNumberSet())
-}, 2000)
+      }, 2000)
     }
   } else {
     // Incorrect match
@@ -698,7 +696,6 @@ if (completedLetters.size + 1 >= getCurrentNumbers().length) {
     setSelectedNumber(null)
   }
 }
-
 const switchActivity = (newActivity) => {
     if (newActivity !== currentActivity) {
       setCurrentActivity(newActivity)
@@ -2036,9 +2033,9 @@ stroke="url(#active-gradient)"
                   className="animate-pulse"
                   style={{
                     dropShadow: '0 0 12px rgba(255, 230, 109, 0.8)'
-                  }}
+}}
                 />
-)}
+              )}
               
               <defs>
               
@@ -2212,11 +2209,11 @@ key={`letter-${item.letter}`}
                         {completedLetters.has(item.letter) && (
                           <motion.div
                             initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
+animate={{ scale: 1 }}
                             className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
->
+                          >
                             <ApperIcon name="Check" className="w-4 h-4 text-white" />
-</motion.div>
+                          </motion.div>
                         )}
                         
 <div className="text-4xl sm:text-5xl mb-3 pointer-events-none">
