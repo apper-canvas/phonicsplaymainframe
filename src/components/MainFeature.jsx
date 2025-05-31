@@ -731,7 +731,7 @@ const switchActivity = (newActivity) => {
       }
     }
 }
-    const activityNames = {
+const activityNames = {
       'letter-match': 'Letter to Word',
       'picture-match': 'Picture to Letter',
       'line-drawing': 'Draw Lines',
@@ -739,11 +739,10 @@ const switchActivity = (newActivity) => {
     }
     
     // Generate initial number set for number matching
-if (newActivity === 'number-match') {
-setCurrentNumbers(generateNumberSet())
+    if (newActivity === 'number-match') {
+      setCurrentNumbers(generateNumberSet())
     }
   }
-
   const resetGame = () => {
     setScore(0)
     setLevel(1)
@@ -967,8 +966,7 @@ setUsedLineColors(new Set()) // Reset colors for new level
       playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
 playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
     }
-    
-    setCurrentLine(null)
+setCurrentLine(null)
     setIsDrawing(false)
   }
 
