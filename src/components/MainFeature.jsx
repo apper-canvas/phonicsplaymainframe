@@ -167,9 +167,9 @@ const [drawingLines, setDrawingLines] = useState([])
       { word: 'Xbox', emoji: '🎮' },
       { word: 'Xerox', emoji: '📄' }
     ], sound: '/ks/' },
-    { letter: 'Y', words: [
+{ letter: 'Y', words: [
       { word: 'Yacht', emoji: '⛵' },
-{ word: 'Yo-yo', emoji: '🪀' },
+      { word: 'Yo-yo', emoji: '🪀' },
       { word: 'Yarn', emoji: '🧶' },
       { word: 'Yak', emoji: '🐂' }
     ], sound: '/j/' },
@@ -307,10 +307,10 @@ const selectRandomLetters = (count) => {
       : getCompatibleAlphabetData()
     
     // Shuffle and select the requested count
+// Shuffle and select the requested count
     const shuffled = shuffleArray(lettersToUse)
     return shuffled.slice(0, Math.min(count, lettersToUse.length))
   }
-}
   
   const shufflePictures = (letters) => {
     return shuffleArray([...letters])
@@ -651,8 +651,9 @@ playSound(number.number, 'number')
     } else {
       // Incorrect match
       playSound(selectedLetter?.letter, 'incorrect')
-      setSelectedLetter(null)
+setSelectedLetter(null)
     }
+  }
 
   const handlePictureMatch = (targetLetter) => {
     if (selectedPicture && selectedPicture.letter === targetLetter) {
@@ -705,9 +706,10 @@ setDraggedLetter(null)
     } else {
       // Incorrect match
       playSound(selectedNumber?.number, 'incorrect')
-      setSelectedNumber(null)
+setSelectedNumber(null)
     }
   }
+
 const switchActivity = (newActivity) => {
     if (newActivity !== currentActivity) {
       setCurrentActivity(newActivity)
@@ -738,7 +740,7 @@ const switchActivity = (newActivity) => {
     
     // Generate initial number set for number matching
 if (newActivity === 'number-match') {
-      setCurrentNumbers(generateNumberSet())
+setCurrentNumbers(generateNumberSet())
     }
   }
 
@@ -764,7 +766,7 @@ if (newActivity === 'number-match') {
     const newLetters = selectRandomLetters(letterCount)
     const newPictures = generatePicturesForLetters(newLetters)
     const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
-    setRandomizedLetters(newLetters)
+setRandomizedLetters(newLetters)
     setRandomizedPictures(shuffledPictures)
   }
   
@@ -783,9 +785,9 @@ if (newActivity === 'number-match') {
 
   // Initialize numbers when component mounts or activity changes
   useEffect(() => {
-    if (currentActivity === 'number-match' && currentNumbers.length === 0) {
+if (currentActivity === 'number-match' && currentNumbers.length === 0) {
       setCurrentNumbers(generateNumberSet())
-}
+    }
   }, [currentActivity, numberRange])
 
   // Line drawing functions with improved accuracy
@@ -2164,9 +2166,10 @@ d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + c
             <div className="drawing-columns-container">
               {/* Letters Column - Left Side */}
               <div className="drawing-column letters-column">
-                <div className="column-header">
+<div className="column-header">
                   <h3 className="text-xl font-bold text-center text-primary mb-6">Letters</h3>
-<div className="column-content">
+                </div>
+                <div className="column-content">
                   {getCurrentLetters().map((item, index) => (
                     <motion.div
                       key={`letter-${item.letter}`}
@@ -2236,9 +2239,10 @@ d={`M ${currentLine.start.x} ${currentLine.start.y} Q ${(currentLine.start.x + c
                             : 'hover:shadow-playful hover:scale-105'
                         }`}
                       >
-                        {completedLetters.has(item.letter) && (
+{completedLetters.has(item.letter) && (
                           <motion.div
-animate={{ scale: 1 }}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
                             className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
                           >
                             <ApperIcon name="Check" className="w-4 h-4 text-white" />
