@@ -958,22 +958,18 @@ if (currentActivity === 'number-match' && currentNumbers.length === 0) {
           setCompletedLetters(new Set())
           setMatchedPairs(new Set())
           setDrawingLines([])
-          setUsedLineColors(new Set()) // Reset colors for new level
+setUsedLineColors(new Set()) // Reset colors for new level
           setGameState('playing')
         }, 2000)
       }
     } else {
       // Incorrect connection
       playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
-setCurrentLine(null)
-    setIsDrawing(false)
-setCurrentLine(null)
+    }
+    
+    setCurrentLine(null)
     setIsDrawing(false)
   }
-
-  setCurrentLine(null)
-  setIsDrawing(false)
-}
 
   return (
     <div className="w-full max-w-7xl mx-auto">
