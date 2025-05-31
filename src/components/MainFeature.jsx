@@ -83,52 +83,9 @@ const MainFeature = () => {
     return letterData[level] || letterData[1]
   }
 
-  const getCurrentNumbers = () => {
-    if (currentActivity === 'number-match') {
-      return currentNumbers
-    }
-return []
+const getCurrentNumbers = () => {
+    return currentNumbers
   }
-  const handleLetterCountChange = (newCount) => {
-    setLetterCount(newCount)
-    // Clear all connected lines and game state when settings change
-    setDrawingLines([])
-    setCompletedLetters(new Set())
-    setMatchedPairs(new Set())
-    setUsedLineColors(new Set())
-    
-    const newLetters = selectRandomLetters(newCount)
-    const newPictures = generatePicturesForLetters(newLetters)
-    const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
-    setRandomizedLetters(newLetters)
-    setRandomizedPictures(shuffledPictures)
-  }
-
-  const handleImagesPerLetterChange = (newCount) => {
-    setImagesPerLetter(newCount)
-    // Clear all connected lines and game state when settings change
-    setDrawingLines([])
-    setCompletedLetters(new Set())
-    setMatchedPairs(new Set())
-    setUsedLineColors(new Set())
-    
-    if (randomizedLetters.length > 0) {
-      const newPictures = generatePicturesForLetters(randomizedLetters)
-      const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
-      setRandomizedPictures(shuffledPictures)
-    }
-  }
-  // Generate initial randomized letters
-useEffect(() => {
-    if (currentActivity === 'line-drawing' || randomizedLetters.length === 0) {
-const newLetters = selectRandomLetters(letterCount)
-      setRandomizedLetters(newLetters)
-const newPictures = generatePicturesForLetters(newLetters)
-const shuffledPictures = shufflePicturesByDifferentLetters(newPictures)
-setRandomizedPictures(shuffledPictures)
-    }
-}, [currentActivity, letterCount, imagesPerLetter])
-
   // Initialize mobile device detection
   useEffect(() => {
     setIsMobileDevice(detectMobileDevice())
