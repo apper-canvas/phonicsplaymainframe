@@ -1132,13 +1132,13 @@ return (
                     <div className="font-bold text-sm">Generate New Set</div>
                     <div className="text-xs opacity-90">Get different items</div>
                   </div>
-</motion.button>
+</div>
+                </motion.button>
               </div>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
       )}
-      {/* Line Drawing Configuration */}
       {currentActivity === 'line-drawing' && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
