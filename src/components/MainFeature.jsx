@@ -969,82 +969,8 @@ playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorre
 setCurrentLine(null)
 setIsDrawing(false)
   }
-  return (
+return (
     <div className="w-full max-w-7xl mx-auto">
-      {/* Game Header with Stats */}
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="activity-card mb-6"
-      >
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4 sm:gap-6">
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">
-                {score}
-              </div>
-              <div className="text-xs sm:text-sm text-surface-600">Score</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-secondary">
-                {level}
-              </div>
-              <div className="text-xs sm:text-sm text-surface-600">Level</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-accent">
-                {attempts}
-              </div>
-              <div className="text-xs sm:text-sm text-surface-600">Tries</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={toggleHint}
-              className={`p-2 sm:p-3 rounded-bubble transition-all duration-300 ${
-                showHint 
-                  ? 'bg-accent text-surface-700 shadow-letter' 
-                  : 'bg-surface-200 text-surface-600 hover:bg-accent hover:text-surface-700'
-              }`}
-            >
-              <ApperIcon name="Lightbulb" className="w-5 h-5 sm:w-6 sm:h-6" />
-            </motion.button>
-            
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={resetGame}
-              className="p-2 sm:p-3 bg-primary text-white rounded-bubble hover:bg-primary-dark transition-all duration-300 shadow-soft hover:shadow-playful"
-            >
-              <ApperIcon name="RotateCcw" className="w-5 h-5 sm:w-6 sm:h-6" />
-            </motion.button>
-          </div>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="mt-4 sm:mt-6">
-          <div className="flex items-center justify-between mb-2">
-<span className="text-sm sm:text-base font-medium text-surface-700">
-              Level {level} Progress
-            </span>
-            <span className="text-sm sm:text-base text-surface-600">
-              {completedLetters.size}/{getCurrentItems().length}
-            </span>
-          </div>
-          <div className="progress-bar">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPercentage}%` }}
-              transition={{ duration: 0.5 }}
-              className="progress-fill"
-            />
-          </div>
-</div>
-      </motion.div>
-
       {/* Activity Selector */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
@@ -1113,8 +1039,8 @@ setIsDrawing(false)
 
       {/* Number Matching Configuration */}
       {currentActivity === 'number-match' && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             className="activity-card mt-6"
@@ -1208,13 +1134,13 @@ setIsDrawing(false)
                   </div>
                 </motion.button>
               </div>
+</div>
             </div>
-</motion.div>
+          </motion.div>
         )}
 
       {/* Line Drawing Configuration */}
       {currentActivity === 'line-drawing' && (
-          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -1343,8 +1269,8 @@ setIsDrawing(false)
                     <div className="text-xs opacity-90">Get different letters</div>
                   </div>
                 </motion.button>
-              </div>
 </div>
+            </div>
           </motion.div>
         )}
 
