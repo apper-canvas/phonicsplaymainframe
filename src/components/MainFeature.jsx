@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ApperIcon from './ApperIcon'
-const MainFeature = () => {
-const [currentActivity, setCurrentActivity] = useState('letter-match') // 'letter-match', 'picture-match', 'line-drawing', or 'number-match'
+const MainFeature = ({ initialActivity = 'letter-match' }) => {
+  const [currentActivity, setCurrentActivity] = useState(initialActivity) // 'letter-match', 'picture-match', 'line-drawing', or 'number-match'
   const [selectedLetter, setSelectedLetter] = useState(null)
   const [selectedNumber, setSelectedNumber] = useState(null)
   const [score, setScore] = useState(0)

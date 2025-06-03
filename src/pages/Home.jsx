@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import MainFeature from '../components/MainFeature'
 import ApperIcon from '../components/ApperIcon'
 
 const Home = () => {
+  const navigate = useNavigate()
   const [currentTime, setCurrentTime] = useState(new Date())
   const [showWelcome, setShowWelcome] = useState(true)
 
@@ -96,31 +98,43 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Navigation Menu */}
+{/* Navigation Menu */}
           <nav className="mt-6">
             <div className="flex flex-wrap items-center justify-center gap-3 md:gap-6">
-              <button className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group">
+              <button 
+                onClick={() => navigate('/letter-to-word')}
+                className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group"
+              >
                 <div className="flex items-center space-x-2">
                   <span className="text-xl md:text-2xl group-hover:animate-bounce">📝</span>
                   <span className="text-sm md:text-base font-semibold text-neutral-700">Letter to Word</span>
                 </div>
               </button>
               
-              <button className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group">
+              <button 
+                onClick={() => navigate('/picture-to-letter')}
+                className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group"
+              >
                 <div className="flex items-center space-x-2">
                   <span className="text-xl md:text-2xl group-hover:animate-bounce">🖼️</span>
                   <span className="text-sm md:text-base font-semibold text-neutral-700">Picture to Letter</span>
                 </div>
               </button>
               
-              <button className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group">
+              <button 
+                onClick={() => navigate('/draw-lines')}
+                className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group"
+              >
                 <div className="flex items-center space-x-2">
                   <span className="text-xl md:text-2xl group-hover:animate-bounce">✏️</span>
                   <span className="text-sm md:text-base font-semibold text-neutral-700">Draw Lines</span>
                 </div>
               </button>
               
-              <button className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group">
+              <button 
+                onClick={() => navigate('/count-and-match')}
+                className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group"
+              >
                 <div className="flex items-center space-x-2">
                   <span className="text-xl md:text-2xl group-hover:animate-bounce">🔢</span>
                   <span className="text-sm md:text-base font-semibold text-neutral-700">Count and Match</span>
