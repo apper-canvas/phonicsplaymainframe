@@ -1138,7 +1138,6 @@ return (
           </div>
         </motion.div>
       )}
-
       {/* Line Drawing Configuration */}
       {currentActivity === 'line-drawing' && (
         <motion.div
