@@ -238,6 +238,9 @@ content: [
         'xl': '16px',
         '2xl': '24px',
 '3xl': '32px'
+      },
+      transitionDuration: {
+        '400': '400ms'
       }
     }
   },
