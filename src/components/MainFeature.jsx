@@ -1132,22 +1132,23 @@ return (
                     <div className="font-bold text-sm">Generate New Set</div>
                     <div className="text-xs opacity-90">Get different items</div>
                   </div>
-                </motion.button>
+</motion.button>
               </div>
-</div>
             </div>
-          </motion.div>
-        )}
+          </div>
+        </motion.div>
+      )}
 
       {/* Line Drawing Configuration */}
       {currentActivity === 'line-drawing' && (
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="activity-card mt-6"
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-accent rounded-bubble flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="activity-card mt-6"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-accent rounded-bubble flex items-center justify-center">
                 <ApperIcon name="Settings" className="w-4 h-4 sm:w-5 sm:h-5 text-surface-700" />
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-surface-800 font-heading">
