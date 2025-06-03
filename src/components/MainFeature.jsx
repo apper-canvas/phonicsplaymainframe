@@ -963,7 +963,6 @@ setUsedLineColors(new Set()) // Reset colors for new level
       }
     } else {
       // Incorrect connection
-      playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
 playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
     }
 setCurrentLine(null)
@@ -1128,19 +1127,19 @@ return (
                   className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-bubble shadow-soft hover:shadow-playful transition-all duration-300"
                 >
                   <ApperIcon name="Shuffle" className="w-5 h-5" />
+<ApperIcon name="Shuffle" className="w-5 h-5" />
                   <div className="text-left">
                     <div className="font-bold text-sm">Generate New Set</div>
                     <div className="text-xs opacity-90">Get different items</div>
                   </div>
-</div>
                 </motion.button>
+</motion.button>
               </div>
             </div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+
       {currentActivity === 'line-drawing' && (
-        <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
@@ -1268,8 +1267,8 @@ return (
                     <div className="font-bold text-sm">Generate New Set</div>
                     <div className="text-xs opacity-90">Get different letters</div>
                   </div>
-                </motion.button>
-</div>
+</motion.button>
+              </div>
             </div>
           </motion.div>
         )}
