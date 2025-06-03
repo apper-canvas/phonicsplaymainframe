@@ -39,105 +39,48 @@ const Home = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.2 }}
             className="fixed inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 backdrop-blur-sm z-50 flex items-center justify-center"
-          >
+>
             <motion.div
               initial={{ y: 50 }}
               animate={{ y: 0 }}
               className="text-center"
             >
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 0.5, repeat: 2 }}
-                className="text-6xl mb-4"
-              >
-                📚
-              </motion.div>
-              <h1 className="text-4xl font-bold text-primary mb-2 font-heading">
-                Welcome to PhonicsPlay!
+              <h1 className="text-4xl font-bold text-white mb-4">
+                {getGreeting()}!
               </h1>
-              <p className="text-xl text-surface-600">
-                Let's learn letters and sounds together!
+              <p className="text-xl text-white/80">
+                Welcome to KidPlay
               </p>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-{/* Header */}
-      <motion.header
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="glass-card-strong border-b border-white/30 shadow-premium"
-      >
-        <div className="container mx-auto px-6 py-6 sm:py-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+      {/* Header */}
+      <header className="relative z-10 p-4 md:p-6">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="flex items-center justify-between w-full max-w-6xl">
             <motion.div
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="flex items-center gap-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center space-x-3"
             >
-              <div className="w-14 h-14 sm:w-18 sm:h-18 glass-medium rounded-2xl flex items-center justify-center shadow-elevated backdrop-blur-xl">
-                <span className="text-2xl sm:text-3xl">📖</span>
-              </div>
-<div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-primary-700 font-heading tracking-tight">
+              <div className="text-3xl">🎮</div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-neutral-800">
                   KidPlay
                 </h1>
-                <p className="text-base sm:text-lg text-neutral-600 font-medium">
-                  Fun Learning Adventures
+                <p className="text-sm text-neutral-600">
+                  {currentTime.toLocaleTimeString()}
                 </p>
               </div>
             </motion.div>
-
-            <div className="flex items-center gap-6 text-center sm:text-right">
-              <div className="hidden sm:block space-y-1">
-                <p className="text-xl font-semibold text-neutral-700 tracking-tight">
-                  {getGreeting()}!
-                </p>
-                <p className="text-sm text-neutral-500 font-medium">
-                  {currentTime.toLocaleDateString('en-US', { 
-                    weekday: 'long',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
-                </p>
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.05, rotate: 90 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                className="w-12 h-12 sm:w-14 sm:h-14 glass-medium rounded-xl flex items-center justify-center shadow-elevated hover:shadow-premium transition-all duration-300 backdrop-blur-xl"
-              >
-                <ApperIcon name="Settings" className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-700" />
-              </motion.button>
-            </div>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 sm:py-8">
-        <MainFeature />
-      </main>
-
-      {/* Footer */}
-      <motion.footer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="bg-white/60 backdrop-blur-sm border-t border-white/20 mt-12"
-      >
-        <div className="container mx-auto px-4 py-6 sm:py-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-surface-600">
-              <ApperIcon name="Heart" className="w-4 h-4 text-primary" />
-              <span className="text-sm">Made with love for young learners</span>
-            </div>
-            <div className="flex items-center gap-4">
+            
+            <div className="flex items-center space-x-2">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="flex items-center gap-2 text-sm text-surface-600 hover:text-primary transition-colors"
+                className="flex items-center gap-2 text-sm text-neutral-600 hover:text-primary-500 transition-colors"
               >
                 <ApperIcon name="HelpCircle" className="w-4 h-4" />
                 Help
@@ -145,17 +88,74 @@ const Home = () => {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-className="flex items-center gap-2 text-sm text-neutral-600 hover:text-primary-500 transition-colors"
+                className="flex items-center gap-2 text-sm text-neutral-600 hover:text-primary-500 transition-colors"
               >
                 <ApperIcon name="Mail" className="w-4 h-4" />
                 Contact
               </motion.button>
             </div>
           </div>
+
+          {/* Navigation Menu */}
+          <nav className="mt-6">
+            <div className="flex flex-wrap items-center justify-center gap-3 md:gap-6">
+              <button className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl md:text-2xl group-hover:animate-bounce">📝</span>
+                  <span className="text-sm md:text-base font-semibold text-neutral-700">Letter to Word</span>
+                </div>
+              </button>
+              
+              <button className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl md:text-2xl group-hover:animate-bounce">🖼️</span>
+                  <span className="text-sm md:text-base font-semibold text-neutral-700">Picture to Letter</span>
+                </div>
+              </button>
+              
+              <button className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl md:text-2xl group-hover:animate-bounce">✏️</span>
+                  <span className="text-sm md:text-base font-semibold text-neutral-700">Draw Lines</span>
+                </div>
+              </button>
+              
+              <button className="glass-card px-4 py-3 md:px-6 md:py-3 hover:scale-105 transition-all duration-300 group">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl md:text-2xl group-hover:animate-bounce">🔢</span>
+                  <span className="text-sm md:text-base font-semibold text-neutral-700">Count and Match</span>
+                </div>
+              </button>
+            </div>
+          </nav>
         </div>
-      </motion.footer>
+      </header>
+
+      {/* Welcome Section */}
+      <main className="flex-1 flex items-center justify-center px-4 pb-8">
+        <div className="text-center space-y-8 max-w-4xl mx-auto">
+          <div className="glass-card-strong p-12 md:p-16 space-y-6">
+            <div className="space-y-4">
+              <h2 className="text-4xl md:text-6xl font-display font-bold text-neutral-800 leading-tight">
+                Welcome to{' '}
+                <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                  KidPlay
+                </span>
+              </h2>
+              <p className="text-xl md:text-2xl text-neutral-600 font-medium leading-relaxed">
+                Where learning meets imagination
+              </p>
+            </div>
+            
+            <div className="pt-6">
+              <p className="text-lg md:text-xl text-neutral-700 leading-relaxed max-w-2xl mx-auto">
+                Discover the joy of learning through interactive games and activities designed to spark creativity and build foundational skills.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   )
 }
-
 export default Home
