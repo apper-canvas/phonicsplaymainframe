@@ -143,7 +143,7 @@ const Home = () => {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="flex items-center gap-2 text-sm text-surface-600 hover:text-primary transition-colors"
+className="flex items-center gap-2 text-sm text-neutral-600 hover:text-primary-500 transition-colors"
               >
                 <ApperIcon name="Mail" className="w-4 h-4" />
                 Contact
