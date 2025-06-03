@@ -967,9 +967,8 @@ setUsedLineColors(new Set()) // Reset colors for new level
 playSound(currentLine.startItem.letter || currentLine.startItem.number, 'incorrect')
     }
 setCurrentLine(null)
-    setIsDrawing(false)
+setIsDrawing(false)
   }
-
   return (
     <div className="w-full max-w-7xl mx-auto">
       {/* Game Header with Stats */}
