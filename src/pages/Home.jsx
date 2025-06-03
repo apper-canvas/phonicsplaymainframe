@@ -79,12 +79,12 @@ const Home = () => {
               <div className="w-14 h-14 sm:w-18 sm:h-18 glass-medium rounded-2xl flex items-center justify-center shadow-elevated backdrop-blur-xl">
                 <span className="text-2xl sm:text-3xl">📖</span>
               </div>
-              <div>
+<div>
                 <h1 className="text-3xl sm:text-4xl font-bold text-primary-700 font-heading tracking-tight">
-                  PhonicsPlay
+                  KidPlay
                 </h1>
                 <p className="text-base sm:text-lg text-neutral-600 font-medium">
-                  Interactive Learning Platform
+                  Fun Learning Adventures
                 </p>
               </div>
             </motion.div>
