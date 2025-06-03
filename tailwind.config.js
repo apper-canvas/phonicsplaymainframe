@@ -111,8 +111,11 @@ content: [
         '8xl': ['6rem', { lineHeight: '6.75rem', letterSpacing: '-0.05em' }],
         '9xl': ['8rem', { lineHeight: '8.75rem', letterSpacing: '-0.05em' }]
       },
-      spacing: {
+spacing: {
         '18': '4.5rem',
+        '22': '5.5rem',
+        '26': '6.5rem',
+        '30': '7.5rem',
         '88': '22rem',
         '128': '32rem',
         '144': '36rem',
