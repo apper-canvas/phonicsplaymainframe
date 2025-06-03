@@ -63,37 +63,38 @@ const Home = () => {
         )}
       </AnimatePresence>
 
-      {/* Header */}
+{/* Header */}
       <motion.header
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="bg-white/80 backdrop-blur-sm shadow-soft border-b border-white/20"
+        className="glass-card-strong border-b border-white/30 shadow-premium"
       >
-        <div className="container mx-auto px-4 py-4 sm:py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="container mx-auto px-6 py-6 sm:py-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-3"
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="flex items-center gap-4"
             >
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-primary to-secondary rounded-bubble flex items-center justify-center shadow-letter">
+              <div className="w-14 h-14 sm:w-18 sm:h-18 glass-medium rounded-2xl flex items-center justify-center shadow-elevated backdrop-blur-xl">
                 <span className="text-2xl sm:text-3xl">📖</span>
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-primary font-heading">
+                <h1 className="text-3xl sm:text-4xl font-bold text-primary-700 font-heading tracking-tight">
                   PhonicsPlay
                 </h1>
-                <p className="text-sm sm:text-base text-surface-600">
-                  Learning Letters & Sounds
+                <p className="text-base sm:text-lg text-neutral-600 font-medium">
+                  Interactive Learning Platform
                 </p>
               </div>
             </motion.div>
 
-            <div className="flex items-center gap-4 text-center sm:text-right">
-              <div className="hidden sm:block">
-                <p className="text-lg font-medium text-surface-700">
+            <div className="flex items-center gap-6 text-center sm:text-right">
+              <div className="hidden sm:block space-y-1">
+                <p className="text-xl font-semibold text-neutral-700 tracking-tight">
                   {getGreeting()}!
                 </p>
-                <p className="text-sm text-surface-500">
+                <p className="text-sm text-neutral-500 font-medium">
                   {currentTime.toLocaleDateString('en-US', { 
                     weekday: 'long',
                     month: 'short',
@@ -102,11 +103,12 @@ const Home = () => {
                 </p>
               </div>
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="w-10 h-10 sm:w-12 sm:h-12 bg-accent rounded-full flex items-center justify-center shadow-soft hover:shadow-playful transition-all duration-300"
+                whileHover={{ scale: 1.05, rotate: 90 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                className="w-12 h-12 sm:w-14 sm:h-14 glass-medium rounded-xl flex items-center justify-center shadow-elevated hover:shadow-premium transition-all duration-300 backdrop-blur-xl"
               >
-                <ApperIcon name="Settings" className="w-5 h-5 sm:w-6 sm:h-6 text-surface-700" />
+                <ApperIcon name="Settings" className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-700" />
               </motion.button>
             </div>
           </div>
